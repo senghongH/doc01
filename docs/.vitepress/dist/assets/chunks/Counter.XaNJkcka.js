@@ -1,0 +1,1 @@
+import{p as o,c as n,o as r,t as a}from"./framework.ls9XjL6W.js";const p={__name:"Counter",setup(s){const t=o(0);return(u,e)=>(r(),n("button",{onClick:e[0]||(e[0]=c=>t.value++)}," Count: "+a(t.value),1))}};export{p as default};
