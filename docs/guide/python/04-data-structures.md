@@ -597,6 +597,285 @@ print(len(unique_words))  # 8
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+## Common Mistakes
+
+::: danger Avoid These Common Errors
+
+### 1. Modifying List While Iterating
+```python
+# ❌ WRONG - Causes unexpected behavior
+numbers = [1, 2, 3, 4, 5]
+for num in numbers:
+    if num % 2 == 0:
+        numbers.remove(num)
+print(numbers)  # [1, 3, 5] - But 4 was skipped!
+
+# ✓ CORRECT - Create new list
+numbers = [1, 2, 3, 4, 5]
+numbers = [n for n in numbers if n % 2 != 0]
+
+# ✓ CORRECT - Iterate over copy
+numbers = [1, 2, 3, 4, 5]
+for num in numbers[:]:
+    if num % 2 == 0:
+        numbers.remove(num)
+```
+
+### 2. Using Lists as Dictionary Keys
+```python
+# ❌ WRONG - Lists are unhashable
+my_dict = {[1, 2]: "value"}  # TypeError!
+
+# ✓ CORRECT - Use tuples instead
+my_dict = {(1, 2): "value"}
+```
+
+### 3. Dictionary Key Errors
+```python
+# ❌ WRONG - Raises KeyError
+my_dict = {"a": 1}
+value = my_dict["b"]  # KeyError!
+
+# ✓ CORRECT - Use .get()
+value = my_dict.get("b", "default")
+
+# ✓ CORRECT - Check first
+if "b" in my_dict:
+    value = my_dict["b"]
+```
+
+### 4. Shallow vs Deep Copy
+```python
+# ❌ WRONG - Shallow copy shares nested objects
+original = [[1, 2], [3, 4]]
+copy = original.copy()
+copy[0][0] = 99
+print(original)  # [[99, 2], [3, 4]] - Modified!
+
+# ✓ CORRECT - Deep copy for nested structures
+import copy
+original = [[1, 2], [3, 4]]
+deep = copy.deepcopy(original)
+deep[0][0] = 99
+print(original)  # [[1, 2], [3, 4]] - Unchanged!
+```
+
+### 5. Empty Set Syntax
+```python
+# ❌ WRONG - This creates an empty dict!
+empty = {}
+print(type(empty))  # <class 'dict'>
+
+# ✓ CORRECT - Use set()
+empty = set()
+print(type(empty))  # <class 'set'>
+```
+:::
+
+## Python vs JavaScript
+
+::: tip Coming from JavaScript?
+| Feature | Python | JavaScript |
+|---------|--------|------------|
+| Array/List | `[1, 2, 3]` | `[1, 2, 3]` |
+| Access | `list[0]` | `array[0]` |
+| Add item | `list.append(x)` | `array.push(x)` |
+| Remove last | `list.pop()` | `array.pop()` |
+| Length | `len(list)` | `array.length` |
+| Dictionary/Object | `{"a": 1}` | `{a: 1}` |
+| Access key | `dict["key"]` | `obj.key` or `obj["key"]` |
+| Check key | `"key" in dict` | `"key" in obj` |
+| Keys | `dict.keys()` | `Object.keys(obj)` |
+| Spread | `[*list1, *list2]` | `[...arr1, ...arr2]` |
+| Destructuring | `a, b = [1, 2]` | `[a, b] = [1, 2]` |
+| Set | `{1, 2, 3}` | `new Set([1, 2, 3])` |
+| Tuple | `(1, 2, 3)` | N/A (use Object.freeze) |
+:::
+
+## Real-World Examples
+
+### Example 1: Shopping Cart
+```python
+class ShoppingCart:
+    def __init__(self):
+        self.items = {}  # product_id: {name, price, quantity}
+
+    def add_item(self, product_id, name, price, quantity=1):
+        if product_id in self.items:
+            self.items[product_id]["quantity"] += quantity
+        else:
+            self.items[product_id] = {
+                "name": name,
+                "price": price,
+                "quantity": quantity
+            }
+
+    def remove_item(self, product_id):
+        if product_id in self.items:
+            del self.items[product_id]
+
+    def update_quantity(self, product_id, quantity):
+        if product_id in self.items:
+            if quantity <= 0:
+                self.remove_item(product_id)
+            else:
+                self.items[product_id]["quantity"] = quantity
+
+    def get_total(self):
+        return sum(
+            item["price"] * item["quantity"]
+            for item in self.items.values()
+        )
+
+    def display(self):
+        print("\n" + "=" * 50)
+        print(f"{'SHOPPING CART':^50}")
+        print("=" * 50)
+        print(f"{'Item':<20} {'Price':>10} {'Qty':>5} {'Total':>10}")
+        print("-" * 50)
+
+        for item in self.items.values():
+            total = item["price"] * item["quantity"]
+            print(f"{item['name']:<20} ${item['price']:>9.2f} {item['quantity']:>5} ${total:>9.2f}")
+
+        print("-" * 50)
+        print(f"{'TOTAL:':>37} ${self.get_total():>9.2f}")
+        print("=" * 50)
+
+# Usage
+cart = ShoppingCart()
+cart.add_item("P001", "Python Book", 29.99, 2)
+cart.add_item("P002", "USB Cable", 9.99, 3)
+cart.add_item("P003", "Mouse Pad", 14.99)
+cart.display()
+```
+
+### Example 2: Contact Manager
+```python
+from collections import defaultdict
+
+class ContactManager:
+    def __init__(self):
+        self.contacts = {}
+        self.groups = defaultdict(set)
+
+    def add_contact(self, name, email, phone=None, groups=None):
+        self.contacts[name] = {
+            "email": email,
+            "phone": phone,
+            "groups": set(groups) if groups else set()
+        }
+        if groups:
+            for group in groups:
+                self.groups[group].add(name)
+
+    def search(self, query):
+        """Search contacts by name or email."""
+        query = query.lower()
+        results = []
+        for name, info in self.contacts.items():
+            if query in name.lower() or query in info["email"].lower():
+                results.append((name, info))
+        return results
+
+    def get_by_group(self, group):
+        """Get all contacts in a group."""
+        return [
+            (name, self.contacts[name])
+            for name in self.groups.get(group, [])
+        ]
+
+    def add_to_group(self, name, group):
+        """Add contact to a group."""
+        if name in self.contacts:
+            self.contacts[name]["groups"].add(group)
+            self.groups[group].add(name)
+
+    def display_all(self):
+        for name, info in sorted(self.contacts.items()):
+            groups = ", ".join(info["groups"]) or "None"
+            print(f"{name}: {info['email']} | Groups: {groups}")
+
+# Usage
+cm = ContactManager()
+cm.add_contact("Alice", "alice@email.com", "555-1234", ["work", "friends"])
+cm.add_contact("Bob", "bob@email.com", groups=["work"])
+cm.add_contact("Charlie", "charlie@email.com", "555-5678", ["friends"])
+
+print("Work contacts:")
+for name, info in cm.get_by_group("work"):
+    print(f"  {name}: {info['email']}")
+```
+
+### Example 3: Inventory System
+```python
+from collections import Counter
+from datetime import datetime
+
+class Inventory:
+    def __init__(self):
+        self.products = {}
+        self.transactions = []
+
+    def add_product(self, sku, name, price, quantity=0):
+        self.products[sku] = {
+            "name": name,
+            "price": price,
+            "quantity": quantity
+        }
+
+    def stock_in(self, sku, quantity):
+        if sku in self.products:
+            self.products[sku]["quantity"] += quantity
+            self._log_transaction(sku, "IN", quantity)
+
+    def stock_out(self, sku, quantity):
+        if sku in self.products:
+            available = self.products[sku]["quantity"]
+            if quantity <= available:
+                self.products[sku]["quantity"] -= quantity
+                self._log_transaction(sku, "OUT", quantity)
+                return True
+            return False
+
+    def _log_transaction(self, sku, type_, quantity):
+        self.transactions.append({
+            "timestamp": datetime.now(),
+            "sku": sku,
+            "type": type_,
+            "quantity": quantity
+        })
+
+    def get_low_stock(self, threshold=10):
+        return {
+            sku: info for sku, info in self.products.items()
+            if info["quantity"] < threshold
+        }
+
+    def get_total_value(self):
+        return sum(
+            p["price"] * p["quantity"]
+            for p in self.products.values()
+        )
+
+    def get_transaction_summary(self):
+        summary = Counter()
+        for t in self.transactions:
+            key = (t["sku"], t["type"])
+            summary[key] += t["quantity"]
+        return dict(summary)
+
+# Usage
+inv = Inventory()
+inv.add_product("SKU001", "Widget", 9.99, 100)
+inv.add_product("SKU002", "Gadget", 19.99, 50)
+inv.stock_out("SKU001", 95)
+inv.stock_in("SKU002", 20)
+
+print("Low stock:", inv.get_low_stock())
+print("Total value:", f"${inv.get_total_value():.2f}")
+```
+
 ## Exercises
 
 ### Exercise 1: Student Grades

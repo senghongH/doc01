@@ -733,6 +733,399 @@ print(result)
 ```
 :::
 
+## Common Mistakes
+
+### ❌ WRONG: Bare except clause
+
+```python
+# ❌ WRONG - Catches everything, including KeyboardInterrupt!
+try:
+    user_input = input("Enter a number: ")
+    result = int(user_input)
+except:  # Too broad!
+    print("Error occurred")
+
+# ✓ CORRECT - Be specific about what you catch
+try:
+    user_input = input("Enter a number: ")
+    result = int(user_input)
+except ValueError:
+    print("Please enter a valid number")
+
+# Or at minimum, use Exception (not BaseException)
+except Exception as e:
+    print(f"Error: {e}")
+```
+
+### ❌ WRONG: Silencing exceptions without handling
+
+```python
+# ❌ WRONG - Swallowing exceptions hides bugs
+try:
+    process_data(data)
+except Exception:
+    pass  # Silent failure!
+
+# ✓ CORRECT - At least log the error
+import logging
+
+try:
+    process_data(data)
+except Exception as e:
+    logging.error(f"Failed to process data: {e}")
+    # Then handle appropriately (retry, return default, re-raise, etc.)
+```
+
+### ❌ WRONG: Using exceptions for flow control
+
+```python
+# ❌ WRONG - Using exceptions instead of conditions
+def get_item(items, index):
+    try:
+        return items[index]
+    except IndexError:
+        return None  # Using exception as normal flow
+
+# ✓ CORRECT - Check condition first
+def get_item(items, index):
+    if 0 <= index < len(items):
+        return items[index]
+    return None
+```
+
+### ❌ WRONG: Catching and re-raising without context
+
+```python
+# ❌ WRONG - Loses original traceback
+try:
+    process_file(filename)
+except IOError:
+    raise RuntimeError("Failed to process file")
+
+# ✓ CORRECT - Chain exceptions to preserve context
+try:
+    process_file(filename)
+except IOError as e:
+    raise RuntimeError(f"Failed to process {filename}") from e
+```
+
+### ❌ WRONG: Too broad exception handling
+
+```python
+# ❌ WRONG - Catches unrelated errors
+try:
+    result = calculate_total(items)
+    save_to_database(result)
+    send_email_notification(result)
+except Exception as e:
+    print(f"Error: {e}")  # Which operation failed?
+
+# ✓ CORRECT - Handle each operation separately
+try:
+    result = calculate_total(items)
+except ValueError as e:
+    print(f"Calculation error: {e}")
+    return
+
+try:
+    save_to_database(result)
+except DatabaseError as e:
+    print(f"Database error: {e}")
+    return
+```
+
+## Python vs JavaScript
+
+| Concept | Python | JavaScript |
+|---------|--------|------------|
+| Try block | `try:` | `try {` |
+| Catch | `except Error:` | `catch (error) {` |
+| Finally | `finally:` | `finally {` |
+| Throw | `raise Exception()` | `throw new Error()` |
+| Custom exception | `class MyError(Exception)` | `class MyError extends Error` |
+| Error message | `str(e)` or `e.args[0]` | `error.message` |
+| Stack trace | `traceback.format_exc()` | `error.stack` |
+| Catch specific | `except ValueError:` | N/A (check instanceof) |
+| Catch multiple | `except (A, B):` | N/A (use if/else) |
+| Re-raise | `raise` | `throw error` |
+| Chain exception | `raise X from e` | N/A (set cause manually) |
+| Else clause | `else:` (no exception) | N/A |
+| Assert | `assert condition` | N/A (use libraries) |
+| Warning | `warnings.warn()` | `console.warn()` |
+
+## Real-World Examples
+
+### Example 1: Robust API Client with Retry
+
+```python
+import time
+import logging
+from typing import Optional, Dict, Any, Callable, TypeVar
+from functools import wraps
+from dataclasses import dataclass
+from enum import Enum
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+T = TypeVar('T')
+
+
+class APIErrorCode(Enum):
+    NETWORK_ERROR = "NETWORK_ERROR"
+    TIMEOUT = "TIMEOUT"
+    RATE_LIMITED = "RATE_LIMITED"
+    UNAUTHORIZED = "UNAUTHORIZED"
+    NOT_FOUND = "NOT_FOUND"
+    SERVER_ERROR = "SERVER_ERROR"
+
+
+@dataclass
+class APIError(Exception):
+    """Custom API exception with structured error information."""
+    code: APIErrorCode
+    message: str
+    status_code: Optional[int] = None
+    retry_after: Optional[int] = None
+
+    def __str__(self):
+        return f"[{self.code.value}] {self.message}"
+
+    @property
+    def is_retryable(self) -> bool:
+        return self.code in {
+            APIErrorCode.NETWORK_ERROR,
+            APIErrorCode.TIMEOUT,
+            APIErrorCode.RATE_LIMITED,
+            APIErrorCode.SERVER_ERROR,
+        }
+
+
+def retry_on_failure(max_attempts: int = 3, delay: float = 1.0, backoff: float = 2.0):
+    """Decorator that retries function on specified exceptions."""
+    def decorator(func: Callable[..., T]) -> Callable[..., T]:
+        @wraps(func)
+        def wrapper(*args, **kwargs) -> T:
+            last_exception = None
+            current_delay = delay
+
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    return func(*args, **kwargs)
+                except APIError as e:
+                    last_exception = e
+                    if not e.is_retryable:
+                        raise
+
+                    if e.retry_after:
+                        current_delay = e.retry_after
+
+                    if attempt < max_attempts:
+                        logger.warning(f"Attempt {attempt} failed. Retrying in {current_delay}s")
+                        time.sleep(current_delay)
+                        current_delay *= backoff
+
+            raise last_exception
+        return wrapper
+    return decorator
+
+
+class APIClient:
+    """API client with comprehensive error handling."""
+
+    def __init__(self, base_url: str, api_key: str):
+        self.base_url = base_url
+        self.api_key = api_key
+
+    @retry_on_failure(max_attempts=3, delay=1.0)
+    def get(self, endpoint: str) -> Dict[str, Any]:
+        """GET request with automatic retry."""
+        import random
+        # Simulate various scenarios
+        if random.random() < 0.3:
+            raise APIError(APIErrorCode.TIMEOUT, "Request timed out", 408)
+        return {"status": "success", "endpoint": endpoint}
+
+
+# Usage
+client = APIClient("https://api.example.com", "key123")
+try:
+    result = client.get("/users/123")
+    print(f"Success: {result}")
+except APIError as e:
+    print(f"API error: {e}")
+```
+
+### Example 2: Validation Framework
+
+```python
+from typing import List, Dict, Any
+from dataclasses import dataclass
+from enum import Enum, auto
+
+
+class ValidationSeverity(Enum):
+    ERROR = auto()
+    WARNING = auto()
+
+
+@dataclass
+class ValidationError:
+    field: str
+    message: str
+    code: str
+    severity: ValidationSeverity = ValidationSeverity.ERROR
+
+
+class ValidationException(Exception):
+    """Exception containing multiple validation errors."""
+
+    def __init__(self, errors: List[ValidationError]):
+        self.errors = errors
+        super().__init__(f"Validation failed with {len(errors)} error(s)")
+
+    def __str__(self):
+        return "\n".join(f"  - {e.field}: {e.message}" for e in self.errors)
+
+
+class Validator:
+    """Fluent validation builder."""
+
+    def __init__(self):
+        self._errors: List[ValidationError] = []
+        self._field: str = ""
+        self._value: Any = None
+
+    def field(self, name: str, value: Any) -> 'Validator':
+        self._field = name
+        self._value = value
+        return self
+
+    def required(self) -> 'Validator':
+        if not self._value:
+            self._errors.append(ValidationError(
+                self._field, "is required", "REQUIRED"
+            ))
+        return self
+
+    def min_length(self, length: int) -> 'Validator':
+        if self._value and len(str(self._value)) < length:
+            self._errors.append(ValidationError(
+                self._field, f"must be at least {length} characters", "MIN_LENGTH"
+            ))
+        return self
+
+    def email(self) -> 'Validator':
+        if self._value and "@" not in str(self._value):
+            self._errors.append(ValidationError(
+                self._field, "must be a valid email", "EMAIL"
+            ))
+        return self
+
+    def raise_if_invalid(self):
+        if self._errors:
+            raise ValidationException(self._errors)
+
+
+# Usage
+def register_user(data: Dict[str, Any]):
+    v = Validator()
+    (v.field("username", data.get("username")).required().min_length(3)
+      .field("email", data.get("email")).required().email()
+      .field("password", data.get("password")).required().min_length(8))
+    v.raise_if_invalid()
+    return data
+
+
+try:
+    register_user({"username": "ab", "email": "invalid", "password": "123"})
+except ValidationException as e:
+    print(f"Validation errors:\n{e}")
+```
+
+### Example 3: Circuit Breaker Pattern
+
+```python
+from datetime import datetime, timedelta
+from enum import Enum, auto
+import threading
+
+
+class CircuitState(Enum):
+    CLOSED = auto()      # Normal operation
+    OPEN = auto()        # Failing, reject calls
+    HALF_OPEN = auto()   # Testing recovery
+
+
+class CircuitOpenError(Exception):
+    def __init__(self, retry_after: timedelta):
+        self.retry_after = retry_after
+        super().__init__(f"Circuit open. Retry after {retry_after.seconds}s")
+
+
+class CircuitBreaker:
+    """Circuit breaker for handling cascading failures."""
+
+    def __init__(self, failure_threshold: int = 5, recovery_timeout: int = 30):
+        self.failure_threshold = failure_threshold
+        self.recovery_timeout = timedelta(seconds=recovery_timeout)
+        self._state = CircuitState.CLOSED
+        self._failures = 0
+        self._last_failure = None
+        self._lock = threading.Lock()
+
+    @property
+    def state(self) -> CircuitState:
+        with self._lock:
+            if self._state == CircuitState.OPEN:
+                if datetime.now() - self._last_failure > self.recovery_timeout:
+                    self._state = CircuitState.HALF_OPEN
+            return self._state
+
+    def call(self, func, *args, **kwargs):
+        if self.state == CircuitState.OPEN:
+            raise CircuitOpenError(self.recovery_timeout)
+
+        try:
+            result = func(*args, **kwargs)
+            self._record_success()
+            return result
+        except Exception as e:
+            self._record_failure()
+            raise
+
+    def _record_success(self):
+        with self._lock:
+            self._failures = 0
+            self._state = CircuitState.CLOSED
+
+    def _record_failure(self):
+        with self._lock:
+            self._failures += 1
+            self._last_failure = datetime.now()
+            if self._failures >= self.failure_threshold:
+                self._state = CircuitState.OPEN
+
+
+# Usage
+circuit = CircuitBreaker(failure_threshold=3, recovery_timeout=10)
+
+def unreliable_service():
+    import random
+    if random.random() < 0.7:
+        raise ConnectionError("Service unavailable")
+    return "Success!"
+
+for i in range(10):
+    try:
+        result = circuit.call(unreliable_service)
+        print(f"Call {i+1}: {result}")
+    except CircuitOpenError as e:
+        print(f"Call {i+1}: {e}")
+    except ConnectionError as e:
+        print(f"Call {i+1}: Failed - {e}")
+```
+
 ## Quick Reference
 
 ::: tip Exception Handling Cheat Sheet

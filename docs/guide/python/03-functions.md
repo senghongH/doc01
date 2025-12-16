@@ -597,6 +597,268 @@ print(any(values))  # True (at least one True)
 print(all(values))  # False (not all True)
 ```
 
+## Common Mistakes
+
+::: danger Avoid These Common Errors
+
+### 1. Mutable Default Arguments
+```python
+# ❌ WRONG - List is shared across calls!
+def add_item(item, items=[]):
+    items.append(item)
+    return items
+
+print(add_item("a"))  # ['a']
+print(add_item("b"))  # ['a', 'b'] - Unexpected!
+
+# ✓ CORRECT - Use None as default
+def add_item(item, items=None):
+    if items is None:
+        items = []
+    items.append(item)
+    return items
+```
+
+### 2. Forgetting Return Statement
+```python
+# ❌ WRONG - Returns None implicitly
+def add(a, b):
+    result = a + b  # No return!
+
+print(add(2, 3))  # None
+
+# ✓ CORRECT
+def add(a, b):
+    return a + b
+```
+
+### 3. Modifying Global Variables
+```python
+# ❌ WRONG - UnboundLocalError
+counter = 0
+def increment():
+    counter += 1  # Error!
+
+# ✓ CORRECT - Use global keyword
+def increment():
+    global counter
+    counter += 1
+
+# ✓ BETTER - Avoid globals, use parameters
+def increment(counter):
+    return counter + 1
+```
+
+### 4. Wrong Argument Order
+```python
+# ❌ WRONG - Positional after keyword
+def greet(name, greeting="Hello"):
+    pass
+
+greet(greeting="Hi", "Alice")  # SyntaxError!
+
+# ✓ CORRECT
+greet("Alice", greeting="Hi")
+```
+
+### 5. Not Handling All Cases
+```python
+# ❌ WRONG - May return None implicitly
+def get_grade(score):
+    if score >= 90:
+        return "A"
+    elif score >= 80:
+        return "B"
+    # What about other scores?
+
+# ✓ CORRECT - Always return something
+def get_grade(score):
+    if score >= 90:
+        return "A"
+    elif score >= 80:
+        return "B"
+    elif score >= 70:
+        return "C"
+    else:
+        return "F"
+```
+:::
+
+## Python vs JavaScript
+
+::: tip Coming from JavaScript?
+| Feature | Python | JavaScript |
+|---------|--------|------------|
+| Define function | `def func():` | `function func() {` |
+| Arrow function | `lambda x: x * 2` | `x => x * 2` |
+| Default params | `def f(x=10):` | `function f(x = 10) {` |
+| Rest params | `def f(*args):` | `function f(...args) {` |
+| Spread | `f(*list)` | `f(...array)` |
+| Return | `return value` | `return value` |
+| No return | Returns `None` | Returns `undefined` |
+| Docstring | `"""docs"""` | JSDoc comments |
+| First-class | Yes | Yes |
+| Closures | Yes | Yes |
+:::
+
+## Real-World Examples
+
+### Example 1: User Registration
+```python
+def validate_username(username):
+    """Validate username requirements."""
+    if not username:
+        return False, "Username is required"
+    if len(username) < 3:
+        return False, "Username must be at least 3 characters"
+    if len(username) > 20:
+        return False, "Username must be at most 20 characters"
+    if not username.isalnum():
+        return False, "Username can only contain letters and numbers"
+    return True, "Valid username"
+
+def validate_email(email):
+    """Simple email validation."""
+    if not email:
+        return False, "Email is required"
+    if "@" not in email or "." not in email:
+        return False, "Invalid email format"
+    return True, "Valid email"
+
+def validate_password(password):
+    """Validate password strength."""
+    errors = []
+    if len(password) < 8:
+        errors.append("At least 8 characters")
+    if not any(c.isupper() for c in password):
+        errors.append("At least one uppercase letter")
+    if not any(c.islower() for c in password):
+        errors.append("At least one lowercase letter")
+    if not any(c.isdigit() for c in password):
+        errors.append("At least one number")
+
+    if errors:
+        return False, errors
+    return True, "Strong password"
+
+def register_user(username, email, password):
+    """Register a new user with validation."""
+    validations = [
+        ("Username", *validate_username(username)),
+        ("Email", *validate_email(email)),
+        ("Password", *validate_password(password)),
+    ]
+
+    errors = []
+    for field, is_valid, message in validations:
+        if not is_valid:
+            if isinstance(message, list):
+                errors.extend([f"{field}: {m}" for m in message])
+            else:
+                errors.append(f"{field}: {message}")
+
+    if errors:
+        return {"success": False, "errors": errors}
+
+    return {
+        "success": True,
+        "user": {"username": username, "email": email}
+    }
+
+# Test
+result = register_user("jo", "invalid", "weak")
+print(result)
+```
+
+### Example 2: Data Processing Pipeline
+```python
+def clean_data(data):
+    """Remove None values and strip strings."""
+    return [item.strip() if isinstance(item, str) else item
+            for item in data if item is not None]
+
+def transform_data(data, transformer):
+    """Apply transformation to each item."""
+    return [transformer(item) for item in data]
+
+def filter_data(data, predicate):
+    """Filter items based on predicate."""
+    return [item for item in data if predicate(item)]
+
+def aggregate_data(data, aggregator, initial=0):
+    """Aggregate data using provided function."""
+    result = initial
+    for item in data:
+        result = aggregator(result, item)
+    return result
+
+def process_pipeline(data, *operations):
+    """Process data through multiple operations."""
+    result = data
+    for operation in operations:
+        result = operation(result)
+    return result
+
+# Usage
+raw_data = [" apple ", None, "  banana  ", "cherry", None, "  date  "]
+
+result = process_pipeline(
+    raw_data,
+    clean_data,
+    lambda d: transform_data(d, str.upper),
+    lambda d: filter_data(d, lambda x: len(x) > 5),
+)
+
+print(result)  # ['BANANA', 'CHERRY']
+```
+
+### Example 3: API Response Handler
+```python
+def create_response(success, data=None, error=None, status_code=200):
+    """Create a standardized API response."""
+    response = {
+        "success": success,
+        "status_code": status_code,
+        "data": data,
+        "error": error
+    }
+    return response
+
+def success_response(data, status_code=200):
+    """Create a success response."""
+    return create_response(True, data=data, status_code=status_code)
+
+def error_response(message, status_code=400):
+    """Create an error response."""
+    return create_response(False, error=message, status_code=status_code)
+
+def handle_request(handler):
+    """Decorator to handle exceptions in request handlers."""
+    def wrapper(*args, **kwargs):
+        try:
+            result = handler(*args, **kwargs)
+            return success_response(result)
+        except ValueError as e:
+            return error_response(str(e), 400)
+        except PermissionError as e:
+            return error_response(str(e), 403)
+        except Exception as e:
+            return error_response("Internal server error", 500)
+    return wrapper
+
+@handle_request
+def get_user(user_id):
+    """Get user by ID."""
+    if user_id <= 0:
+        raise ValueError("Invalid user ID")
+    # Simulate database lookup
+    return {"id": user_id, "name": "Alice", "email": "alice@example.com"}
+
+# Test
+print(get_user(1))
+print(get_user(-1))
+```
+
 ## Exercises
 
 ### Exercise 1: Calculator Function

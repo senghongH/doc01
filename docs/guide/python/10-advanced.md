@@ -907,6 +907,661 @@ from functools import lru_cache, partial
 ```
 :::
 
+## Common Mistakes
+
+### ❌ WRONG: Forgetting functools.wraps in decorators
+
+```python
+# ❌ WRONG - Loses function metadata
+def my_decorator(func):
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    return wrapper
+
+@my_decorator
+def greet(name):
+    """Greet someone."""
+    return f"Hello, {name}"
+
+print(greet.__name__)  # 'wrapper' - wrong!
+print(greet.__doc__)   # None - lost!
+
+# ✓ CORRECT - Use functools.wraps
+from functools import wraps
+
+def my_decorator(func):
+    @wraps(func)  # Preserves metadata
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    return wrapper
+```
+
+### ❌ WRONG: Not exhausting generators before reuse
+
+```python
+# ❌ WRONG - Generator is exhausted after first use
+def numbers():
+    yield 1
+    yield 2
+    yield 3
+
+gen = numbers()
+list(gen)  # [1, 2, 3]
+list(gen)  # [] - empty! Generator is exhausted
+
+# ✓ CORRECT - Create new generator or use list
+def numbers():
+    yield 1
+    yield 2
+    yield 3
+
+# Option 1: Create new generator each time
+result1 = list(numbers())
+result2 = list(numbers())
+
+# Option 2: Store as list if you need multiple iterations
+nums = list(numbers())
+```
+
+### ❌ WRONG: Modifying variables in nested functions
+
+```python
+# ❌ WRONG - Can't modify outer variable
+def counter():
+    count = 0
+    def increment():
+        count += 1  # UnboundLocalError!
+        return count
+    return increment
+
+# ✓ CORRECT - Use nonlocal keyword
+def counter():
+    count = 0
+    def increment():
+        nonlocal count  # Declare as nonlocal
+        count += 1
+        return count
+    return increment
+```
+
+### ❌ WRONG: Misusing type hints
+
+```python
+# ❌ WRONG - Type hints don't enforce types at runtime
+def add(a: int, b: int) -> int:
+    return a + b
+
+result = add("hello", "world")  # No error! Returns "helloworld"
+
+# Type hints are for documentation and static analysis tools
+# Use validation if you need runtime type checking
+
+# ✓ CORRECT - Add runtime validation if needed
+def add(a: int, b: int) -> int:
+    if not isinstance(a, int) or not isinstance(b, int):
+        raise TypeError("Arguments must be integers")
+    return a + b
+```
+
+### ❌ WRONG: Using mutable defaults in dataclasses
+
+```python
+# ❌ WRONG - Mutable default shared between instances
+from dataclasses import dataclass
+
+@dataclass
+class Team:
+    members: list = []  # Error or shared reference!
+
+# ✓ CORRECT - Use field with default_factory
+from dataclasses import dataclass, field
+
+@dataclass
+class Team:
+    members: list = field(default_factory=list)
+```
+
+## Python vs JavaScript
+
+| Concept | Python | JavaScript |
+|---------|--------|------------|
+| Decorator | `@decorator` | N/A (HOC pattern) |
+| Generator | `yield` | `function*`, `yield` |
+| Iterator | `__iter__`, `__next__` | `Symbol.iterator`, `next()` |
+| Async/Await | `async def`, `await` | `async function`, `await` |
+| Property | `@property` | `get prop()` |
+| Static method | `@staticmethod` | `static method()` |
+| Class method | `@classmethod` | N/A |
+| Context manager | `with`, `__enter__/__exit__` | N/A (try/finally) |
+| Type hints | `def func(x: int) -> str:` | TypeScript types |
+| Comprehension | `[x for x in list]` | `list.map(x => x)` |
+| Lambda | `lambda x: x * 2` | `x => x * 2` |
+| Metaclass | `class Meta(type):` | N/A |
+| Descriptor | `__get__`, `__set__` | Proxy |
+| Slots | `__slots__` | N/A |
+| ABC | `ABC`, `@abstractmethod` | N/A (interfaces in TS) |
+
+## Real-World Examples
+
+### Example 1: Rate Limiter Decorator
+
+```python
+import time
+from functools import wraps
+from collections import deque
+from threading import Lock
+from typing import Callable, TypeVar
+
+T = TypeVar('T')
+
+def rate_limit(max_calls: int, period: float):
+    """
+    Rate limiter decorator that limits function calls.
+
+    Args:
+        max_calls: Maximum number of calls allowed in the period
+        period: Time period in seconds
+    """
+    def decorator(func: Callable[..., T]) -> Callable[..., T]:
+        call_times: deque = deque()
+        lock = Lock()
+
+        @wraps(func)
+        def wrapper(*args, **kwargs) -> T:
+            with lock:
+                now = time.time()
+
+                # Remove expired timestamps
+                while call_times and call_times[0] < now - period:
+                    call_times.popleft()
+
+                if len(call_times) >= max_calls:
+                    wait_time = period - (now - call_times[0])
+                    raise RateLimitExceeded(
+                        f"Rate limit exceeded. Try again in {wait_time:.1f}s"
+                    )
+
+                call_times.append(now)
+
+            return func(*args, **kwargs)
+
+        wrapper.reset = lambda: call_times.clear()
+        return wrapper
+
+    return decorator
+
+
+class RateLimitExceeded(Exception):
+    pass
+
+
+@rate_limit(max_calls=5, period=10.0)
+def api_call(endpoint: str) -> dict:
+    """Simulated API call."""
+    return {"endpoint": endpoint, "status": "success"}
+
+
+# Usage
+for i in range(7):
+    try:
+        result = api_call(f"/api/users/{i}")
+        print(f"Call {i+1}: {result}")
+    except RateLimitExceeded as e:
+        print(f"Call {i+1}: {e}")
+```
+
+### Example 2: Async Task Queue
+
+```python
+import asyncio
+from typing import Callable, Any, List, Optional
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum, auto
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+class TaskStatus(Enum):
+    PENDING = auto()
+    RUNNING = auto()
+    COMPLETED = auto()
+    FAILED = auto()
+
+
+@dataclass
+class Task:
+    id: str
+    func: Callable
+    args: tuple = ()
+    kwargs: dict = field(default_factory=dict)
+    status: TaskStatus = TaskStatus.PENDING
+    result: Any = None
+    error: Optional[Exception] = None
+    created_at: datetime = field(default_factory=datetime.now)
+    completed_at: Optional[datetime] = None
+
+
+class AsyncTaskQueue:
+    """Async task queue with worker pool."""
+
+    def __init__(self, workers: int = 3):
+        self.workers = workers
+        self._queue: asyncio.Queue = asyncio.Queue()
+        self._tasks: dict = {}
+        self._running = False
+
+    async def add_task(self, task_id: str, func: Callable,
+                       *args, **kwargs) -> Task:
+        """Add a task to the queue."""
+        task = Task(id=task_id, func=func, args=args, kwargs=kwargs)
+        self._tasks[task_id] = task
+        await self._queue.put(task)
+        logger.info(f"Task {task_id} added to queue")
+        return task
+
+    async def _worker(self, worker_id: int):
+        """Worker that processes tasks from the queue."""
+        while self._running:
+            try:
+                task = await asyncio.wait_for(
+                    self._queue.get(), timeout=1.0
+                )
+            except asyncio.TimeoutError:
+                continue
+
+            task.status = TaskStatus.RUNNING
+            logger.info(f"Worker {worker_id} processing task {task.id}")
+
+            try:
+                if asyncio.iscoroutinefunction(task.func):
+                    task.result = await task.func(*task.args, **task.kwargs)
+                else:
+                    task.result = await asyncio.get_event_loop().run_in_executor(
+                        None, lambda: task.func(*task.args, **task.kwargs)
+                    )
+                task.status = TaskStatus.COMPLETED
+                logger.info(f"Task {task.id} completed")
+            except Exception as e:
+                task.status = TaskStatus.FAILED
+                task.error = e
+                logger.error(f"Task {task.id} failed: {e}")
+            finally:
+                task.completed_at = datetime.now()
+                self._queue.task_done()
+
+    async def start(self):
+        """Start the task queue workers."""
+        self._running = True
+        workers = [
+            asyncio.create_task(self._worker(i))
+            for i in range(self.workers)
+        ]
+        logger.info(f"Started {self.workers} workers")
+        return workers
+
+    async def stop(self):
+        """Stop the task queue."""
+        self._running = False
+        logger.info("Stopping task queue")
+
+    def get_task(self, task_id: str) -> Optional[Task]:
+        """Get task by ID."""
+        return self._tasks.get(task_id)
+
+    async def wait_for_completion(self):
+        """Wait for all tasks to complete."""
+        await self._queue.join()
+
+
+# Usage example
+async def process_item(item_id: int) -> dict:
+    await asyncio.sleep(1)  # Simulate work
+    return {"item_id": item_id, "processed": True}
+
+
+async def main():
+    queue = AsyncTaskQueue(workers=3)
+    workers = await queue.start()
+
+    # Add tasks
+    for i in range(5):
+        await queue.add_task(f"task_{i}", process_item, i)
+
+    # Wait for completion
+    await queue.wait_for_completion()
+
+    # Check results
+    for i in range(5):
+        task = queue.get_task(f"task_{i}")
+        print(f"Task {task.id}: {task.status.name} - {task.result}")
+
+    await queue.stop()
+    for worker in workers:
+        worker.cancel()
+
+
+# asyncio.run(main())
+```
+
+### Example 3: Dependency Injection with Descriptors
+
+```python
+from typing import Type, TypeVar, Generic, Callable, Optional, Dict, Any
+from functools import wraps
+
+T = TypeVar('T')
+
+
+class Inject(Generic[T]):
+    """Descriptor for dependency injection."""
+
+    def __init__(self, dependency_type: Type[T]):
+        self.dependency_type = dependency_type
+        self.attr_name: str = ""
+
+    def __set_name__(self, owner: type, name: str):
+        self.attr_name = f"_inject_{name}"
+
+    def __get__(self, obj: Optional[object], objtype: type = None) -> T:
+        if obj is None:
+            return self
+
+        # Try to get cached instance
+        instance = getattr(obj, self.attr_name, None)
+        if instance is not None:
+            return instance
+
+        # Resolve from container
+        container = getattr(obj, '_container', None)
+        if container is None:
+            raise RuntimeError("No DI container configured")
+
+        instance = container.resolve(self.dependency_type)
+        setattr(obj, self.attr_name, instance)
+        return instance
+
+    def __set__(self, obj: object, value: T):
+        setattr(obj, self.attr_name, value)
+
+
+class Container:
+    """Simple dependency injection container."""
+
+    _instance: Optional['Container'] = None
+
+    def __init__(self):
+        self._bindings: Dict[type, Callable] = {}
+        self._singletons: Dict[type, Any] = {}
+
+    @classmethod
+    def instance(cls) -> 'Container':
+        if cls._instance is None:
+            cls._instance = Container()
+        return cls._instance
+
+    def bind(self, interface: Type[T], implementation: Type[T] = None,
+             singleton: bool = False):
+        """Bind interface to implementation."""
+        impl = implementation or interface
+
+        if singleton:
+            def factory():
+                if interface not in self._singletons:
+                    self._singletons[interface] = impl()
+                return self._singletons[interface]
+            self._bindings[interface] = factory
+        else:
+            self._bindings[interface] = impl
+
+    def resolve(self, interface: Type[T]) -> T:
+        """Resolve a dependency."""
+        if interface not in self._bindings:
+            raise KeyError(f"No binding for {interface}")
+
+        factory = self._bindings[interface]
+        return factory() if callable(factory) else factory
+
+
+def injectable(cls: Type[T]) -> Type[T]:
+    """Decorator to make a class injectable."""
+    original_init = cls.__init__
+
+    @wraps(original_init)
+    def new_init(self, *args, **kwargs):
+        self._container = Container.instance()
+        original_init(self, *args, **kwargs)
+
+    cls.__init__ = new_init
+    return cls
+
+
+# Example services
+class Logger:
+    def log(self, message: str):
+        print(f"[LOG] {message}")
+
+
+class Database:
+    def __init__(self):
+        self.connected = True
+
+    def query(self, sql: str):
+        return [{"id": 1, "name": "Test"}]
+
+
+@injectable
+class UserService:
+    logger = Inject(Logger)
+    db = Inject(Database)
+
+    def get_users(self):
+        self.logger.log("Fetching users")
+        return self.db.query("SELECT * FROM users")
+
+
+# Setup
+container = Container.instance()
+container.bind(Logger, singleton=True)
+container.bind(Database, singleton=True)
+
+# Usage
+service = UserService()
+users = service.get_users()
+print(f"Users: {users}")
+```
+
+## Additional Exercises
+
+### Exercise 4: Async Context Manager
+
+Create an async context manager for database connections.
+
+::: details Solution
+```python
+import asyncio
+from typing import Optional
+from dataclasses import dataclass
+
+
+@dataclass
+class Connection:
+    host: str
+    connected: bool = False
+
+    async def execute(self, query: str):
+        await asyncio.sleep(0.1)  # Simulate query
+        return [{"id": 1}]
+
+
+class AsyncConnectionPool:
+    """Async connection pool with context manager support."""
+
+    def __init__(self, host: str, pool_size: int = 5):
+        self.host = host
+        self.pool_size = pool_size
+        self._pool: asyncio.Queue = asyncio.Queue()
+        self._connections: list = []
+
+    async def initialize(self):
+        """Initialize the connection pool."""
+        for _ in range(self.pool_size):
+            conn = Connection(self.host)
+            conn.connected = True
+            self._connections.append(conn)
+            await self._pool.put(conn)
+
+    async def acquire(self) -> Connection:
+        """Acquire a connection from the pool."""
+        return await self._pool.get()
+
+    async def release(self, conn: Connection):
+        """Release a connection back to the pool."""
+        await self._pool.put(conn)
+
+    async def close(self):
+        """Close all connections."""
+        for conn in self._connections:
+            conn.connected = False
+
+
+class AsyncConnection:
+    """Async context manager for database connections."""
+
+    def __init__(self, pool: AsyncConnectionPool):
+        self.pool = pool
+        self.conn: Optional[Connection] = None
+
+    async def __aenter__(self) -> Connection:
+        self.conn = await self.pool.acquire()
+        return self.conn
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        if self.conn:
+            await self.pool.release(self.conn)
+        return False
+
+
+async def main():
+    pool = AsyncConnectionPool("localhost", pool_size=3)
+    await pool.initialize()
+
+    async with AsyncConnection(pool) as conn:
+        result = await conn.execute("SELECT * FROM users")
+        print(f"Result: {result}")
+
+    await pool.close()
+
+
+asyncio.run(main())
+```
+:::
+
+### Exercise 5: Property with Validation
+
+Create a descriptor that validates property values.
+
+::: details Solution
+```python
+from typing import Any, Callable, Optional, TypeVar
+
+T = TypeVar('T')
+
+
+class ValidatedProperty:
+    """Descriptor with validation support."""
+
+    def __init__(self, validator: Callable[[Any], bool] = None,
+                 converter: Callable[[Any], T] = None,
+                 error_message: str = "Invalid value"):
+        self.validator = validator
+        self.converter = converter
+        self.error_message = error_message
+        self.attr_name: str = ""
+
+    def __set_name__(self, owner: type, name: str):
+        self.attr_name = f"_{name}"
+
+    def __get__(self, obj: Optional[object], objtype: type = None) -> T:
+        if obj is None:
+            return self
+        return getattr(obj, self.attr_name, None)
+
+    def __set__(self, obj: object, value: Any):
+        if self.converter:
+            try:
+                value = self.converter(value)
+            except (ValueError, TypeError) as e:
+                raise ValueError(f"{self.error_message}: {e}")
+
+        if self.validator and not self.validator(value):
+            raise ValueError(self.error_message)
+
+        setattr(obj, self.attr_name, value)
+
+
+# Convenience constructors
+def string_property(min_length: int = 0, max_length: int = None,
+                    pattern: str = None):
+    import re
+
+    def validator(value):
+        if not isinstance(value, str):
+            return False
+        if len(value) < min_length:
+            return False
+        if max_length and len(value) > max_length:
+            return False
+        if pattern and not re.match(pattern, value):
+            return False
+        return True
+
+    return ValidatedProperty(
+        validator=validator,
+        converter=str,
+        error_message=f"String must be {min_length}-{max_length or '∞'} chars"
+    )
+
+
+def number_property(min_value: float = None, max_value: float = None):
+    def validator(value):
+        if min_value is not None and value < min_value:
+            return False
+        if max_value is not None and value > max_value:
+            return False
+        return True
+
+    return ValidatedProperty(
+        validator=validator,
+        converter=float,
+        error_message=f"Number must be between {min_value} and {max_value}"
+    )
+
+
+class User:
+    username = string_property(min_length=3, max_length=20)
+    email = string_property(pattern=r'^[\w\.-]+@[\w\.-]+\.\w+$')
+    age = number_property(min_value=0, max_value=150)
+
+    def __init__(self, username: str, email: str, age: int):
+        self.username = username
+        self.email = email
+        self.age = age
+
+
+# Usage
+try:
+    user = User("alice", "alice@email.com", 25)
+    print(f"Created user: {user.username}")
+
+    user.username = "ab"  # Too short - raises ValueError
+except ValueError as e:
+    print(f"Validation error: {e}")
+```
+:::
+
 ## Summary
 
 | Concept | Description | Use Case |

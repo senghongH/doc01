@@ -532,6 +532,234 @@ matrix = [[i * j for j in range(3)] for i in range(3)]
 ```
 :::
 
+## Common Mistakes
+
+::: danger Avoid These Common Errors
+
+### 1. Forgetting the Colon
+```python
+# ❌ WRONG
+if x > 5
+    print("Big")
+
+# ✓ CORRECT
+if x > 5:
+    print("Big")
+```
+
+### 2. Using = Instead of ==
+```python
+# ❌ WRONG - This is assignment, not comparison!
+if x = 5:    # SyntaxError
+
+# ✓ CORRECT
+if x == 5:
+    print("Equal")
+```
+
+### 3. Infinite Loops
+```python
+# ❌ WRONG - Never terminates!
+i = 0
+while i < 10:
+    print(i)
+    # Forgot i += 1
+
+# ✓ CORRECT
+i = 0
+while i < 10:
+    print(i)
+    i += 1
+```
+
+### 4. Off-by-One Errors
+```python
+# ❌ WRONG - Doesn't include 10
+for i in range(10):  # 0 to 9
+
+# ✓ CORRECT - If you want 1 to 10
+for i in range(1, 11):  # 1 to 10
+```
+
+### 5. Modifying List While Iterating
+```python
+# ❌ WRONG - Can cause unexpected behavior
+numbers = [1, 2, 3, 4, 5]
+for num in numbers:
+    if num % 2 == 0:
+        numbers.remove(num)
+
+# ✓ CORRECT - Create new list
+numbers = [1, 2, 3, 4, 5]
+numbers = [num for num in numbers if num % 2 != 0]
+```
+:::
+
+## Python vs JavaScript
+
+::: tip Coming from JavaScript?
+| Feature | Python | JavaScript |
+|---------|--------|------------|
+| If statement | `if x > 5:` | `if (x > 5) {` |
+| Else if | `elif` | `else if` |
+| For loop | `for i in range(10):` | `for (let i = 0; i < 10; i++) {` |
+| For-each | `for item in list:` | `for (const item of array) {` |
+| While | `while x > 0:` | `while (x > 0) {` |
+| Ternary | `a if cond else b` | `cond ? a : b` |
+| Switch | `match value:` (3.10+) | `switch (value) {` |
+| AND | `and` | `&&` |
+| OR | `or` | `\|\|` |
+| NOT | `not` | `!` |
+:::
+
+## Real-World Examples
+
+### Example 1: User Authentication
+```python
+MAX_ATTEMPTS = 3
+CORRECT_PASSWORD = "secret123"
+
+attempts = 0
+logged_in = False
+
+while attempts < MAX_ATTEMPTS:
+    password = input("Enter password: ")
+    attempts += 1
+
+    if password == CORRECT_PASSWORD:
+        logged_in = True
+        print("Login successful!")
+        break
+    else:
+        remaining = MAX_ATTEMPTS - attempts
+        if remaining > 0:
+            print(f"Wrong password. {remaining} attempts remaining.")
+        else:
+            print("Account locked. Too many failed attempts.")
+
+if logged_in:
+    print("Welcome to the system!")
+```
+
+### Example 2: Menu System
+```python
+def show_menu():
+    print("\n" + "=" * 30)
+    print("       MAIN MENU")
+    print("=" * 30)
+    print("1. View Profile")
+    print("2. Edit Settings")
+    print("3. Help")
+    print("4. Exit")
+    print("=" * 30)
+
+while True:
+    show_menu()
+    choice = input("Select option (1-4): ")
+
+    match choice:
+        case "1":
+            print("\n📋 Displaying your profile...")
+        case "2":
+            print("\n⚙️ Opening settings...")
+        case "3":
+            print("\n❓ Help: Contact support@example.com")
+        case "4":
+            print("\n👋 Goodbye!")
+            break
+        case _:
+            print("\n❌ Invalid option. Please try again.")
+```
+
+### Example 3: Data Validation
+```python
+def get_valid_age():
+    """Get a valid age from user with validation."""
+    while True:
+        try:
+            age = int(input("Enter your age: "))
+
+            if age < 0:
+                print("Age cannot be negative!")
+            elif age > 150:
+                print("Age seems unrealistic!")
+            else:
+                return age
+
+        except ValueError:
+            print("Please enter a valid number!")
+
+def get_valid_email():
+    """Get a valid email from user."""
+    while True:
+        email = input("Enter your email: ").strip()
+
+        if not email:
+            print("Email cannot be empty!")
+        elif "@" not in email:
+            print("Email must contain @!")
+        elif "." not in email.split("@")[-1]:
+            print("Invalid email domain!")
+        else:
+            return email
+
+# Usage
+age = get_valid_age()
+email = get_valid_email()
+print(f"\nAge: {age}, Email: {email}")
+```
+
+### Example 4: Shopping Cart with Discount
+```python
+cart = []
+total = 0
+
+print("Shopping Cart (type 'done' to checkout)")
+print("-" * 40)
+
+while True:
+    item = input("Item name (or 'done'): ").strip()
+    if item.lower() == 'done':
+        break
+
+    try:
+        price = float(input(f"Price of {item}: $"))
+        qty = int(input("Quantity: "))
+
+        if price < 0 or qty < 1:
+            print("Invalid price or quantity!")
+            continue
+
+        cart.append({"item": item, "price": price, "qty": qty})
+        subtotal = price * qty
+        total += subtotal
+        print(f"Added: {item} x{qty} = ${subtotal:.2f}")
+        print()
+
+    except ValueError:
+        print("Invalid input! Try again.\n")
+
+# Checkout
+print("\n" + "=" * 40)
+print("CHECKOUT")
+print("=" * 40)
+
+for item in cart:
+    line_total = item['price'] * item['qty']
+    print(f"{item['item']:20} x{item['qty']:3} ${line_total:8.2f}")
+
+print("-" * 40)
+print(f"{'Subtotal:':24} ${total:8.2f}")
+
+# Apply discount
+if total >= 100:
+    discount = total * 0.1
+    print(f"{'Discount (10%):':24} -${discount:7.2f}")
+    total -= discount
+
+print(f"{'TOTAL:':24} ${total:8.2f}")
+```
+
 ## Exercises
 
 ### Exercise 1: FizzBuzz
@@ -593,6 +821,105 @@ while attempts > 0:
         print(f"Too high! {attempts} attempts left.")
 else:
     print(f"Game over! The number was {secret}.")
+```
+:::
+
+### Exercise 4: Pyramid Pattern
+Print a pyramid pattern with n rows.
+
+::: details Solution
+```python
+n = int(input("Enter number of rows: "))
+
+for i in range(1, n + 1):
+    # Print spaces
+    print(" " * (n - i), end="")
+    # Print stars
+    print("*" * (2 * i - 1))
+
+# Output for n=5:
+#     *
+#    ***
+#   *****
+#  *******
+# *********
+```
+:::
+
+### Exercise 5: Factorial Calculator
+Calculate factorial using a loop.
+
+::: details Solution
+```python
+num = int(input("Enter a number: "))
+
+if num < 0:
+    print("Factorial not defined for negative numbers")
+elif num == 0:
+    print("0! = 1")
+else:
+    factorial = 1
+    for i in range(1, num + 1):
+        factorial *= i
+    print(f"{num}! = {factorial}")
+```
+:::
+
+### Exercise 6: Password Strength Checker
+Check password strength based on criteria.
+
+::: details Solution
+```python
+password = input("Enter password: ")
+
+score = 0
+feedback = []
+
+# Check length
+if len(password) >= 8:
+    score += 1
+else:
+    feedback.append("At least 8 characters")
+
+# Check for uppercase
+if any(c.isupper() for c in password):
+    score += 1
+else:
+    feedback.append("Add uppercase letter")
+
+# Check for lowercase
+if any(c.islower() for c in password):
+    score += 1
+else:
+    feedback.append("Add lowercase letter")
+
+# Check for digit
+if any(c.isdigit() for c in password):
+    score += 1
+else:
+    feedback.append("Add a number")
+
+# Check for special character
+special = "!@#$%^&*()_+-="
+if any(c in special for c in password):
+    score += 1
+else:
+    feedback.append("Add special character")
+
+# Display result
+print(f"\nStrength: {'█' * score}{'░' * (5 - score)} ({score}/5)")
+
+if score < 3:
+    print("Status: Weak 🔴")
+elif score < 5:
+    print("Status: Medium 🟡")
+else:
+    print("Status: Strong 🟢")
+
+if feedback:
+    print("\nSuggestions:")
+    for item in feedback:
+        print(f"  • {item}")
 ```
 :::
 

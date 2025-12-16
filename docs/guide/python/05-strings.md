@@ -598,6 +598,703 @@ s.isspace()   # Only whitespace
 ```
 :::
 
+## Common Mistakes
+
+### ❌ WRONG: Modifying strings directly
+
+```python
+# ❌ WRONG - Strings are immutable
+text = "Hello"
+text[0] = "J"  # TypeError!
+
+# ✓ CORRECT - Create a new string
+text = "Hello"
+text = "J" + text[1:]  # "Jello"
+# Or use replace
+text = text.replace("H", "J")
+```
+
+### ❌ WRONG: Inefficient string concatenation
+
+```python
+# ❌ WRONG - Creates new string each iteration
+result = ""
+for word in ["Hello", "World", "Python"]:
+    result += word + " "  # Slow for large lists
+
+# ✓ CORRECT - Use join()
+words = ["Hello", "World", "Python"]
+result = " ".join(words)  # Much faster
+```
+
+### ❌ WRONG: Forgetting string methods return new strings
+
+```python
+# ❌ WRONG - Ignoring return value
+text = "  hello  "
+text.strip()  # Returns new string, doesn't modify original
+print(text)   # Still "  hello  "
+
+# ✓ CORRECT - Assign the result
+text = "  hello  "
+text = text.strip()
+print(text)   # "hello"
+```
+
+### ❌ WRONG: Using + for complex string formatting
+
+```python
+# ❌ WRONG - Hard to read
+name = "Alice"
+age = 25
+city = "NYC"
+msg = "Name: " + name + ", Age: " + str(age) + ", City: " + city
+
+# ✓ CORRECT - Use f-strings
+msg = f"Name: {name}, Age: {age}, City: {city}"
+```
+
+### ❌ WRONG: Not handling encoding properly
+
+```python
+# ❌ WRONG - May fail with non-ASCII
+with open("file.txt", "r") as f:
+    content = f.read()  # UnicodeDecodeError possible
+
+# ✓ CORRECT - Specify encoding
+with open("file.txt", "r", encoding="utf-8") as f:
+    content = f.read()
+```
+
+## Python vs JavaScript
+
+| Operation | Python | JavaScript |
+|-----------|--------|------------|
+| Create string | `s = "hello"` or `s = 'hello'` | `let s = "hello"` or `let s = 'hello'` |
+| Multi-line | `"""multi\nline"""` | `` `multi\nline` `` |
+| String length | `len(s)` | `s.length` |
+| Concatenate | `s1 + s2` or `f"{s1}{s2}"` | `s1 + s2` or `` `${s1}${s2}` `` |
+| Uppercase | `s.upper()` | `s.toUpperCase()` |
+| Lowercase | `s.lower()` | `s.toLowerCase()` |
+| Find substring | `s.find("sub")` (returns -1) | `s.indexOf("sub")` (returns -1) |
+| Contains | `"sub" in s` | `s.includes("sub")` |
+| Split | `s.split(",")` | `s.split(",")` |
+| Join | `",".join(list)` | `array.join(",")` |
+| Replace | `s.replace("a", "b")` | `s.replace("a", "b")` |
+| Replace all | `s.replace("a", "b")` (replaces all) | `s.replaceAll("a", "b")` |
+| Strip/Trim | `s.strip()` | `s.trim()` |
+| Starts with | `s.startswith("pre")` | `s.startsWith("pre")` |
+| Ends with | `s.endswith("suf")` | `s.endsWith("suf")` |
+| Slice | `s[1:4]` | `s.slice(1, 4)` |
+| Character at | `s[0]` | `s[0]` or `s.charAt(0)` |
+| Repeat | `s * 3` | `s.repeat(3)` |
+| Format | `f"Hello {name}"` | `` `Hello ${name}` `` |
+
+## Real-World Examples
+
+### Example 1: URL Slug Generator
+
+```python
+import re
+
+class SlugGenerator:
+    """Generate URL-friendly slugs from text."""
+
+    def __init__(self, max_length=50):
+        self.max_length = max_length
+
+    def generate(self, text):
+        """Convert text to URL slug."""
+        # Convert to lowercase
+        slug = text.lower()
+
+        # Replace accented characters
+        replacements = {
+            'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
+            'ñ': 'n', 'ü': 'u', 'ä': 'a', 'ö': 'o'
+        }
+        for char, replacement in replacements.items():
+            slug = slug.replace(char, replacement)
+
+        # Remove special characters, keep alphanumeric and spaces
+        slug = re.sub(r'[^a-z0-9\s-]', '', slug)
+
+        # Replace spaces and multiple hyphens with single hyphen
+        slug = re.sub(r'[\s_-]+', '-', slug)
+
+        # Remove leading/trailing hyphens
+        slug = slug.strip('-')
+
+        # Truncate to max length without cutting words
+        if len(slug) > self.max_length:
+            slug = slug[:self.max_length].rsplit('-', 1)[0]
+
+        return slug
+
+    def generate_unique(self, text, existing_slugs):
+        """Generate unique slug by adding number suffix if needed."""
+        base_slug = self.generate(text)
+        slug = base_slug
+        counter = 1
+
+        while slug in existing_slugs:
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+
+        return slug
+
+
+# Usage
+generator = SlugGenerator(max_length=30)
+
+titles = [
+    "Hello World! This is a Test",
+    "Python Programming 101",
+    "Café & Restaurant Guide",
+    "Hello World! This is a Test"  # Duplicate
+]
+
+existing = set()
+for title in titles:
+    slug = generator.generate_unique(title, existing)
+    existing.add(slug)
+    print(f"{title[:30]:<30} → {slug}")
+
+# Output:
+# Hello World! This is a Test   → hello-world-this-is-a-test
+# Python Programming 101        → python-programming-101
+# Café & Restaurant Guide       → cafe-restaurant-guide
+# Hello World! This is a Test   → hello-world-this-is-a-test-1
+```
+
+### Example 2: Log Message Parser
+
+```python
+import re
+from datetime import datetime
+from dataclasses import dataclass
+from typing import Optional, List
+
+@dataclass
+class LogEntry:
+    timestamp: datetime
+    level: str
+    message: str
+    source: Optional[str] = None
+
+    def __str__(self):
+        return f"[{self.timestamp}] {self.level}: {self.message}"
+
+
+class LogParser:
+    """Parse log messages with various formats."""
+
+    # Common log format patterns
+    PATTERNS = {
+        'standard': r'\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\] \[(\w+)\] (.+)',
+        'simple': r'(\w+): (.+)',
+        'with_source': r'\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\] \[(\w+)\] \[(\w+)\] (.+)'
+    }
+
+    def parse_line(self, line: str) -> Optional[LogEntry]:
+        """Parse a single log line."""
+        line = line.strip()
+
+        # Try with source pattern first
+        match = re.match(self.PATTERNS['with_source'], line)
+        if match:
+            return LogEntry(
+                timestamp=datetime.strptime(match.group(1), "%Y-%m-%d %H:%M:%S"),
+                level=match.group(2),
+                source=match.group(3),
+                message=match.group(4)
+            )
+
+        # Try standard pattern
+        match = re.match(self.PATTERNS['standard'], line)
+        if match:
+            return LogEntry(
+                timestamp=datetime.strptime(match.group(1), "%Y-%m-%d %H:%M:%S"),
+                level=match.group(2),
+                message=match.group(3)
+            )
+
+        return None
+
+    def parse_file(self, content: str) -> List[LogEntry]:
+        """Parse multiple log lines."""
+        entries = []
+        for line in content.splitlines():
+            entry = self.parse_line(line)
+            if entry:
+                entries.append(entry)
+        return entries
+
+    def filter_by_level(self, entries: List[LogEntry], level: str) -> List[LogEntry]:
+        """Filter entries by log level."""
+        return [e for e in entries if e.level.upper() == level.upper()]
+
+    def search(self, entries: List[LogEntry], keyword: str) -> List[LogEntry]:
+        """Search entries for keyword."""
+        keyword = keyword.lower()
+        return [e for e in entries if keyword in e.message.lower()]
+
+
+# Usage
+log_content = """
+[2024-01-15 10:30:00] [INFO] Application started
+[2024-01-15 10:30:05] [DEBUG] Loading configuration from config.json
+[2024-01-15 10:30:10] [INFO] [Database] Connected to PostgreSQL
+[2024-01-15 10:30:15] [WARNING] High memory usage detected: 85%
+[2024-01-15 10:30:20] [ERROR] Failed to process request: timeout
+[2024-01-15 10:30:25] [INFO] Request completed successfully
+"""
+
+parser = LogParser()
+entries = parser.parse_file(log_content)
+
+print("All entries:")
+for entry in entries:
+    print(f"  {entry}")
+
+print("\nErrors only:")
+errors = parser.filter_by_level(entries, "ERROR")
+for entry in errors:
+    print(f"  {entry}")
+
+print("\nSearch 'database':")
+db_entries = parser.search(entries, "database")
+for entry in db_entries:
+    print(f"  {entry}")
+```
+
+### Example 3: Template Engine
+
+```python
+import re
+from typing import Dict, Any, Callable
+
+class SimpleTemplateEngine:
+    """A simple template engine with variable substitution and filters."""
+
+    def __init__(self):
+        self.filters: Dict[str, Callable] = {
+            'upper': str.upper,
+            'lower': str.lower,
+            'title': str.title,
+            'strip': str.strip,
+            'capitalize': str.capitalize,
+            'reverse': lambda s: s[::-1],
+            'length': lambda s: str(len(s)),
+            'default': lambda s, default='': s if s else default,
+        }
+
+    def add_filter(self, name: str, func: Callable):
+        """Add a custom filter."""
+        self.filters[name] = func
+
+    def render(self, template: str, context: Dict[str, Any]) -> str:
+        """Render template with given context."""
+        result = template
+
+        # Handle conditional blocks: {% if var %}...{% endif %}
+        result = self._process_conditionals(result, context)
+
+        # Handle loops: {% for item in items %}...{% endfor %}
+        result = self._process_loops(result, context)
+
+        # Handle variable substitution: {{ var }} or {{ var|filter }}
+        result = self._process_variables(result, context)
+
+        return result
+
+    def _process_variables(self, template: str, context: Dict[str, Any]) -> str:
+        """Process variable substitutions."""
+        pattern = r'\{\{\s*(\w+)(?:\|(\w+)(?::([^}]+))?)?\s*\}\}'
+
+        def replace(match):
+            var_name = match.group(1)
+            filter_name = match.group(2)
+            filter_arg = match.group(3)
+
+            value = str(context.get(var_name, ''))
+
+            if filter_name and filter_name in self.filters:
+                if filter_arg:
+                    value = self.filters[filter_name](value, filter_arg)
+                else:
+                    value = self.filters[filter_name](value)
+
+            return value
+
+        return re.sub(pattern, replace, template)
+
+    def _process_conditionals(self, template: str, context: Dict[str, Any]) -> str:
+        """Process conditional blocks."""
+        pattern = r'\{%\s*if\s+(\w+)\s*%\}(.*?)\{%\s*endif\s*%\}'
+
+        def replace(match):
+            var_name = match.group(1)
+            content = match.group(2)
+
+            if context.get(var_name):
+                return content
+            return ''
+
+        return re.sub(pattern, replace, template, flags=re.DOTALL)
+
+    def _process_loops(self, template: str, context: Dict[str, Any]) -> str:
+        """Process loop blocks."""
+        pattern = r'\{%\s*for\s+(\w+)\s+in\s+(\w+)\s*%\}(.*?)\{%\s*endfor\s*%\}'
+
+        def replace(match):
+            item_name = match.group(1)
+            list_name = match.group(2)
+            content = match.group(3)
+
+            items = context.get(list_name, [])
+            result = []
+
+            for item in items:
+                item_context = {**context, item_name: item}
+                result.append(self._process_variables(content, item_context))
+
+            return ''.join(result)
+
+        return re.sub(pattern, replace, template, flags=re.DOTALL)
+
+
+# Usage
+engine = SimpleTemplateEngine()
+
+# Add custom filter
+engine.add_filter('truncate', lambda s, length='10': s[:int(length)] + '...' if len(s) > int(length) else s)
+
+template = """
+Hello, {{ name|title }}!
+
+{% if is_premium %}
+You are a PREMIUM member!
+{% endif %}
+
+Your items:
+{% for item in items %}- {{ item|upper }}
+{% endfor %}
+
+Contact: {{ email|default:N/A }}
+Bio: {{ bio|truncate:20 }}
+"""
+
+context = {
+    'name': 'john doe',
+    'is_premium': True,
+    'items': ['apple', 'banana', 'cherry'],
+    'email': '',
+    'bio': 'This is a long biography that should be truncated'
+}
+
+result = engine.render(template, context)
+print(result)
+```
+
+## Additional Exercises
+
+### Exercise 4: Email Template Generator
+
+Create a function that generates personalized email templates.
+
+::: details Solution
+```python
+def generate_email(template, recipients):
+    """
+    Generate personalized emails from template.
+
+    Template placeholders: {name}, {company}, {product}, etc.
+    """
+    emails = []
+
+    for recipient in recipients:
+        email = template
+        for key, value in recipient.items():
+            placeholder = "{" + key + "}"
+            email = email.replace(placeholder, str(value))
+
+        # Check for unreplaced placeholders
+        import re
+        missing = re.findall(r'\{(\w+)\}', email)
+        if missing:
+            print(f"Warning: Missing values for {recipient.get('name', 'unknown')}: {missing}")
+
+        emails.append({
+            'to': recipient.get('email', ''),
+            'subject': f"Hello {recipient.get('name', 'Customer')}",
+            'body': email
+        })
+
+    return emails
+
+
+# Test
+template = """
+Dear {name},
+
+Thank you for your interest in {product}!
+
+As a {membership} member, you're eligible for a {discount}% discount.
+
+Best regards,
+{company} Team
+"""
+
+recipients = [
+    {'name': 'Alice', 'email': 'alice@email.com', 'product': 'Python Course',
+     'membership': 'Gold', 'discount': 20, 'company': 'TechCorp'},
+    {'name': 'Bob', 'email': 'bob@email.com', 'product': 'JavaScript Course',
+     'membership': 'Silver', 'discount': 10, 'company': 'TechCorp'},
+]
+
+emails = generate_email(template, recipients)
+for email in emails:
+    print(f"To: {email['to']}")
+    print(f"Subject: {email['subject']}")
+    print(f"Body:\n{email['body']}")
+    print("-" * 40)
+```
+:::
+
+### Exercise 5: Markdown Parser
+
+Create a simple markdown to HTML converter.
+
+::: details Solution
+```python
+import re
+
+def markdown_to_html(markdown):
+    """Convert basic markdown to HTML."""
+    html = markdown
+
+    # Headers
+    html = re.sub(r'^### (.+)$', r'<h3>\1</h3>', html, flags=re.MULTILINE)
+    html = re.sub(r'^## (.+)$', r'<h2>\1</h2>', html, flags=re.MULTILINE)
+    html = re.sub(r'^# (.+)$', r'<h1>\1</h1>', html, flags=re.MULTILINE)
+
+    # Bold and italic
+    html = re.sub(r'\*\*\*(.+?)\*\*\*', r'<strong><em>\1</em></strong>', html)
+    html = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', html)
+    html = re.sub(r'\*(.+?)\*', r'<em>\1</em>', html)
+
+    # Code blocks
+    html = re.sub(r'```(\w+)?\n(.*?)```',
+                  r'<pre><code class="\1">\2</code></pre>',
+                  html, flags=re.DOTALL)
+
+    # Inline code
+    html = re.sub(r'`([^`]+)`', r'<code>\1</code>', html)
+
+    # Links
+    html = re.sub(r'\[([^\]]+)\]\(([^\)]+)\)', r'<a href="\2">\1</a>', html)
+
+    # Images
+    html = re.sub(r'!\[([^\]]*)\]\(([^\)]+)\)', r'<img src="\2" alt="\1">', html)
+
+    # Unordered lists
+    def process_ul(match):
+        items = match.group(0).strip().split('\n')
+        items_html = '\n'.join(f'<li>{item[2:]}</li>' for item in items)
+        return f'<ul>\n{items_html}\n</ul>'
+
+    html = re.sub(r'(^- .+$\n?)+', process_ul, html, flags=re.MULTILINE)
+
+    # Paragraphs (simple approach)
+    lines = html.split('\n\n')
+    processed = []
+    for line in lines:
+        if not line.startswith('<'):
+            processed.append(f'<p>{line}</p>')
+        else:
+            processed.append(line)
+    html = '\n\n'.join(processed)
+
+    return html
+
+
+# Test
+markdown = """
+# Welcome to Python
+
+This is a **bold** statement with *italic* text.
+
+## Features
+
+- Easy to learn
+- Powerful libraries
+- Great community
+
+### Code Example
+
+```python
+def hello():
+    print("Hello, World!")
+```
+
+Use `print()` to output text.
+
+Visit [Python.org](https://python.org) for more info.
+
+![Python Logo](https://python.org/logo.png)
+"""
+
+html = markdown_to_html(markdown)
+print(html)
+```
+:::
+
+### Exercise 6: CSV to JSON Converter
+
+Create a function that converts CSV data to JSON format.
+
+::: details Solution
+```python
+import json
+from typing import List, Dict, Any
+
+def csv_to_json(csv_string: str,
+                delimiter: str = ',',
+                has_header: bool = True,
+                type_inference: bool = True) -> List[Dict[str, Any]]:
+    """
+    Convert CSV string to list of dictionaries (JSON-like structure).
+
+    Args:
+        csv_string: CSV data as string
+        delimiter: Field delimiter
+        has_header: Whether first row is header
+        type_inference: Attempt to convert types (int, float, bool)
+    """
+    lines = csv_string.strip().split('\n')
+
+    if not lines:
+        return []
+
+    def parse_value(value: str) -> Any:
+        """Attempt to parse value to appropriate type."""
+        value = value.strip()
+
+        if not type_inference:
+            return value
+
+        # Try boolean
+        if value.lower() in ('true', 'yes'):
+            return True
+        if value.lower() in ('false', 'no'):
+            return False
+
+        # Try integer
+        try:
+            return int(value)
+        except ValueError:
+            pass
+
+        # Try float
+        try:
+            return float(value)
+        except ValueError:
+            pass
+
+        # Return as string
+        return value
+
+    def parse_line(line: str) -> List[str]:
+        """Parse CSV line handling quoted fields."""
+        result = []
+        current = ''
+        in_quotes = False
+
+        for char in line:
+            if char == '"':
+                in_quotes = not in_quotes
+            elif char == delimiter and not in_quotes:
+                result.append(current.strip())
+                current = ''
+            else:
+                current += char
+
+        result.append(current.strip())
+        return result
+
+    # Parse all lines
+    rows = [parse_line(line) for line in lines]
+
+    if has_header:
+        headers = rows[0]
+        data_rows = rows[1:]
+    else:
+        # Generate column names
+        headers = [f'column_{i}' for i in range(len(rows[0]))]
+        data_rows = rows
+
+    # Convert to list of dictionaries
+    result = []
+    for row in data_rows:
+        if len(row) != len(headers):
+            continue  # Skip malformed rows
+
+        record = {}
+        for header, value in zip(headers, row):
+            record[header] = parse_value(value)
+        result.append(record)
+
+    return result
+
+
+def json_to_csv(data: List[Dict], delimiter: str = ',') -> str:
+    """Convert list of dictionaries to CSV string."""
+    if not data:
+        return ''
+
+    # Get all unique headers
+    headers = []
+    for record in data:
+        for key in record.keys():
+            if key not in headers:
+                headers.append(key)
+
+    lines = [delimiter.join(headers)]
+
+    for record in data:
+        values = []
+        for header in headers:
+            value = str(record.get(header, ''))
+            # Quote if contains delimiter or quotes
+            if delimiter in value or '"' in value:
+                value = '"' + value.replace('"', '""') + '"'
+            values.append(value)
+        lines.append(delimiter.join(values))
+
+    return '\n'.join(lines)
+
+
+# Test
+csv_data = """name,age,city,is_active
+Alice,25,New York,true
+Bob,30,Los Angeles,false
+Charlie,35,Chicago,yes
+"Smith, John",28,"San Francisco",true
+"""
+
+# Convert CSV to JSON
+json_data = csv_to_json(csv_data)
+print("CSV to JSON:")
+print(json.dumps(json_data, indent=2))
+
+# Convert back to CSV
+csv_output = json_to_csv(json_data)
+print("\nJSON to CSV:")
+print(csv_output)
+```
+:::
+
 ## Summary
 
 | Operation | Method/Syntax | Example |

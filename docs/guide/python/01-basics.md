@@ -446,6 +446,151 @@ print(f"{age:05d}")    # Zero-padded: 00025
 print(f"{3.14159:.2f}") # 2 decimal places: 3.14
 ```
 
+## Common Mistakes
+
+::: danger Avoid These Common Errors
+
+### 1. Using `=` instead of `==`
+```python
+# ❌ WRONG - This assigns, not compares!
+if x = 5:    # SyntaxError!
+    print("x is 5")
+
+# ✓ CORRECT
+if x == 5:
+    print("x is 5")
+```
+
+### 2. Forgetting Quotes for Strings
+```python
+# ❌ WRONG
+name = Alice    # NameError: name 'Alice' is not defined
+
+# ✓ CORRECT
+name = "Alice"
+```
+
+### 3. Case Sensitivity
+```python
+# ❌ WRONG
+Print("Hello")  # NameError
+TRUE            # NameError
+NONE            # NameError
+
+# ✓ CORRECT
+print("Hello")
+True
+None
+```
+
+### 4. Indentation Errors
+```python
+# ❌ WRONG
+if True:
+print("Hello")  # IndentationError
+
+# ✓ CORRECT
+if True:
+    print("Hello")
+```
+
+### 5. Integer Division Confusion
+```python
+# Python 3 behavior
+print(5 / 2)   # 2.5 (true division)
+print(5 // 2)  # 2 (floor division)
+
+# If you want integer result, use //
+```
+:::
+
+## Python vs JavaScript
+
+::: tip Coming from JavaScript?
+| Feature | Python | JavaScript |
+|---------|--------|------------|
+| Variable declaration | `name = "Alice"` | `let name = "Alice"` |
+| Constants | `MAX = 100` (convention) | `const MAX = 100` |
+| Print | `print("Hello")` | `console.log("Hello")` |
+| String format | `f"Hello {name}"` | `` `Hello ${name}` `` |
+| Boolean | `True` / `False` | `true` / `false` |
+| Null value | `None` | `null` / `undefined` |
+| Type check | `type(x)` | `typeof x` |
+| Comments | `# comment` | `// comment` |
+| Equality | `==` (value) | `===` (strict) |
+| List/Array | `[1, 2, 3]` | `[1, 2, 3]` |
+| Dictionary/Object | `{"a": 1}` | `{a: 1}` |
+:::
+
+## Real-World Examples
+
+### Example 1: User Profile
+```python
+# Creating a user profile
+username = "john_doe"
+email = "john@example.com"
+age = 28
+is_verified = True
+account_balance = 1250.50
+
+# Display profile
+print("=" * 40)
+print(f"{'USER PROFILE':^40}")
+print("=" * 40)
+print(f"Username:  {username}")
+print(f"Email:     {email}")
+print(f"Age:       {age}")
+print(f"Verified:  {'Yes' if is_verified else 'No'}")
+print(f"Balance:   ${account_balance:,.2f}")
+print("=" * 40)
+```
+
+### Example 2: Shopping Cart Total
+```python
+# Calculate shopping cart
+item1_price = 29.99
+item1_qty = 2
+
+item2_price = 15.50
+item2_qty = 3
+
+item3_price = 8.99
+item3_qty = 1
+
+# Calculate totals
+subtotal = (item1_price * item1_qty +
+            item2_price * item2_qty +
+            item3_price * item3_qty)
+tax_rate = 0.08
+tax = subtotal * tax_rate
+total = subtotal + tax
+
+print(f"Subtotal: ${subtotal:.2f}")
+print(f"Tax (8%): ${tax:.2f}")
+print(f"Total:    ${total:.2f}")
+```
+
+### Example 3: BMI Calculator
+```python
+# Body Mass Index Calculator
+weight_kg = float(input("Enter weight in kg: "))
+height_m = float(input("Enter height in meters: "))
+
+bmi = weight_kg / (height_m ** 2)
+
+print(f"\nYour BMI: {bmi:.1f}")
+print("Category: ", end="")
+
+if bmi < 18.5:
+    print("Underweight")
+elif bmi < 25:
+    print("Normal weight")
+elif bmi < 30:
+    print("Overweight")
+else:
+    print("Obese")
+```
+
 ## Exercises
 
 ### Exercise 1: Personal Info
@@ -487,6 +632,70 @@ if num2 != 0:
     print(f"{num1} ÷ {num2} = {num1 / num2}")
 else:
     print("Cannot divide by zero!")
+```
+:::
+
+### Exercise 4: Tip Calculator
+Create a tip calculator that takes the bill amount and tip percentage.
+
+::: details Solution
+```python
+bill = float(input("Enter bill amount: $"))
+tip_percent = float(input("Enter tip percentage: "))
+
+tip_amount = bill * (tip_percent / 100)
+total = bill + tip_amount
+
+print(f"\nBill:      ${bill:.2f}")
+print(f"Tip ({tip_percent}%): ${tip_amount:.2f}")
+print(f"Total:     ${total:.2f}")
+```
+:::
+
+### Exercise 5: Time Converter
+Convert seconds to hours, minutes, and seconds.
+
+::: details Solution
+```python
+total_seconds = int(input("Enter total seconds: "))
+
+hours = total_seconds // 3600
+remaining = total_seconds % 3600
+minutes = remaining // 60
+seconds = remaining % 60
+
+print(f"{total_seconds} seconds = {hours}h {minutes}m {seconds}s")
+```
+:::
+
+### Exercise 6: Area Calculator
+Calculate the area of different shapes based on user choice.
+
+::: details Solution
+```python
+print("Area Calculator")
+print("1. Circle")
+print("2. Rectangle")
+print("3. Triangle")
+
+choice = input("Choose shape (1-3): ")
+
+if choice == "1":
+    radius = float(input("Enter radius: "))
+    area = 3.14159 * radius ** 2
+    print(f"Circle area: {area:.2f}")
+elif choice == "2":
+    length = float(input("Enter length: "))
+    width = float(input("Enter width: "))
+    area = length * width
+    print(f"Rectangle area: {area:.2f}")
+elif choice == "3":
+    base = float(input("Enter base: "))
+    height = float(input("Enter height: "))
+    area = 0.5 * base * height
+    print(f"Triangle area: {area:.2f}")
+else:
+    print("Invalid choice!")
 ```
 :::
 

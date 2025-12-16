@@ -719,6 +719,812 @@ writer = csv.writer(f)
 ```
 :::
 
+## Common Mistakes
+
+### ❌ WRONG: Not using context managers
+
+```python
+# ❌ WRONG - File may not be closed on error
+file = open("data.txt", "r")
+content = file.read()
+# If error occurs here, file stays open!
+file.close()
+
+# ✓ CORRECT - Context manager ensures cleanup
+with open("data.txt", "r") as file:
+    content = file.read()
+# File automatically closed, even if error occurs
+```
+
+### ❌ WRONG: Forgetting encoding for text files
+
+```python
+# ❌ WRONG - Default encoding may cause issues
+with open("unicode_data.txt", "r") as f:
+    content = f.read()  # May fail with non-ASCII
+
+# ✓ CORRECT - Always specify encoding
+with open("unicode_data.txt", "r", encoding="utf-8") as f:
+    content = f.read()
+```
+
+### ❌ WRONG: Loading entire large files into memory
+
+```python
+# ❌ WRONG - Loads entire file into memory
+with open("huge_file.txt", "r") as f:
+    lines = f.readlines()  # May crash with large files
+    for line in lines:
+        process(line)
+
+# ✓ CORRECT - Process line by line
+with open("huge_file.txt", "r") as f:
+    for line in f:  # Memory efficient iteration
+        process(line)
+```
+
+### ❌ WRONG: Using write mode when you want to append
+
+```python
+# ❌ WRONG - Overwrites existing content!
+with open("log.txt", "w") as f:
+    f.write("New log entry\n")
+
+# ✓ CORRECT - Append mode preserves existing content
+with open("log.txt", "a") as f:
+    f.write("New log entry\n")
+```
+
+### ❌ WRONG: Not checking if file exists before reading
+
+```python
+# ❌ WRONG - Crashes if file doesn't exist
+with open("config.json", "r") as f:
+    config = json.load(f)
+
+# ✓ CORRECT - Check first or handle exception
+from pathlib import Path
+
+if Path("config.json").exists():
+    with open("config.json", "r") as f:
+        config = json.load(f)
+else:
+    config = {}  # Default config
+
+# Or use try/except
+try:
+    with open("config.json", "r") as f:
+        config = json.load(f)
+except FileNotFoundError:
+    config = {}
+```
+
+### ❌ WRONG: Hardcoding path separators
+
+```python
+# ❌ WRONG - Won't work on all operating systems
+path = "folder\\subfolder\\file.txt"  # Windows only
+path = "folder/subfolder/file.txt"    # May fail on Windows
+
+# ✓ CORRECT - Use pathlib or os.path
+from pathlib import Path
+path = Path("folder") / "subfolder" / "file.txt"
+
+# Or use os.path
+import os
+path = os.path.join("folder", "subfolder", "file.txt")
+```
+
+## Python vs JavaScript (Node.js)
+
+| Operation | Python | JavaScript (Node.js) |
+|-----------|--------|---------------------|
+| Read file (sync) | `open(f).read()` | `fs.readFileSync(f)` |
+| Read file (async) | `aiofiles.open(f)` | `fs.promises.readFile(f)` |
+| Write file | `open(f, 'w').write(data)` | `fs.writeFileSync(f, data)` |
+| Append file | `open(f, 'a').write(data)` | `fs.appendFileSync(f, data)` |
+| Check exists | `Path(f).exists()` | `fs.existsSync(f)` |
+| Delete file | `Path(f).unlink()` | `fs.unlinkSync(f)` |
+| Create directory | `Path(d).mkdir()` | `fs.mkdirSync(d)` |
+| List directory | `Path(d).iterdir()` | `fs.readdirSync(d)` |
+| Read JSON | `json.load(f)` | `JSON.parse(fs.readFileSync(f))` |
+| Write JSON | `json.dump(data, f)` | `fs.writeFileSync(f, JSON.stringify(data))` |
+| Path join | `Path(a) / b` | `path.join(a, b)` |
+| Get filename | `Path(f).name` | `path.basename(f)` |
+| Get extension | `Path(f).suffix` | `path.extname(f)` |
+| Get directory | `Path(f).parent` | `path.dirname(f)` |
+| Absolute path | `Path(f).resolve()` | `path.resolve(f)` |
+| Context manager | `with open(f) as file:` | N/A (use try/finally) |
+
+## Real-World Examples
+
+### Example 1: Configuration Manager with Auto-Reload
+
+```python
+import json
+import time
+from pathlib import Path
+from typing import Any, Dict, Optional
+from datetime import datetime
+
+class ConfigManager:
+    """
+    Configuration manager with file watching and auto-reload.
+    """
+
+    def __init__(self, config_path: str, auto_reload: bool = True):
+        self.config_path = Path(config_path)
+        self.auto_reload = auto_reload
+        self._config: Dict[str, Any] = {}
+        self._last_modified: float = 0
+        self._load()
+
+    def _load(self) -> None:
+        """Load configuration from file."""
+        if not self.config_path.exists():
+            self._config = {}
+            self._save()
+            return
+
+        try:
+            with open(self.config_path, 'r', encoding='utf-8') as f:
+                self._config = json.load(f)
+            self._last_modified = self.config_path.stat().st_mtime
+        except json.JSONDecodeError as e:
+            print(f"Error loading config: {e}")
+            self._config = {}
+
+    def _save(self) -> None:
+        """Save configuration to file."""
+        self.config_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(self.config_path, 'w', encoding='utf-8') as f:
+            json.dump(self._config, f, indent=2)
+        self._last_modified = self.config_path.stat().st_mtime
+
+    def _check_reload(self) -> None:
+        """Check if config file changed and reload if needed."""
+        if not self.auto_reload:
+            return
+        if not self.config_path.exists():
+            return
+
+        current_mtime = self.config_path.stat().st_mtime
+        if current_mtime > self._last_modified:
+            print(f"Config file changed, reloading...")
+            self._load()
+
+    def get(self, key: str, default: Any = None) -> Any:
+        """Get config value with dot notation support."""
+        self._check_reload()
+
+        keys = key.split('.')
+        value = self._config
+        for k in keys:
+            if isinstance(value, dict) and k in value:
+                value = value[k]
+            else:
+                return default
+        return value
+
+    def set(self, key: str, value: Any) -> None:
+        """Set config value with dot notation support."""
+        keys = key.split('.')
+        config = self._config
+        for k in keys[:-1]:
+            config = config.setdefault(k, {})
+        config[keys[-1]] = value
+        self._save()
+
+    def delete(self, key: str) -> bool:
+        """Delete config value."""
+        keys = key.split('.')
+        config = self._config
+        for k in keys[:-1]:
+            if k not in config:
+                return False
+            config = config[k]
+
+        if keys[-1] in config:
+            del config[keys[-1]]
+            self._save()
+            return True
+        return False
+
+    def all(self) -> Dict[str, Any]:
+        """Return all config values."""
+        self._check_reload()
+        return self._config.copy()
+
+
+# Usage
+config = ConfigManager("app_config.json")
+
+# Set values
+config.set("database.host", "localhost")
+config.set("database.port", 5432)
+config.set("database.credentials.user", "admin")
+config.set("app.debug", True)
+config.set("app.log_level", "INFO")
+
+# Get values
+print(f"DB Host: {config.get('database.host')}")
+print(f"Debug: {config.get('app.debug')}")
+print(f"Missing: {config.get('app.missing', 'default_value')}")
+
+# View all
+print(f"\nAll config: {json.dumps(config.all(), indent=2)}")
+```
+
+### Example 2: Log Rotation System
+
+```python
+import os
+import gzip
+import shutil
+from pathlib import Path
+from datetime import datetime
+from typing import Optional
+
+class LogRotator:
+    """
+    Log file rotation with compression and cleanup.
+    """
+
+    def __init__(self,
+                 log_path: str,
+                 max_size_mb: float = 10,
+                 backup_count: int = 5,
+                 compress: bool = True):
+        self.log_path = Path(log_path)
+        self.max_size_bytes = max_size_mb * 1024 * 1024
+        self.backup_count = backup_count
+        self.compress = compress
+
+    def _get_backup_files(self):
+        """Get list of existing backup files sorted by number."""
+        pattern = f"{self.log_path.name}.*"
+        backups = list(self.log_path.parent.glob(pattern))
+        # Sort by modification time (newest first)
+        return sorted(backups, key=lambda p: p.stat().st_mtime, reverse=True)
+
+    def _compress_file(self, filepath: Path) -> Path:
+        """Compress a file using gzip."""
+        compressed_path = filepath.with_suffix(filepath.suffix + '.gz')
+        with open(filepath, 'rb') as f_in:
+            with gzip.open(compressed_path, 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
+        filepath.unlink()
+        return compressed_path
+
+    def _rotate(self) -> None:
+        """Perform log rotation."""
+        if not self.log_path.exists():
+            return
+
+        # Generate backup name with timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_name = f"{self.log_path.name}.{timestamp}"
+        backup_path = self.log_path.parent / backup_name
+
+        # Rename current log to backup
+        self.log_path.rename(backup_path)
+
+        # Compress if enabled
+        if self.compress:
+            backup_path = self._compress_file(backup_path)
+
+        print(f"Rotated: {self.log_path.name} -> {backup_path.name}")
+
+        # Cleanup old backups
+        self._cleanup_old_backups()
+
+    def _cleanup_old_backups(self) -> None:
+        """Remove old backup files exceeding backup_count."""
+        backups = self._get_backup_files()
+        if len(backups) > self.backup_count:
+            for old_backup in backups[self.backup_count:]:
+                old_backup.unlink()
+                print(f"Deleted old backup: {old_backup.name}")
+
+    def should_rotate(self) -> bool:
+        """Check if rotation is needed."""
+        if not self.log_path.exists():
+            return False
+        return self.log_path.stat().st_size >= self.max_size_bytes
+
+    def write(self, message: str) -> None:
+        """Write to log file with automatic rotation."""
+        if self.should_rotate():
+            self._rotate()
+
+        # Ensure parent directory exists
+        self.log_path.parent.mkdir(parents=True, exist_ok=True)
+
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with open(self.log_path, 'a', encoding='utf-8') as f:
+            f.write(f"[{timestamp}] {message}\n")
+
+    def get_all_logs(self) -> str:
+        """Read current log file and all backups."""
+        content = []
+
+        # Read backups (oldest first)
+        for backup in reversed(self._get_backup_files()):
+            if backup.suffix == '.gz':
+                with gzip.open(backup, 'rt', encoding='utf-8') as f:
+                    content.append(f.read())
+            else:
+                with open(backup, 'r', encoding='utf-8') as f:
+                    content.append(f.read())
+
+        # Read current log
+        if self.log_path.exists():
+            with open(self.log_path, 'r', encoding='utf-8') as f:
+                content.append(f.read())
+
+        return '\n'.join(content)
+
+
+# Usage
+logger = LogRotator(
+    "logs/app.log",
+    max_size_mb=0.001,  # Small for demo
+    backup_count=3,
+    compress=True
+)
+
+# Write some logs
+for i in range(100):
+    logger.write(f"Log message {i}: This is a test message with some content")
+
+print(f"\nBackup files: {[f.name for f in logger._get_backup_files()]}")
+```
+
+### Example 3: Data Pipeline with Multiple Formats
+
+```python
+import csv
+import json
+from pathlib import Path
+from typing import List, Dict, Any, Callable
+from dataclasses import dataclass, asdict
+from abc import ABC, abstractmethod
+
+@dataclass
+class Record:
+    """Generic data record."""
+    id: int
+    name: str
+    value: float
+    tags: List[str]
+
+
+class DataReader(ABC):
+    """Abstract base class for data readers."""
+
+    @abstractmethod
+    def read(self, filepath: Path) -> List[Dict[str, Any]]:
+        pass
+
+
+class DataWriter(ABC):
+    """Abstract base class for data writers."""
+
+    @abstractmethod
+    def write(self, filepath: Path, data: List[Dict[str, Any]]) -> None:
+        pass
+
+
+class JSONReader(DataReader):
+    def read(self, filepath: Path) -> List[Dict[str, Any]]:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            return json.load(f)
+
+
+class JSONWriter(DataWriter):
+    def write(self, filepath: Path, data: List[Dict[str, Any]]) -> None:
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2)
+
+
+class CSVReader(DataReader):
+    def read(self, filepath: Path) -> List[Dict[str, Any]]:
+        with open(filepath, 'r', encoding='utf-8', newline='') as f:
+            reader = csv.DictReader(f)
+            data = []
+            for row in reader:
+                # Convert types
+                row['id'] = int(row['id'])
+                row['value'] = float(row['value'])
+                row['tags'] = row['tags'].split(';') if row['tags'] else []
+                data.append(row)
+            return data
+
+
+class CSVWriter(DataWriter):
+    def write(self, filepath: Path, data: List[Dict[str, Any]]) -> None:
+        if not data:
+            return
+
+        with open(filepath, 'w', encoding='utf-8', newline='') as f:
+            # Flatten tags list for CSV
+            fieldnames = list(data[0].keys())
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in data:
+                row_copy = row.copy()
+                if 'tags' in row_copy and isinstance(row_copy['tags'], list):
+                    row_copy['tags'] = ';'.join(row_copy['tags'])
+                writer.writerow(row_copy)
+
+
+class DataPipeline:
+    """Data processing pipeline with format conversion."""
+
+    READERS = {
+        '.json': JSONReader(),
+        '.csv': CSVReader(),
+    }
+
+    WRITERS = {
+        '.json': JSONWriter(),
+        '.csv': CSVWriter(),
+    }
+
+    def __init__(self):
+        self.transformers: List[Callable] = []
+
+    def add_transformer(self, func: Callable) -> 'DataPipeline':
+        """Add a data transformation function."""
+        self.transformers.append(func)
+        return self
+
+    def _get_reader(self, filepath: Path) -> DataReader:
+        ext = filepath.suffix.lower()
+        if ext not in self.READERS:
+            raise ValueError(f"Unsupported input format: {ext}")
+        return self.READERS[ext]
+
+    def _get_writer(self, filepath: Path) -> DataWriter:
+        ext = filepath.suffix.lower()
+        if ext not in self.WRITERS:
+            raise ValueError(f"Unsupported output format: {ext}")
+        return self.WRITERS[ext]
+
+    def process(self, input_path: str, output_path: str) -> int:
+        """Process data from input to output with transformations."""
+        input_file = Path(input_path)
+        output_file = Path(output_path)
+
+        # Read data
+        reader = self._get_reader(input_file)
+        data = reader.read(input_file)
+
+        # Apply transformations
+        for transformer in self.transformers:
+            data = transformer(data)
+
+        # Write data
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+        writer = self._get_writer(output_file)
+        writer.write(output_file, data)
+
+        return len(data)
+
+
+# Usage
+# Create sample JSON data
+sample_data = [
+    {"id": 1, "name": "Alice", "value": 100.5, "tags": ["premium", "active"]},
+    {"id": 2, "name": "Bob", "value": 50.0, "tags": ["basic"]},
+    {"id": 3, "name": "Charlie", "value": 200.0, "tags": ["premium", "vip"]},
+]
+
+# Write sample data
+Path("data").mkdir(exist_ok=True)
+with open("data/input.json", 'w') as f:
+    json.dump(sample_data, f, indent=2)
+
+# Define transformers
+def filter_premium(data):
+    return [r for r in data if 'premium' in r.get('tags', [])]
+
+def add_discount(data):
+    for record in data:
+        record['discounted_value'] = record['value'] * 0.9
+    return data
+
+def uppercase_names(data):
+    for record in data:
+        record['name'] = record['name'].upper()
+    return data
+
+# Create and run pipeline
+pipeline = DataPipeline()
+pipeline.add_transformer(filter_premium)
+pipeline.add_transformer(add_discount)
+pipeline.add_transformer(uppercase_names)
+
+# JSON to CSV conversion with transformations
+count = pipeline.process("data/input.json", "data/output.csv")
+print(f"Processed {count} records")
+
+# Read and display result
+with open("data/output.csv", 'r') as f:
+    print(f.read())
+```
+
+## Additional Exercises
+
+### Exercise 4: Watchdog File Monitor
+
+Create a file monitoring system that watches for changes.
+
+::: details Solution
+```python
+import time
+from pathlib import Path
+from datetime import datetime
+from typing import Callable, Dict, Set
+from dataclasses import dataclass, field
+
+@dataclass
+class FileState:
+    path: Path
+    size: int
+    modified: float
+    exists: bool
+
+@dataclass
+class FileEvent:
+    event_type: str  # 'created', 'modified', 'deleted'
+    path: Path
+    timestamp: datetime
+
+class FileWatcher:
+    """Simple file watcher that monitors directory for changes."""
+
+    def __init__(self, watch_path: str, patterns: list = None):
+        self.watch_path = Path(watch_path)
+        self.patterns = patterns or ['*']
+        self._file_states: Dict[Path, FileState] = {}
+        self._callbacks: Dict[str, list] = {
+            'created': [],
+            'modified': [],
+            'deleted': [],
+        }
+
+    def on(self, event_type: str, callback: Callable):
+        """Register callback for event type."""
+        if event_type in self._callbacks:
+            self._callbacks[event_type].append(callback)
+        return self
+
+    def _get_current_files(self) -> Dict[Path, FileState]:
+        """Get current state of all matching files."""
+        states = {}
+        for pattern in self.patterns:
+            for path in self.watch_path.rglob(pattern):
+                if path.is_file():
+                    states[path] = FileState(
+                        path=path,
+                        size=path.stat().st_size,
+                        modified=path.stat().st_mtime,
+                        exists=True
+                    )
+        return states
+
+    def _emit(self, event_type: str, path: Path):
+        """Emit event to registered callbacks."""
+        event = FileEvent(event_type, path, datetime.now())
+        for callback in self._callbacks[event_type]:
+            callback(event)
+
+    def _check_changes(self):
+        """Check for file changes."""
+        current_files = self._get_current_files()
+        current_paths = set(current_files.keys())
+        known_paths = set(self._file_states.keys())
+
+        # New files
+        for path in current_paths - known_paths:
+            self._emit('created', path)
+
+        # Deleted files
+        for path in known_paths - current_paths:
+            self._emit('deleted', path)
+
+        # Modified files
+        for path in current_paths & known_paths:
+            old_state = self._file_states[path]
+            new_state = current_files[path]
+            if new_state.modified > old_state.modified:
+                self._emit('modified', path)
+
+        self._file_states = current_files
+
+    def watch(self, interval: float = 1.0, duration: float = None):
+        """Start watching for changes."""
+        self._file_states = self._get_current_files()
+        print(f"Watching {self.watch_path} for changes...")
+
+        start_time = time.time()
+        try:
+            while True:
+                self._check_changes()
+                time.sleep(interval)
+
+                if duration and (time.time() - start_time) > duration:
+                    break
+        except KeyboardInterrupt:
+            print("\nStopped watching.")
+
+
+# Usage
+def on_created(event):
+    print(f"[CREATED] {event.path.name} at {event.timestamp}")
+
+def on_modified(event):
+    print(f"[MODIFIED] {event.path.name} at {event.timestamp}")
+
+def on_deleted(event):
+    print(f"[DELETED] {event.path.name} at {event.timestamp}")
+
+# Create watcher
+watcher = FileWatcher("./watched_folder", patterns=["*.txt", "*.log"])
+watcher.on('created', on_created)
+watcher.on('modified', on_modified)
+watcher.on('deleted', on_deleted)
+
+# Watch for 10 seconds (for demo)
+# watcher.watch(interval=0.5, duration=10)
+print("FileWatcher ready. Call watcher.watch() to start monitoring.")
+```
+:::
+
+### Exercise 5: Database-like File Storage
+
+Create a simple file-based database.
+
+::: details Solution
+```python
+import json
+import uuid
+from pathlib import Path
+from typing import Dict, List, Any, Optional
+from datetime import datetime
+from dataclasses import dataclass, asdict
+import threading
+
+class FileDB:
+    """Simple file-based JSON database."""
+
+    def __init__(self, db_path: str):
+        self.db_path = Path(db_path)
+        self.db_path.mkdir(parents=True, exist_ok=True)
+        self._lock = threading.Lock()
+
+    def _collection_path(self, collection: str) -> Path:
+        return self.db_path / f"{collection}.json"
+
+    def _read_collection(self, collection: str) -> Dict[str, Any]:
+        path = self._collection_path(collection)
+        if not path.exists():
+            return {}
+        with open(path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+
+    def _write_collection(self, collection: str, data: Dict[str, Any]):
+        path = self._collection_path(collection)
+        with open(path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, default=str)
+
+    def insert(self, collection: str, document: Dict[str, Any]) -> str:
+        """Insert a document into collection."""
+        with self._lock:
+            data = self._read_collection(collection)
+
+            # Generate ID if not provided
+            doc_id = document.get('_id') or str(uuid.uuid4())[:8]
+            document['_id'] = doc_id
+            document['_created'] = datetime.now().isoformat()
+
+            data[doc_id] = document
+            self._write_collection(collection, data)
+            return doc_id
+
+    def find(self, collection: str, query: Dict[str, Any] = None) -> List[Dict]:
+        """Find documents matching query."""
+        data = self._read_collection(collection)
+
+        if not query:
+            return list(data.values())
+
+        results = []
+        for doc in data.values():
+            if self._matches(doc, query):
+                results.append(doc)
+        return results
+
+    def find_one(self, collection: str, query: Dict[str, Any]) -> Optional[Dict]:
+        """Find single document matching query."""
+        results = self.find(collection, query)
+        return results[0] if results else None
+
+    def _matches(self, doc: Dict, query: Dict) -> bool:
+        """Check if document matches query."""
+        for key, value in query.items():
+            if key.startswith('$'):
+                # Handle operators
+                if key == '$gt':
+                    pass  # Implement comparison operators
+            elif key not in doc or doc[key] != value:
+                return False
+        return True
+
+    def update(self, collection: str, query: Dict, update: Dict) -> int:
+        """Update documents matching query."""
+        with self._lock:
+            data = self._read_collection(collection)
+            count = 0
+
+            for doc_id, doc in data.items():
+                if self._matches(doc, query):
+                    doc.update(update)
+                    doc['_updated'] = datetime.now().isoformat()
+                    count += 1
+
+            self._write_collection(collection, data)
+            return count
+
+    def delete(self, collection: str, query: Dict) -> int:
+        """Delete documents matching query."""
+        with self._lock:
+            data = self._read_collection(collection)
+            to_delete = [
+                doc_id for doc_id, doc in data.items()
+                if self._matches(doc, query)
+            ]
+
+            for doc_id in to_delete:
+                del data[doc_id]
+
+            self._write_collection(collection, data)
+            return len(to_delete)
+
+    def count(self, collection: str, query: Dict = None) -> int:
+        """Count documents matching query."""
+        return len(self.find(collection, query))
+
+
+# Usage
+db = FileDB("./my_database")
+
+# Insert documents
+db.insert("users", {"name": "Alice", "age": 25, "role": "admin"})
+db.insert("users", {"name": "Bob", "age": 30, "role": "user"})
+db.insert("users", {"name": "Charlie", "age": 35, "role": "user"})
+
+# Find all users
+print("All users:")
+for user in db.find("users"):
+    print(f"  {user['name']} ({user['role']})")
+
+# Find specific user
+admin = db.find_one("users", {"role": "admin"})
+print(f"\nAdmin: {admin['name']}")
+
+# Update user
+db.update("users", {"name": "Bob"}, {"age": 31})
+bob = db.find_one("users", {"name": "Bob"})
+print(f"\nBob's age: {bob['age']}")
+
+# Count users
+print(f"\nTotal users: {db.count('users')}")
+print(f"Regular users: {db.count('users', {'role': 'user'})}")
+```
+:::
+
 ## Summary
 
 | Operation | Code | Description |

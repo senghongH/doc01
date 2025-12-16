@@ -749,6 +749,893 @@ deactivate
 ```
 :::
 
+## Common Mistakes
+
+### ❌ WRONG: Circular imports
+
+```python
+# ❌ WRONG - module_a.py
+from module_b import func_b
+
+def func_a():
+    return func_b()
+
+# module_b.py
+from module_a import func_a  # Circular import!
+
+def func_b():
+    return func_a()
+
+# ✓ CORRECT - Restructure to avoid circular dependency
+# Either move shared code to a third module, or import inside functions
+def func_b():
+    from module_a import func_a  # Import inside function
+    return func_a()
+```
+
+### ❌ WRONG: Using `from module import *`
+
+```python
+# ❌ WRONG - Pollutes namespace, unclear what's imported
+from math import *
+from statistics import *
+
+result = sqrt(16)  # Which module is this from?
+mean([1, 2, 3])    # Overwritten if both have 'mean'?
+
+# ✓ CORRECT - Be explicit
+from math import sqrt, pi
+from statistics import mean, median
+
+# Or use qualified names
+import math
+import statistics
+
+result = math.sqrt(16)
+avg = statistics.mean([1, 2, 3])
+```
+
+### ❌ WRONG: Modifying sys.path permanently
+
+```python
+# ❌ WRONG - Modifies path for entire application
+import sys
+sys.path.append("/my/custom/path")  # Affects all imports
+
+# ✓ CORRECT - Use proper package structure or virtual environment
+# Or use context manager for temporary path changes
+import contextlib
+
+@contextlib.contextmanager
+def add_path(path):
+    import sys
+    sys.path.insert(0, path)
+    try:
+        yield
+    finally:
+        sys.path.remove(path)
+
+with add_path("/my/custom/path"):
+    import my_module
+```
+
+### ❌ WRONG: Not using `__name__ == "__main__"`
+
+```python
+# ❌ WRONG - Code runs on import too
+# mymodule.py
+def main():
+    print("Running main")
+
+main()  # Runs when imported!
+
+# ✓ CORRECT - Guard main code
+def main():
+    print("Running main")
+
+if __name__ == "__main__":
+    main()  # Only runs when executed directly
+```
+
+### ❌ WRONG: Hardcoding import paths
+
+```python
+# ❌ WRONG - Breaks when project structure changes
+from src.utils.helpers import helper_func
+from /absolute/path/module import func
+
+# ✓ CORRECT - Use relative imports within packages
+from .utils.helpers import helper_func
+from ..common import shared_func
+
+# Or configure package properly and use package imports
+from mypackage.utils import helper_func
+```
+
+## Python vs JavaScript
+
+| Concept | Python | JavaScript (ES6+) |
+|---------|--------|-------------------|
+| Import module | `import math` | `import * as math from 'math'` |
+| Import specific | `from math import sqrt` | `import { sqrt } from 'math'` |
+| Import with alias | `import numpy as np` | `import * as np from 'numpy'` |
+| Import function alias | `from math import sqrt as s` | `import { sqrt as s } from 'math'` |
+| Default export | N/A | `import func from 'module'` |
+| Export | `__all__ = ['func']` | `export { func }` |
+| Export default | N/A | `export default func` |
+| Dynamic import | `importlib.import_module('m')` | `import('module')` |
+| Conditional import | `if x: import y` | `if (x) await import('y')` |
+| Module file | `.py` | `.js`, `.mjs` |
+| Package marker | `__init__.py` | `package.json` |
+| Package manager | `pip` | `npm`, `yarn`, `pnpm` |
+| Virtual environment | `venv`, `virtualenv` | N/A (uses node_modules) |
+| Requirements file | `requirements.txt` | `package.json` |
+| Lock file | `requirements.txt` (pinned) | `package-lock.json` |
+
+## Real-World Examples
+
+### Example 1: Plugin System
+
+```python
+"""
+A dynamic plugin system that loads plugins from a directory.
+"""
+import importlib
+import importlib.util
+from pathlib import Path
+from typing import Dict, List, Any, Protocol
+from abc import ABC, abstractmethod
+
+class PluginInterface(ABC):
+    """Base class that all plugins must inherit from."""
+
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        """Plugin name."""
+        pass
+
+    @property
+    @abstractmethod
+    def version(self) -> str:
+        """Plugin version."""
+        pass
+
+    @abstractmethod
+    def execute(self, *args, **kwargs) -> Any:
+        """Execute plugin functionality."""
+        pass
+
+
+class PluginManager:
+    """Manages discovery, loading, and execution of plugins."""
+
+    def __init__(self, plugin_dir: str):
+        self.plugin_dir = Path(plugin_dir)
+        self.plugins: Dict[str, PluginInterface] = {}
+        self._discovered: Dict[str, Path] = {}
+
+    def discover(self) -> List[str]:
+        """Discover available plugins in the plugin directory."""
+        if not self.plugin_dir.exists():
+            self.plugin_dir.mkdir(parents=True)
+            return []
+
+        self._discovered.clear()
+        for py_file in self.plugin_dir.glob("*.py"):
+            if py_file.name.startswith("_"):
+                continue
+            plugin_name = py_file.stem
+            self._discovered[plugin_name] = py_file
+
+        return list(self._discovered.keys())
+
+    def load(self, plugin_name: str) -> bool:
+        """Load a specific plugin by name."""
+        if plugin_name not in self._discovered:
+            print(f"Plugin '{plugin_name}' not found")
+            return False
+
+        if plugin_name in self.plugins:
+            print(f"Plugin '{plugin_name}' already loaded")
+            return True
+
+        plugin_path = self._discovered[plugin_name]
+
+        try:
+            # Load module from file path
+            spec = importlib.util.spec_from_file_location(
+                plugin_name, plugin_path
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+
+            # Find plugin class
+            for attr_name in dir(module):
+                attr = getattr(module, attr_name)
+                if (isinstance(attr, type) and
+                    issubclass(attr, PluginInterface) and
+                    attr is not PluginInterface):
+                    self.plugins[plugin_name] = attr()
+                    print(f"Loaded plugin: {plugin_name} v{self.plugins[plugin_name].version}")
+                    return True
+
+            print(f"No valid plugin class found in {plugin_name}")
+            return False
+
+        except Exception as e:
+            print(f"Error loading plugin '{plugin_name}': {e}")
+            return False
+
+    def load_all(self) -> int:
+        """Load all discovered plugins."""
+        self.discover()
+        loaded = 0
+        for name in self._discovered:
+            if self.load(name):
+                loaded += 1
+        return loaded
+
+    def unload(self, plugin_name: str) -> bool:
+        """Unload a plugin."""
+        if plugin_name in self.plugins:
+            del self.plugins[plugin_name]
+            return True
+        return False
+
+    def execute(self, plugin_name: str, *args, **kwargs) -> Any:
+        """Execute a plugin."""
+        if plugin_name not in self.plugins:
+            raise ValueError(f"Plugin '{plugin_name}' not loaded")
+        return self.plugins[plugin_name].execute(*args, **kwargs)
+
+    def list_plugins(self) -> List[Dict[str, str]]:
+        """List all loaded plugins."""
+        return [
+            {"name": p.name, "version": p.version}
+            for p in self.plugins.values()
+        ]
+
+
+# Example plugin file: plugins/hello_plugin.py
+"""
+from plugin_system import PluginInterface
+
+class HelloPlugin(PluginInterface):
+    @property
+    def name(self) -> str:
+        return "Hello Plugin"
+
+    @property
+    def version(self) -> str:
+        return "1.0.0"
+
+    def execute(self, name: str = "World") -> str:
+        return f"Hello, {name}!"
+"""
+
+# Usage
+manager = PluginManager("./plugins")
+print(f"Discovered: {manager.discover()}")
+manager.load_all()
+print(f"Loaded plugins: {manager.list_plugins()}")
+```
+
+### Example 2: Dependency Injection Container
+
+```python
+"""
+A simple dependency injection container for managing dependencies.
+"""
+from typing import Any, Callable, Dict, Type, TypeVar, get_type_hints
+from functools import wraps
+import inspect
+
+T = TypeVar('T')
+
+class Container:
+    """Simple dependency injection container."""
+
+    def __init__(self):
+        self._services: Dict[Type, Any] = {}
+        self._factories: Dict[Type, Callable] = {}
+        self._singletons: Dict[Type, Any] = {}
+
+    def register(self, interface: Type[T], implementation: Type[T] = None,
+                 singleton: bool = False) -> None:
+        """Register a service."""
+        impl = implementation or interface
+
+        if singleton:
+            self._factories[interface] = lambda: self._get_singleton(interface, impl)
+        else:
+            self._factories[interface] = lambda: self._create_instance(impl)
+
+    def register_instance(self, interface: Type[T], instance: T) -> None:
+        """Register an existing instance."""
+        self._services[interface] = instance
+
+    def register_factory(self, interface: Type[T],
+                         factory: Callable[[], T]) -> None:
+        """Register a factory function."""
+        self._factories[interface] = factory
+
+    def _get_singleton(self, interface: Type, impl: Type) -> Any:
+        """Get or create singleton instance."""
+        if interface not in self._singletons:
+            self._singletons[interface] = self._create_instance(impl)
+        return self._singletons[interface]
+
+    def _create_instance(self, cls: Type) -> Any:
+        """Create instance with dependency injection."""
+        hints = get_type_hints(cls.__init__) if hasattr(cls, '__init__') else {}
+
+        # Get constructor parameters
+        sig = inspect.signature(cls.__init__)
+        kwargs = {}
+
+        for param_name, param in sig.parameters.items():
+            if param_name == 'self':
+                continue
+
+            param_type = hints.get(param_name)
+            if param_type and param_type in self._factories:
+                kwargs[param_name] = self.resolve(param_type)
+            elif param_type and param_type in self._services:
+                kwargs[param_name] = self._services[param_type]
+            elif param.default is not inspect.Parameter.empty:
+                kwargs[param_name] = param.default
+
+        return cls(**kwargs)
+
+    def resolve(self, interface: Type[T]) -> T:
+        """Resolve a service."""
+        if interface in self._services:
+            return self._services[interface]
+
+        if interface in self._factories:
+            return self._factories[interface]()
+
+        raise ValueError(f"Service not registered: {interface}")
+
+    def inject(self, func: Callable) -> Callable:
+        """Decorator to inject dependencies into function."""
+        hints = get_type_hints(func)
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            sig = inspect.signature(func)
+            for param_name, param in sig.parameters.items():
+                if param_name in kwargs:
+                    continue
+                param_type = hints.get(param_name)
+                if param_type:
+                    try:
+                        kwargs[param_name] = self.resolve(param_type)
+                    except ValueError:
+                        pass
+            return func(*args, **kwargs)
+
+        return wrapper
+
+
+# Example usage
+from abc import ABC, abstractmethod
+
+# Define interfaces
+class ILogger(ABC):
+    @abstractmethod
+    def log(self, message: str) -> None:
+        pass
+
+class IDatabase(ABC):
+    @abstractmethod
+    def query(self, sql: str) -> list:
+        pass
+
+# Implementations
+class ConsoleLogger(ILogger):
+    def log(self, message: str) -> None:
+        print(f"[LOG] {message}")
+
+class MockDatabase(IDatabase):
+    def __init__(self, logger: ILogger):
+        self.logger = logger
+
+    def query(self, sql: str) -> list:
+        self.logger.log(f"Executing: {sql}")
+        return [{"id": 1, "name": "Test"}]
+
+class UserService:
+    def __init__(self, db: IDatabase, logger: ILogger):
+        self.db = db
+        self.logger = logger
+
+    def get_users(self) -> list:
+        self.logger.log("Getting users")
+        return self.db.query("SELECT * FROM users")
+
+
+# Setup container
+container = Container()
+container.register(ILogger, ConsoleLogger, singleton=True)
+container.register(IDatabase, MockDatabase)
+container.register(UserService)
+
+# Resolve and use
+user_service = container.resolve(UserService)
+users = user_service.get_users()
+print(f"Users: {users}")
+```
+
+### Example 3: Command Line Application Framework
+
+```python
+"""
+A mini CLI framework similar to Click/Typer.
+"""
+import sys
+import inspect
+from typing import Callable, Dict, List, Any, Optional, get_type_hints
+from dataclasses import dataclass, field
+
+@dataclass
+class Command:
+    """Represents a CLI command."""
+    name: str
+    func: Callable
+    help: str = ""
+    options: Dict[str, Any] = field(default_factory=dict)
+
+
+class CLI:
+    """Simple CLI application framework."""
+
+    def __init__(self, name: str = "app", description: str = ""):
+        self.name = name
+        self.description = description
+        self.commands: Dict[str, Command] = {}
+        self._default_command: Optional[str] = None
+
+    def command(self, name: str = None, help: str = ""):
+        """Decorator to register a command."""
+        def decorator(func: Callable) -> Callable:
+            cmd_name = name or func.__name__
+            self.commands[cmd_name] = Command(
+                name=cmd_name,
+                func=func,
+                help=help or func.__doc__ or "",
+            )
+            return func
+        return decorator
+
+    def default(self, func: Callable) -> Callable:
+        """Set default command."""
+        self._default_command = func.__name__
+        return self.command()(func)
+
+    def _parse_args(self, args: List[str], func: Callable) -> Dict[str, Any]:
+        """Parse command line arguments."""
+        hints = get_type_hints(func)
+        sig = inspect.signature(func)
+        kwargs = {}
+
+        # Get defaults from signature
+        for param_name, param in sig.parameters.items():
+            if param.default is not inspect.Parameter.empty:
+                kwargs[param_name] = param.default
+
+        # Parse arguments
+        i = 0
+        positional_params = [
+            name for name, p in sig.parameters.items()
+            if p.default is inspect.Parameter.empty
+        ]
+        positional_index = 0
+
+        while i < len(args):
+            arg = args[i]
+
+            if arg.startswith("--"):
+                # Named argument
+                key = arg[2:].replace("-", "_")
+                if i + 1 < len(args) and not args[i + 1].startswith("-"):
+                    value = args[i + 1]
+                    i += 1
+                else:
+                    value = True
+
+                # Type conversion
+                if key in hints:
+                    if hints[key] == bool:
+                        value = value.lower() in ("true", "1", "yes") if isinstance(value, str) else value
+                    elif hints[key] == int:
+                        value = int(value)
+                    elif hints[key] == float:
+                        value = float(value)
+
+                kwargs[key] = value
+
+            elif arg.startswith("-"):
+                # Short argument (flag)
+                key = arg[1:]
+                kwargs[key] = True
+
+            else:
+                # Positional argument
+                if positional_index < len(positional_params):
+                    param_name = positional_params[positional_index]
+                    kwargs[param_name] = arg
+                    positional_index += 1
+
+            i += 1
+
+        return kwargs
+
+    def _show_help(self):
+        """Show help message."""
+        print(f"\n{self.name}")
+        if self.description:
+            print(f"  {self.description}")
+        print("\nCommands:")
+        for name, cmd in self.commands.items():
+            print(f"  {name:15} {cmd.help}")
+        print(f"\nRun '{self.name} <command> --help' for command help.")
+
+    def _show_command_help(self, cmd: Command):
+        """Show help for specific command."""
+        print(f"\n{cmd.name}: {cmd.help}")
+        sig = inspect.signature(cmd.func)
+        hints = get_type_hints(cmd.func)
+
+        if sig.parameters:
+            print("\nArguments:")
+            for name, param in sig.parameters.items():
+                type_name = hints.get(name, Any).__name__ if name in hints else "any"
+                default = f" (default: {param.default})" if param.default is not inspect.Parameter.empty else ""
+                print(f"  --{name.replace('_', '-'):15} {type_name}{default}")
+
+    def run(self, args: List[str] = None):
+        """Run the CLI application."""
+        args = args if args is not None else sys.argv[1:]
+
+        if not args:
+            if self._default_command:
+                args = [self._default_command]
+            else:
+                self._show_help()
+                return
+
+        cmd_name = args[0]
+        cmd_args = args[1:]
+
+        if cmd_name in ("--help", "-h"):
+            self._show_help()
+            return
+
+        if cmd_name not in self.commands:
+            print(f"Unknown command: {cmd_name}")
+            self._show_help()
+            return
+
+        cmd = self.commands[cmd_name]
+
+        if "--help" in cmd_args or "-h" in cmd_args:
+            self._show_command_help(cmd)
+            return
+
+        try:
+            kwargs = self._parse_args(cmd_args, cmd.func)
+            result = cmd.func(**kwargs)
+            if result is not None:
+                print(result)
+        except Exception as e:
+            print(f"Error: {e}")
+
+
+# Example usage
+cli = CLI("myapp", "A sample CLI application")
+
+@cli.command(help="Greet someone")
+def greet(name: str, times: int = 1, loud: bool = False):
+    """Greet someone by name."""
+    message = f"Hello, {name}!"
+    if loud:
+        message = message.upper()
+    for _ in range(times):
+        print(message)
+
+@cli.command(help="Add two numbers")
+def add(a: float, b: float) -> float:
+    """Add two numbers together."""
+    return a + b
+
+@cli.command(help="List items")
+def list_items(count: int = 5):
+    """List some items."""
+    for i in range(count):
+        print(f"Item {i + 1}")
+
+if __name__ == "__main__":
+    # cli.run()  # Use command line args
+    # Or test directly:
+    cli.run(["greet", "World", "--times", "2", "--loud"])
+    cli.run(["add", "10", "20"])
+```
+
+## Additional Exercises
+
+### Exercise 4: Auto-Import System
+
+Create a system that automatically imports all modules from a directory.
+
+::: details Solution
+```python
+import importlib
+import pkgutil
+from pathlib import Path
+from typing import Dict, Any, List
+
+def auto_import(package_path: str, package_name: str = None) -> Dict[str, Any]:
+    """
+    Automatically import all modules from a package directory.
+
+    Args:
+        package_path: Path to the package directory
+        package_name: Name to use for the package (default: directory name)
+
+    Returns:
+        Dictionary mapping module names to module objects
+    """
+    path = Path(package_path)
+    if not path.exists():
+        raise ValueError(f"Path does not exist: {package_path}")
+
+    package_name = package_name or path.name
+    modules = {}
+
+    # Add path to sys.path temporarily
+    import sys
+    parent_path = str(path.parent)
+    if parent_path not in sys.path:
+        sys.path.insert(0, parent_path)
+
+    try:
+        # Import the package
+        package = importlib.import_module(package_name)
+
+        # Iterate over all modules in the package
+        for importer, modname, ispkg in pkgutil.walk_packages(
+            path=[str(path)],
+            prefix=f"{package_name}."
+        ):
+            try:
+                module = importlib.import_module(modname)
+                modules[modname] = module
+                print(f"Imported: {modname}")
+            except ImportError as e:
+                print(f"Failed to import {modname}: {e}")
+
+    finally:
+        # Clean up sys.path
+        if parent_path in sys.path:
+            sys.path.remove(parent_path)
+
+    return modules
+
+
+def collect_classes(modules: Dict[str, Any], base_class: type = None) -> List[type]:
+    """
+    Collect all classes from imported modules.
+
+    Args:
+        modules: Dictionary of imported modules
+        base_class: Optional base class to filter by
+
+    Returns:
+        List of class objects
+    """
+    classes = []
+
+    for module in modules.values():
+        for name in dir(module):
+            obj = getattr(module, name)
+            if isinstance(obj, type):
+                if base_class is None or issubclass(obj, base_class):
+                    if obj is not base_class:
+                        classes.append(obj)
+
+    return classes
+
+
+def collect_functions(modules: Dict[str, Any], prefix: str = None) -> Dict[str, callable]:
+    """
+    Collect all functions from imported modules.
+
+    Args:
+        modules: Dictionary of imported modules
+        prefix: Optional prefix to filter function names
+
+    Returns:
+        Dictionary mapping function names to functions
+    """
+    import inspect
+    functions = {}
+
+    for module in modules.values():
+        for name in dir(module):
+            if name.startswith('_'):
+                continue
+            if prefix and not name.startswith(prefix):
+                continue
+
+            obj = getattr(module, name)
+            if inspect.isfunction(obj):
+                functions[name] = obj
+
+    return functions
+
+
+# Example usage
+# modules = auto_import("./my_package")
+# classes = collect_classes(modules, base_class=MyBaseClass)
+# functions = collect_functions(modules, prefix="handle_")
+```
+:::
+
+### Exercise 5: Module Hot Reloading
+
+Create a system for hot-reloading modules during development.
+
+::: details Solution
+```python
+import importlib
+import sys
+import time
+from pathlib import Path
+from typing import Dict, Callable, Any, Optional
+from dataclasses import dataclass
+
+@dataclass
+class ModuleInfo:
+    module: Any
+    path: Path
+    last_modified: float
+
+
+class HotReloader:
+    """
+    Hot reload modules when they change on disk.
+    Useful for development.
+    """
+
+    def __init__(self):
+        self._modules: Dict[str, ModuleInfo] = {}
+        self._callbacks: Dict[str, Callable] = {}
+
+    def watch(self, module_name: str, callback: Callable = None) -> Any:
+        """
+        Start watching a module for changes.
+
+        Args:
+            module_name: Name of module to watch
+            callback: Optional callback when module reloads
+
+        Returns:
+            The imported module
+        """
+        module = importlib.import_module(module_name)
+
+        # Get module file path
+        if hasattr(module, '__file__') and module.__file__:
+            path = Path(module.__file__)
+            self._modules[module_name] = ModuleInfo(
+                module=module,
+                path=path,
+                last_modified=path.stat().st_mtime
+            )
+            if callback:
+                self._callbacks[module_name] = callback
+
+        return module
+
+    def check_and_reload(self) -> list:
+        """
+        Check all watched modules and reload if changed.
+
+        Returns:
+            List of reloaded module names
+        """
+        reloaded = []
+
+        for name, info in self._modules.items():
+            if not info.path.exists():
+                continue
+
+            current_mtime = info.path.stat().st_mtime
+            if current_mtime > info.last_modified:
+                try:
+                    # Reload the module
+                    reloaded_module = importlib.reload(info.module)
+
+                    # Update info
+                    info.module = reloaded_module
+                    info.last_modified = current_mtime
+
+                    # Call callback if registered
+                    if name in self._callbacks:
+                        self._callbacks[name](reloaded_module)
+
+                    reloaded.append(name)
+                    print(f"Reloaded: {name}")
+
+                except Exception as e:
+                    print(f"Failed to reload {name}: {e}")
+
+        return reloaded
+
+    def unwatch(self, module_name: str):
+        """Stop watching a module."""
+        self._modules.pop(module_name, None)
+        self._callbacks.pop(module_name, None)
+
+    def start_watching(self, interval: float = 1.0):
+        """
+        Start continuous watching loop.
+
+        Args:
+            interval: Check interval in seconds
+        """
+        print(f"Watching {len(self._modules)} modules for changes...")
+        try:
+            while True:
+                self.check_and_reload()
+                time.sleep(interval)
+        except KeyboardInterrupt:
+            print("\nStopped watching.")
+
+
+class ModuleProxy:
+    """
+    Proxy object that always returns the latest version of a module.
+    """
+
+    def __init__(self, reloader: HotReloader, module_name: str):
+        object.__setattr__(self, '_reloader', reloader)
+        object.__setattr__(self, '_module_name', module_name)
+
+    def __getattr__(self, name: str):
+        module = self._reloader._modules[self._module_name].module
+        return getattr(module, name)
+
+    def __setattr__(self, name: str, value: Any):
+        module = self._reloader._modules[self._module_name].module
+        setattr(module, name, value)
+
+
+# Usage example
+"""
+# main.py
+reloader = HotReloader()
+
+# Watch a module
+def on_reload(module):
+    print(f"Module reloaded! New version loaded.")
+
+my_module = reloader.watch('my_module', callback=on_reload)
+
+# Use proxy for always-fresh access
+proxy = ModuleProxy(reloader, 'my_module')
+
+# In development loop
+while True:
+    reloader.check_and_reload()
+    result = proxy.some_function()  # Always uses latest version
+    time.sleep(1)
+"""
+```
+:::
+
 ## Summary
 
 | Concept | Description | Example |
