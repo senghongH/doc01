@@ -2,58 +2,137 @@
 
 Learn how to create and use TypeScript declaration files.
 
+::: info What You'll Learn
+- What declaration files are and why they matter
+- How to create `.d.ts` files for JavaScript libraries
+- Declaration merging and module augmentation
+- Publishing type definitions
+:::
+
 ## What Are Declaration Files?
 
-Declaration files (`.d.ts`) describe the shape of JavaScript code for TypeScript.
+Declaration files (`.d.ts`) describe the **shape of JavaScript code** for TypeScript. They contain only type information - no actual implementation code.
+
+```
+JavaScript Library          Declaration File
+┌─────────────────┐        ┌─────────────────┐
+│ lodash.js       │        │ lodash.d.ts     │
+│ function sum()  │   ←    │ function sum(   │
+│ { ... }         │        │   ...numbers    │
+│                 │        │ ): number;      │
+└─────────────────┘        └─────────────────┘
+    Runtime code              Type information
+    (how it works)            (what types it uses)
+```
+
+### Why Declaration Files?
+
+| Benefit | Description |
+|---------|-------------|
+| Type checking | Catch errors when using libraries |
+| Autocomplete | See available methods and properties |
+| Documentation | Types serve as inline documentation |
+| Refactoring | Safe renaming across your codebase |
+
+## Using Type Definitions
+
+Most popular libraries have type definitions available:
+
+```bash
+# Install a library and its types
+npm install lodash
+npm install --save-dev @types/lodash
+
+# Many modern libraries include their own types
+npm install axios  # Types included!
+```
 
 ```typescript
-// math.d.ts
-declare function add(a: number, b: number): number;
-declare function subtract(a: number, b: number): number;
+// TypeScript now knows about lodash
+import { chunk, uniq } from "lodash";
 
-declare const PI: number;
-
-declare class Calculator {
-    add(a: number, b: number): number;
-    subtract(a: number, b: number): number;
-}
+chunk([1, 2, 3, 4], 2);  // ✅ TypeScript knows this returns number[][]
+// chunk("invalid");     // ❌ Error: string is not an array
 ```
 
 ## Creating Declaration Files
 
+### Basic Syntax
+
+Declaration files use `declare` to describe external code:
+
+```typescript
+// math.d.ts
+
+// Declare a function
+declare function add(a: number, b: number): number;
+declare function subtract(a: number, b: number): number;
+
+// Declare a constant
+declare const PI: number;
+
+// Declare a class
+declare class Calculator {
+    add(a: number, b: number): number;
+    subtract(a: number, b: number): number;
+}
+
+// Declare an interface (no 'declare' needed for types)
+interface MathOptions {
+    precision?: number;
+    rounding?: "up" | "down" | "nearest";
+}
+```
+
 ### For a Module
+
+Describe a module that can be imported:
 
 ```typescript
 // mylib.d.ts
 declare module "mylib" {
+    // Named exports
     export function doSomething(value: string): void;
     export const version: string;
 
+    // Types
     export interface Options {
         debug?: boolean;
         timeout?: number;
     }
 
+    // Class
     export class Client {
         constructor(options?: Options);
         connect(): Promise<void>;
         disconnect(): void;
     }
 
+    // Default export
     export default Client;
 }
+```
 
+```typescript
 // Usage
 import Client, { doSomething, Options } from "mylib";
+
+const options: Options = { debug: true };
+const client = new Client(options);
 ```
 
 ### For Global Variables
 
+Describe variables available globally (like `window` properties):
+
 ```typescript
 // globals.d.ts
+
+// Global variables
 declare const API_URL: string;
 declare const DEBUG: boolean;
 
+// Global function
 declare function log(message: string): void;
 
 // Extending Window
@@ -62,59 +141,85 @@ declare global {
         myApp: {
             version: string;
             init(): void;
+            config: Record<string, unknown>;
         };
     }
 }
 
-export {}; // Make this a module
+export {}; // Make this a module (required for declare global)
 ```
 
-### For Existing JavaScript
-
 ```typescript
-// lodash.d.ts (simplified)
-declare module "lodash" {
-    export function chunk<T>(array: T[], size: number): T[][];
-    export function compact<T>(array: T[]): T[];
-    export function uniq<T>(array: T[]): T[];
-    export function debounce<T extends (...args: any[]) => any>(
-        func: T,
-        wait?: number
-    ): T;
-}
+// Now you can use these globals with type safety
+console.log(API_URL);
+window.myApp.init();
 ```
 
 ## Declaration Merging
 
-Combine multiple declarations:
+TypeScript allows you to **combine multiple declarations** with the same name:
+
+### Interface Merging
 
 ```typescript
-// Interface merging
+// First declaration
 interface User {
     name: string;
 }
 
+// Second declaration (merged automatically)
 interface User {
     age: number;
 }
 
-// User now has both name and age
-const user: User = { name: "John", age: 30 };
+// User now has BOTH properties
+const user: User = {
+    name: "John",
+    age: 30
+};  // ✅ Both required!
+```
 
-// Namespace merging
+### Visual Guide
+
+```
+interface User {           interface User {
+    name: string;    +         age: number;
+}                          }
+        │                          │
+        └──────────┬───────────────┘
+                   │
+                   ▼
+           interface User {
+               name: string;
+               age: number;
+           }
+```
+
+### Namespace Merging
+
+```typescript
 namespace Animals {
-    export class Dog {}
+    export class Dog {
+        bark() { console.log("Woof!"); }
+    }
 }
 
 namespace Animals {
-    export class Cat {}
+    export class Cat {
+        meow() { console.log("Meow!"); }
+    }
 }
 
-// Animals has both Dog and Cat
+// Animals now has both Dog and Cat
 const dog = new Animals.Dog();
 const cat = new Animals.Cat();
+```
 
-// Function + Namespace merging
+### Function + Namespace Merging
+
+Add properties to a function:
+
+```typescript
 function buildLabel(name: string): string {
     return buildLabel.prefix + name + buildLabel.suffix;
 }
@@ -125,39 +230,97 @@ namespace buildLabel {
 }
 
 console.log(buildLabel("World")); // "Hello, World!"
+buildLabel.prefix = "Hi, ";
+console.log(buildLabel("World")); // "Hi, World!"
 ```
 
-## Ambient Declarations
+## Module Augmentation
 
-Describe external code:
+Extend existing modules with new types:
+
+### Extending Express
 
 ```typescript
-// Ambient variable
-declare const jQuery: (selector: string) => any;
+// express-extensions.d.ts
+import "express";
 
-// Ambient function
-declare function require(module: string): any;
-
-// Ambient class
-declare class Greeter {
-    constructor(greeting: string);
-    greet(): string;
-}
-
-// Ambient namespace
-declare namespace Express {
+declare module "express" {
     interface Request {
-        body: any;
-        params: Record<string, string>;
-        query: Record<string, string>;
+        user?: {
+            id: string;
+            email: string;
+            role: "admin" | "user";
+        };
+        startTime?: number;
     }
 
     interface Response {
-        send(body: any): Response;
-        json(body: any): Response;
-        status(code: number): Response;
+        success(data: unknown): Response;
+        error(message: string): Response;
     }
 }
+```
+
+```typescript
+// Now TypeScript knows about request.user
+import express from "express";
+
+const app = express();
+
+app.use((req, res, next) => {
+    req.user = { id: "123", email: "user@test.com", role: "user" };
+    req.startTime = Date.now();
+    next();
+});
+
+app.get("/profile", (req, res) => {
+    if (req.user) {
+        res.json({ user: req.user });
+    }
+});
+```
+
+### Extending Built-in Types
+
+```typescript
+// array-extensions.d.ts
+declare global {
+    interface Array<T> {
+        first(): T | undefined;
+        last(): T | undefined;
+        isEmpty(): boolean;
+        random(): T | undefined;
+    }
+}
+
+export {};
+```
+
+```typescript
+// Implementation
+Array.prototype.first = function () {
+    return this[0];
+};
+
+Array.prototype.last = function () {
+    return this[this.length - 1];
+};
+
+Array.prototype.isEmpty = function () {
+    return this.length === 0;
+};
+
+Array.prototype.random = function () {
+    if (this.length === 0) return undefined;
+    return this[Math.floor(Math.random() * this.length)];
+};
+
+// Usage - TypeScript knows about these methods!
+const arr = [1, 2, 3, 4, 5];
+console.log(arr.first());  // 1
+console.log(arr.last());   // 5
+console.log(arr.isEmpty()); // false
+console.log(arr.random()); // random element
 ```
 
 ## Triple-Slash Directives
@@ -172,67 +335,128 @@ Reference other declaration files:
 // Now you can use types from those files
 ```
 
-## Module Augmentation
+| Directive | Purpose |
+|-----------|---------|
+| `/// <reference path="..." />` | Reference local file |
+| `/// <reference types="..." />` | Reference @types package |
+| `/// <reference lib="..." />` | Reference built-in lib |
 
-Extend existing modules:
+## Ambient Declarations
+
+Describe external code that exists at runtime:
 
 ```typescript
-// Extend Express
-import { Request, Response } from "express";
+// Describe jQuery (loaded via <script> tag)
+declare const jQuery: (selector: string) => {
+    html(content: string): void;
+    on(event: string, handler: () => void): void;
+    css(property: string, value: string): void;
+};
 
-declare module "express" {
-    interface Request {
-        user?: {
-            id: string;
-            email: string;
-            role: "admin" | "user";
-        };
-        startTime?: number;
-    }
-}
+declare const $: typeof jQuery;
 
-// Now TypeScript knows about request.user
-app.use((req: Request, res: Response, next) => {
-    req.user = { id: "123", email: "user@test.com", role: "user" };
-    next();
+// Now you can use jQuery with types
+$(".button").on("click", () => {
+    $(".content").html("Clicked!");
 });
 ```
 
-### Extending Built-in Types
+### Describing a Namespace
 
 ```typescript
-// Extend Array prototype
-declare global {
-    interface Array<T> {
-        first(): T | undefined;
-        last(): T | undefined;
-        isEmpty(): boolean;
+// Describe Express types
+declare namespace Express {
+    interface Request {
+        body: any;
+        params: Record<string, string>;
+        query: Record<string, string>;
+    }
+
+    interface Response {
+        send(body: any): Response;
+        json(body: any): Response;
+        status(code: number): Response;
+    }
+
+    interface Application {
+        get(path: string, handler: (req: Request, res: Response) => void): void;
+        post(path: string, handler: (req: Request, res: Response) => void): void;
     }
 }
 
-Array.prototype.first = function () {
-    return this[0];
-};
-
-Array.prototype.last = function () {
-    return this[this.length - 1];
-};
-
-Array.prototype.isEmpty = function () {
-    return this.length === 0;
-};
-
-// Usage
-const arr = [1, 2, 3];
-console.log(arr.first()); // 1
-console.log(arr.last());  // 3
-
-export {};
+declare function express(): Express.Application;
 ```
 
-## Publishing Type Declarations
+## Wildcard Module Declarations
 
-### Including in Package
+Handle non-TypeScript imports:
+
+```typescript
+// assets.d.ts
+
+// Images
+declare module "*.png" {
+    const value: string;
+    export default value;
+}
+
+declare module "*.jpg" {
+    const value: string;
+    export default value;
+}
+
+declare module "*.svg" {
+    const value: string;
+    export default value;
+}
+
+// CSS Modules
+declare module "*.module.css" {
+    const classes: { [key: string]: string };
+    export default classes;
+}
+
+declare module "*.module.scss" {
+    const classes: { [key: string]: string };
+    export default classes;
+}
+
+// JSON
+declare module "*.json" {
+    const value: any;
+    export default value;
+}
+```
+
+```typescript
+// Now TypeScript allows these imports
+import logo from "./logo.png";
+import styles from "./styles.module.css";
+import config from "./config.json";
+
+console.log(logo);              // string (path)
+console.log(styles.container);  // string (class name)
+console.log(config);            // any
+```
+
+## Shorthand Declarations
+
+Quick fix for untyped modules:
+
+```typescript
+// Allows import but everything is 'any'
+declare module "my-untyped-lib";
+
+// With basic structure
+declare module "my-other-lib" {
+    export function doThing(): void;
+    export default function(): string;
+}
+```
+
+## Publishing Type Definitions
+
+### Including Types in Your Package
 
 ```json
 // package.json
@@ -244,91 +468,59 @@ export {};
 }
 ```
 
-### tsconfig for Library
+### TypeScript Config for Libraries
 
 ```json
+// tsconfig.json
 {
     "compilerOptions": {
         "declaration": true,
         "declarationDir": "dist",
         "declarationMap": true,
         "emitDeclarationOnly": false,
-        "outDir": "dist"
+        "outDir": "dist",
+        "rootDir": "src"
     },
     "include": ["src"]
 }
 ```
 
+| Option | Purpose |
+|--------|---------|
+| `declaration` | Generate `.d.ts` files |
+| `declarationDir` | Output directory for `.d.ts` |
+| `declarationMap` | Generate `.d.ts.map` for debugging |
+| `emitDeclarationOnly` | Only generate types (no JS) |
+
 ## DefinitelyTyped
 
-Community-maintained type definitions:
+Community-maintained type definitions at [@types](https://github.com/DefinitelyTyped/DefinitelyTyped):
 
 ```bash
-# Install types for a package
+# Search for types
+npm search @types/lodash
+
+# Install types
 npm install --save-dev @types/lodash
 npm install --save-dev @types/express
 npm install --save-dev @types/node
 ```
 
-### Creating @types Package
+### Creating an @types Package
 
 ```typescript
 // index.d.ts for @types/my-package
 export interface Options {
     debug?: boolean;
+    timeout?: number;
 }
 
 export function init(options?: Options): void;
 export function process(data: string): string;
 export function cleanup(): void;
 
+// Allow UMD usage
 export as namespace MyPackage;
-```
-
-## Wildcard Module Declarations
-
-Handle non-TypeScript imports:
-
-```typescript
-// images.d.ts
-declare module "*.png" {
-    const value: string;
-    export default value;
-}
-
-declare module "*.svg" {
-    const value: string;
-    export default value;
-}
-
-declare module "*.css" {
-    const classes: { [key: string]: string };
-    export default classes;
-}
-
-declare module "*.json" {
-    const value: any;
-    export default value;
-}
-
-// Usage
-import logo from "./logo.png";
-import styles from "./styles.css";
-```
-
-## Shorthand Ambient Modules
-
-Quick type for any module:
-
-```typescript
-// All imports from "my-untyped-lib" will be 'any'
-declare module "my-untyped-lib";
-
-// Or with basic structure
-declare module "my-other-lib" {
-    export function doThing(): void;
-    export default function(): string;
-}
 ```
 
 ## Practice Exercise
@@ -449,9 +641,6 @@ export declare class ApiClient {
 
     /**
      * Make a PUT request
-     * @param path - Request path
-     * @param body - Request body
-     * @param options - Request options
      */
     put<T, U = unknown>(
         path: string,
@@ -461,35 +650,29 @@ export declare class ApiClient {
 
     /**
      * Make a DELETE request
-     * @param path - Request path
-     * @param options - Request options
      */
     delete<T>(path: string, options?: RequestOptions): Promise<ApiResponse<T>>;
 
     /**
      * Add a request interceptor
-     * @param interceptor - Interceptor function
      * @returns Function to remove the interceptor
      */
     addRequestInterceptor(interceptor: RequestInterceptor): () => void;
 
     /**
      * Add a response interceptor
-     * @param interceptor - Interceptor function
      * @returns Function to remove the interceptor
      */
     addResponseInterceptor<T>(interceptor: ResponseInterceptor<T>): () => void;
 
     /**
      * Add an error interceptor
-     * @param interceptor - Interceptor function
      * @returns Function to remove the interceptor
      */
     addErrorInterceptor(interceptor: ErrorInterceptor): () => void;
 
     /**
      * Set default headers for all requests
-     * @param headers - Headers to set
      */
     setHeaders(headers: Record<string, string>): void;
 
@@ -503,9 +686,25 @@ export declare class ApiClient {
 
 /**
  * Create a new API client instance
- * @param config - Client configuration
  */
 export declare function createClient(config: ApiClientConfig): ApiClient;
 
 export default ApiClient;
 ```
+
+## Summary
+
+| Concept | Purpose |
+|---------|---------|
+| `.d.ts` files | Type information for JS code |
+| `declare` | Describe external code |
+| `declare module` | Type a module |
+| `declare global` | Extend global types |
+| Interface merging | Combine declarations |
+| Module augmentation | Extend existing modules |
+| `@types/*` | Community type definitions |
+| Wildcard modules | Handle non-TS imports |
+
+---
+
+[Next: Advanced Patterns →](/guide/typescript/10-advanced)

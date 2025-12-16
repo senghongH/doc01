@@ -2,6 +2,37 @@
 
 JavaScript is single-threaded but handles asynchronous operations through an event loop. This allows non-blocking operations like network requests, file I/O, and timers.
 
+::: info What You'll Learn
+- Understand synchronous vs asynchronous code execution
+- Master callbacks and recognize callback hell
+- Work with Promises and their methods
+- Write clean async code with async/await
+- Use the Fetch API for HTTP requests
+- Understand the JavaScript event loop
+:::
+
+## Why Async Matters
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Real World Analogy                        │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  SYNCHRONOUS (Waiting in Line)      ASYNCHRONOUS (Online)   │
+│  ┌─────────────────────┐           ┌─────────────────────┐  │
+│  │ 1. Go to bank       │           │ 1. Start online     │  │
+│  │ 2. Wait in line...  │           │    transfer         │  │
+│  │ 3. Wait more...     │           │ 2. Do other things  │  │
+│  │ 4. Finally served   │           │ 3. Get notification │  │
+│  │ 5. Go home          │           │    when done        │  │
+│  └─────────────────────┘           └─────────────────────┘  │
+│                                                              │
+│  Total time: 2 hours               Total time: 5 minutes    │
+│  (Blocked the whole time)          (Free to do other work)  │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
 ## Synchronous vs Asynchronous
 
 ### Synchronous Code
@@ -25,6 +56,27 @@ setTimeout(() => {
 console.log("Third");
 // Output: First, Third, Second
 ```
+
+::: tip Execution Timeline
+```
+Time →
+0ms      1ms      2ms      ...      1000ms    1001ms
+|        |        |                 |         |
+▼        ▼        ▼                 ▼         ▼
+"First"  "Third"  (waiting...)      "Second"  (done)
+   ↓        ↓                          ↓
+   |        |                          |
+   └────────┴── Main thread busy ──────┴── Timer callback
+```
+:::
+
+## Async Patterns Comparison
+
+| Pattern | Syntax | Error Handling | Best For |
+|---------|--------|----------------|----------|
+| Callbacks | `fn(callback)` | Error-first `(err, data)` | Simple, single operations |
+| Promises | `.then().catch()` | `.catch()` block | Chaining operations |
+| Async/Await | `await fn()` | `try/catch` | Clean, readable code |
 
 ## Callbacks
 
@@ -60,6 +112,22 @@ getUser(userId, (user) => {
 });
 ```
 
+::: warning The Pyramid of Doom
+```
+getUser ──┐
+          └──> getOrders ──┐
+                           └──> getOrderDetails ──┐
+                                                  └──> getProduct ──┐
+                                                                    └──> ???
+
+Problems:
+• Hard to read (grows to the right)
+• Hard to maintain
+• Error handling is messy
+• Difficult to debug
+```
+:::
+
 ### Error Handling with Callbacks
 
 ```js
@@ -84,6 +152,32 @@ fetchData((error, data) => {
 ## Promises
 
 Promises represent the eventual completion or failure of an async operation.
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│                    Promise Lifecycle                            │
+├────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   new Promise()          resolve(value)          .then()        │
+│        │                      │                     │           │
+│        ▼                      ▼                     ▼           │
+│   ┌─────────┐            ┌─────────┐          ┌─────────┐      │
+│   │ PENDING │ ────────▶  │FULFILLED│ ───────▶ │ Handle  │      │
+│   └─────────┘            └─────────┘          │ Success │      │
+│        │                                      └─────────┘      │
+│        │ reject(error)                                          │
+│        │      │                                                 │
+│        ▼      ▼                                                 │
+│   ┌─────────────┐            ┌─────────┐                       │
+│   │  REJECTED   │ ─────────▶ │ Handle  │                       │
+│   └─────────────┘            │  Error  │                       │
+│                              └─────────┘                       │
+│                                   ▲                             │
+│                                   │                             │
+│                              .catch()                           │
+│                                                                 │
+└────────────────────────────────────────────────────────────────┘
+```
 
 ### Creating Promises
 
@@ -132,6 +226,16 @@ const fulfilled = Promise.resolve("Success");
 const rejected = Promise.reject(new Error("Failed"));
 ```
 
+::: tip Promise States at a Glance
+| State | Description | Next Action |
+|-------|-------------|-------------|
+| `pending` | Operation in progress | Wait... |
+| `fulfilled` | Success! Value available | `.then(value)` |
+| `rejected` | Error occurred | `.catch(error)` |
+
+**Note:** A promise can only change state once. Once settled (fulfilled or rejected), it's final!
+:::
+
 ### Chaining Promises
 
 ```js
@@ -172,6 +276,28 @@ getUser(1)
 ```
 
 ### Promise Static Methods
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              Promise Static Methods Comparison                   │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Promise.all()              Promise.allSettled()                 │
+│  ┌───┐ ┌───┐ ┌───┐          ┌───┐ ┌───┐ ┌───┐                   │
+│  │ ✓ │ │ ✓ │ │ ✓ │ → ✓      │ ✓ │ │ ✗ │ │ ✓ │ → Results[]       │
+│  └───┘ └───┘ └───┘          └───┘ └───┘ └───┘                   │
+│  │ ✓ │ │ ✗ │ │ ✓ │ → ✗      All results returned                │
+│  ALL must succeed           regardless of success/failure        │
+│                                                                  │
+│  Promise.race()             Promise.any()                        │
+│  ┌───┐ ┌───┐ ┌───┐          ┌───┐ ┌───┐ ┌───┐                   │
+│  │ 🏃 │ │ 🚶 │ │ 🐢 │ → First │ ✗ │ │ ✓ │ │ ✗ │ → First ✓       │
+│  └───┘ └───┘ └───┘          └───┘ └───┘ └───┘                   │
+│  First to finish wins       First SUCCESS wins                   │
+│  (success OR failure)       (ignores failures)                   │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 #### Promise.all()
 
@@ -246,6 +372,35 @@ Promise.any(promises)
 
 Syntactic sugar over Promises for cleaner async code.
 
+```
+┌─────────────────────────────────────────────────────────────────┐
+│            Callbacks → Promises → Async/Await                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  CALLBACKS (Old Way)         PROMISES (Better)                   │
+│  ┌──────────────────┐        ┌──────────────────┐               │
+│  │ getData(cb => {  │        │ getData()        │               │
+│  │   process(cb => {│        │   .then(process) │               │
+│  │     save(cb => { │        │   .then(save)    │               │
+│  │       done()     │        │   .then(done)    │               │
+│  │     })           │        │   .catch(error)  │               │
+│  │   })             │        │                  │               │
+│  │ })               │        │                  │               │
+│  └──────────────────┘        └──────────────────┘               │
+│                                                                  │
+│  ASYNC/AWAIT (Best)                                              │
+│  ┌──────────────────────────────────────────────┐               │
+│  │ async function run() {                        │               │
+│  │   const data = await getData();               │  Reads like   │
+│  │   const result = await process(data);         │  synchronous  │
+│  │   await save(result);                         │  code!        │
+│  │   done();                                     │               │
+│  │ }                                             │               │
+│  └──────────────────────────────────────────────┘               │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 ### Basic Usage
 
 ```js
@@ -281,25 +436,54 @@ async function fetchData() {
 
 ### Sequential vs Parallel
 
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              Sequential vs Parallel Execution                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  SEQUENTIAL (One at a time)                                      │
+│  ────────────────────────────────────────────────────           │
+│  Time →                                                          │
+│  |──── User ────|──── Orders ────|──── Products ────|           │
+│  0s             1s                2s                 3s          │
+│  Total: 3 seconds                                                │
+│                                                                  │
+│  PARALLEL (All at once)                                          │
+│  ────────────────────────────────────────────────────           │
+│  Time →                                                          │
+│  |──── User ────────|                                           │
+│  |──── Orders ──────|                                           │
+│  |──── Products ────|                                           │
+│  0s                 1s                                           │
+│  Total: 1 second (fastest request time)                          │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 ```js
-// Sequential - one after another
+// Sequential - one after another (SLOW)
 async function sequential() {
-    const user = await getUser(1);      // Wait
-    const orders = await getOrders(1);  // Then wait
-    const products = await getProducts(); // Then wait
-    return { user, orders, products };
+    const user = await getUser(1);      // Wait 1s
+    const orders = await getOrders(1);  // Then wait 1s
+    const products = await getProducts(); // Then wait 1s
+    return { user, orders, products };   // Total: ~3s
 }
 
-// Parallel - all at once
+// Parallel - all at once (FAST)
 async function parallel() {
     const [user, orders, products] = await Promise.all([
-        getUser(1),
-        getOrders(1),
-        getProducts()
+        getUser(1),      // Start immediately
+        getOrders(1),    // Start immediately
+        getProducts()    // Start immediately
     ]);
-    return { user, orders, products };
+    return { user, orders, products }; // Total: ~1s
 }
 ```
+
+::: tip When to Use Each
+- **Sequential**: When requests depend on each other
+- **Parallel**: When requests are independent (3x faster!)
+:::
 
 ### Async Loops
 
@@ -339,7 +523,17 @@ export { config };
 
 ## Fetch API
 
-Modern API for making HTTP requests:
+Modern API for making HTTP requests.
+
+::: info Fetch Method Reference
+| Method | Use Case | Body? |
+|--------|----------|-------|
+| `GET` | Retrieve data | No |
+| `POST` | Create new resource | Yes |
+| `PUT` | Replace entire resource | Yes |
+| `PATCH` | Update partial resource | Yes |
+| `DELETE` | Remove resource | Rarely |
+:::
 
 ### GET Request
 
@@ -484,7 +678,35 @@ async function example() {
 
 ## Event Loop
 
-Understanding how JavaScript handles async operations:
+Understanding how JavaScript handles async operations.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    JavaScript Event Loop                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌──────────────┐     ┌─────────────────────────────────────┐   │
+│  │  Call Stack  │     │           Web APIs                  │   │
+│  │──────────────│     │  ┌─────────┐ ┌────────┐ ┌───────┐  │   │
+│  │ function()   │────▶│  │setTimeout│ │ fetch()│ │ DOM   │  │   │
+│  │              │     │  └─────────┘ └────────┘ └───────┘  │   │
+│  └──────────────┘     └──────────────────┬──────────────────┘   │
+│         ▲                                │                       │
+│         │                                ▼                       │
+│         │            ┌─────────────────────────────────────┐    │
+│         │            │          Task Queues                 │    │
+│         │            │  ┌───────────────────────────────┐  │    │
+│         │            │  │ Microtasks (Promises, queueM) │  │    │
+│         │            │  │ Priority: HIGH (runs first)   │  │    │
+│         │            │  └───────────────────────────────┘  │    │
+│         │            │  ┌───────────────────────────────┐  │    │
+│         └────────────│  │ Macrotasks (setTimeout, I/O)  │  │    │
+│                      │  │ Priority: LOW (runs after)    │  │    │
+│                      │  └───────────────────────────────┘  │    │
+│                      └─────────────────────────────────────┘    │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ```js
 console.log("1. Synchronous");
@@ -502,6 +724,14 @@ console.log("2. Synchronous");
 // Output order: 1, 2, 3, 4
 // Microtasks (Promises) execute before macrotasks (setTimeout)
 ```
+
+::: tip Execution Priority
+1. **Synchronous code** runs first (Call Stack)
+2. **Microtasks** run next (Promises, queueMicrotask)
+3. **Macrotasks** run last (setTimeout, setInterval, I/O)
+
+Even `setTimeout(..., 0)` waits for microtasks!
+:::
 
 ## Error Handling Patterns
 
@@ -656,15 +886,50 @@ input.addEventListener("input", async (e) => {
 ```
 :::
 
+## Quick Reference
+
+::: tip Async Cheat Sheet
+```js
+// Creating a Promise
+const promise = new Promise((resolve, reject) => {
+    // resolve(value) for success
+    // reject(error) for failure
+});
+
+// Using Promises
+promise
+    .then(value => { /* success */ })
+    .catch(error => { /* failure */ })
+    .finally(() => { /* always runs */ });
+
+// Async/Await
+async function fetchData() {
+    try {
+        const result = await promise;
+        return result;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// Parallel Promises
+await Promise.all([p1, p2, p3]);      // All must succeed
+await Promise.allSettled([p1, p2]);   // Get all results
+await Promise.race([p1, p2]);         // First to finish
+await Promise.any([p1, p2]);          // First success
+```
+:::
+
 ## Summary
 
-- Callbacks were the original async pattern but lead to callback hell
-- Promises provide cleaner async handling with `.then()` and `.catch()`
-- `async/await` makes async code look synchronous
-- Use `Promise.all()` for parallel operations
-- The Fetch API is the modern way to make HTTP requests
-- Understanding the event loop helps debug async issues
-- Always handle errors in async code
+| Concept | Key Point |
+|---------|-----------|
+| Callbacks | Original pattern, leads to nesting issues |
+| Promises | Chainable with `.then()`, `.catch()` |
+| Async/Await | Cleanest syntax, use `try/catch` |
+| Promise.all | Run parallel, fail if any fails |
+| Fetch API | Modern HTTP requests |
+| Event Loop | Microtasks before macrotasks |
 
 ## Next Steps
 

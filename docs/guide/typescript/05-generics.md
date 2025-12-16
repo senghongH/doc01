@@ -2,113 +2,295 @@
 
 Learn how to write reusable, type-safe code with generics.
 
-## Introduction to Generics
+::: info What You'll Learn
+- What generics are and why they matter
+- How to create generic functions, interfaces, and classes
+- Generic constraints to limit type parameters
+- Built-in utility types using generics
+:::
 
-Generics allow you to write flexible, reusable code that works with multiple types.
+## Why Generics?
+
+Generics let you write **flexible code** that works with multiple types while keeping type safety. Think of them as **"type variables"** - placeholders for types that get filled in later.
+
+### The Problem Without Generics
 
 ```typescript
-// Without generics - loses type information
-function identity(value: any): any {
+// ❌ Problem: You want a function that returns what you pass in
+
+// Option 1: Specific functions for each type
+function identityString(value: string): string {
+    return value;
+}
+function identityNumber(value: number): number {
+    return value;
+}
+// Tedious! Need a new function for every type...
+
+// Option 2: Use 'any' - loses type information!
+function identityAny(value: any): any {
+    return value;
+}
+const result = identityAny("hello");
+// result is 'any' - TypeScript doesn't know it's a string!
+result.toUpperCase(); // No autocomplete, no type checking 😢
+```
+
+### The Solution: Generics
+
+```typescript
+// ✅ Solution: Use a generic type parameter <T>
+function identity<T>(value: T): T {
     return value;
 }
 
-// With generics - preserves type information
-function identityGeneric<T>(value: T): T {
-    return value;
-}
+// TypeScript knows the exact type!
+const str = identity<string>("hello");  // str: string
+const num = identity(42);               // num: number (inferred!)
 
-const str = identityGeneric<string>("hello"); // type: string
-const num = identityGeneric(42);              // type: number (inferred)
+str.toUpperCase();  // ✅ Autocomplete works!
+num.toFixed(2);     // ✅ Number methods available!
+```
+
+### Visual Explanation
+
+```
+Without Generics:               With Generics:
+
+identity(value: any): any       identity<T>(value: T): T
+         │                                │
+         ▼                                ▼
+    ┌─────────┐                    ┌─────────┐
+    │   any   │                    │    T    │ ← Type placeholder
+    │ (lost!) │                    │(preserved)│
+    └─────────┘                    └─────────┘
+         │                                │
+         ▼                                ▼
+   Returns: any                   Returns: same type T!
+   (no type info)                 (full type safety)
 ```
 
 ## Generic Functions
 
+### Basic Syntax
+
 ```typescript
-// Single type parameter
-function first<T>(arr: T[]): T | undefined {
-    return arr[0];
+//         ┌─ Type parameter (like a variable for types)
+//         │
+function identity<T>(value: T): T {
+//                      │      │
+//                      │      └─ Return type uses T
+//                      └─ Parameter type uses T
+    return value;
 }
 
-first([1, 2, 3]);        // number | undefined
-first(["a", "b", "c"]);  // string | undefined
+// Two ways to call:
+const a = identity<string>("hello");  // Explicit: specify <string>
+const b = identity(42);               // Inferred: TypeScript figures it out
+```
 
-// Multiple type parameters
+### Multiple Type Parameters
+
+```typescript
+// Use multiple type parameters for different types
 function pair<T, U>(first: T, second: U): [T, U] {
     return [first, second];
 }
 
-const result = pair("hello", 42); // [string, number]
+const result = pair("hello", 42);  // type: [string, number]
+console.log(result[0].length);     // ✅ Knows first is string
+console.log(result[1].toFixed());  // ✅ Knows second is number
+```
 
-// With arrow functions
-const last = <T>(arr: T[]): T | undefined => {
+### Generic Arrow Functions
+
+```typescript
+// Arrow function syntax for generics
+const getFirst = <T>(arr: T[]): T | undefined => {
+    return arr[0];
+};
+
+const getLast = <T>(arr: T[]): T | undefined => {
     return arr[arr.length - 1];
 };
+
+getFirst([1, 2, 3]);        // number | undefined
+getLast(["a", "b", "c"]);   // string | undefined
+```
+
+### Practical Examples
+
+```typescript
+// Swap two values
+function swap<T, U>(a: T, b: U): [U, T] {
+    return [b, a];
+}
+
+const [second, first] = swap("hello", 42);
+// second: number (42)
+// first: string ("hello")
+
+// Create an array filled with a value
+function createArray<T>(length: number, value: T): T[] {
+    return Array(length).fill(value);
+}
+
+createArray(3, "x");     // ["x", "x", "x"] (string[])
+createArray(3, 0);       // [0, 0, 0] (number[])
 ```
 
 ## Generic Constraints
 
-Restrict type parameters to specific shapes:
+Sometimes you need to limit what types can be used. Use `extends` to add constraints:
+
+### The Problem
 
 ```typescript
-// Constrain to types with length
+// ❌ This won't work!
+function logLength<T>(value: T): void {
+    console.log(value.length);  // Error: Property 'length' does not exist on type 'T'
+}
+// TypeScript doesn't know if T has a 'length' property
+```
+
+### The Solution: Constraints
+
+```typescript
+// ✅ Constrain T to types that have a 'length' property
 interface HasLength {
     length: number;
 }
 
 function logLength<T extends HasLength>(value: T): void {
-    console.log(value.length);
+    console.log(value.length);  // ✅ Now TypeScript knows 'length' exists
 }
 
-logLength("hello");     // OK - string has length
-logLength([1, 2, 3]);   // OK - array has length
-// logLength(42);       // Error - number has no length
+logLength("hello");     // ✅ OK - string has length
+logLength([1, 2, 3]);   // ✅ OK - array has length
+logLength({ length: 10 }); // ✅ OK - object has length property
+// logLength(42);       // ❌ Error - number has no length
+```
 
-// Constrain to object with specific property
+### Visual Guide to Constraints
+
+```
+<T extends HasLength>
+        │
+        └─── T must be a subtype of HasLength
+
+HasLength { length: number }
+        │
+        ├── string ✅ (has length)
+        ├── array ✅ (has length)
+        ├── { length: 10 } ✅ (has length)
+        │
+        └── number ❌ (no length property)
+```
+
+### keyof Constraint
+
+Use `keyof` to constrain to valid property keys:
+
+```typescript
+// Get a property from an object, safely!
 function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
     return obj[key];
 }
 
 const person = { name: "John", age: 30 };
-const name = getProperty(person, "name"); // string
-const age = getProperty(person, "age");   // number
-// getProperty(person, "email");          // Error
+
+const name = getProperty(person, "name");  // ✅ type: string
+const age = getProperty(person, "age");    // ✅ type: number
+// getProperty(person, "email");           // ❌ Error: "email" is not a key of person
+```
+
+### Multiple Constraints
+
+```typescript
+// T must have both id and name
+interface HasId {
+    id: number;
+}
+
+interface HasName {
+    name: string;
+}
+
+// Use intersection type for multiple constraints
+function displayItem<T extends HasId & HasName>(item: T): string {
+    return `${item.id}: ${item.name}`;
+}
+
+displayItem({ id: 1, name: "Widget", price: 10 }); // ✅ OK
+// displayItem({ id: 1 });                         // ❌ Error: missing 'name'
 ```
 
 ## Generic Interfaces
 
+Define interfaces that work with any type:
+
 ```typescript
+// Generic container interface
 interface Container<T> {
     value: T;
     getValue(): T;
+    setValue(value: T): void;
 }
 
+// Implement for strings
 const stringContainer: Container<string> = {
     value: "hello",
-    getValue() {
-        return this.value;
-    }
+    getValue() { return this.value; },
+    setValue(value) { this.value = value; }
 };
 
-// Generic interface with multiple types
-interface KeyValuePair<K, V> {
-    key: K;
-    value: V;
+// Implement for numbers
+const numberContainer: Container<number> = {
+    value: 42,
+    getValue() { return this.value; },
+    setValue(value) { this.value = value; }
+};
+```
+
+### Generic Interface for API Responses
+
+```typescript
+// Common pattern for API responses
+interface ApiResponse<T> {
+    data: T;
+    status: number;
+    message?: string;
+    timestamp: Date;
 }
 
-const pair: KeyValuePair<string, number> = {
-    key: "age",
-    value: 30
+interface User {
+    id: number;
+    name: string;
+}
+
+interface Product {
+    id: number;
+    title: string;
+    price: number;
+}
+
+// Same interface, different data types!
+const userResponse: ApiResponse<User> = {
+    data: { id: 1, name: "John" },
+    status: 200,
+    timestamp: new Date()
 };
 
-// Generic interface for functions
-interface Transformer<T, U> {
-    (input: T): U;
-}
-
-const stringify: Transformer<number, string> = (num) => num.toString();
+const productResponse: ApiResponse<Product> = {
+    data: { id: 1, title: "Widget", price: 9.99 },
+    status: 200,
+    timestamp: new Date()
+};
 ```
 
 ## Generic Classes
+
+Create reusable data structures:
 
 ```typescript
 class Queue<T> {
@@ -131,17 +313,28 @@ class Queue<T> {
     }
 }
 
+// Queue of numbers
 const numberQueue = new Queue<number>();
 numberQueue.enqueue(1);
 numberQueue.enqueue(2);
 console.log(numberQueue.dequeue()); // 1
 
-// Generic class with constraints
+// Queue of strings
+const stringQueue = new Queue<string>();
+stringQueue.enqueue("first");
+stringQueue.enqueue("second");
+console.log(stringQueue.dequeue()); // "first"
+```
+
+### Generic Class with Constraints
+
+```typescript
+// Data store that requires items to have an 'id'
 class DataStore<T extends { id: number }> {
     private items: Map<number, T> = new Map();
 
     add(item: T): void {
-        this.items.set(item.id, item);
+        this.items.set(item.id, item);  // ✅ TypeScript knows 'id' exists
     }
 
     get(id: number): T | undefined {
@@ -156,44 +349,72 @@ class DataStore<T extends { id: number }> {
         return Array.from(this.items.values());
     }
 }
+
+interface User { id: number; name: string; }
+interface Product { id: number; title: string; }
+
+const userStore = new DataStore<User>();
+userStore.add({ id: 1, name: "John" });
+
+const productStore = new DataStore<Product>();
+productStore.add({ id: 1, title: "Widget" });
 ```
 
 ## Generic Type Aliases
 
+Create reusable type definitions:
+
 ```typescript
-// Generic type alias
-type Result<T> = {
-    success: boolean;
-    data?: T;
-    error?: string;
-};
+// Result type for operations that might fail
+type Result<T, E = Error> =
+    | { success: true; value: T }
+    | { success: false; error: E };
 
-type UserResult = Result<{ id: number; name: string }>;
+function divide(a: number, b: number): Result<number, string> {
+    if (b === 0) {
+        return { success: false, error: "Cannot divide by zero" };
+    }
+    return { success: true, value: a / b };
+}
 
-// Generic union type
+const result = divide(10, 2);
+if (result.success) {
+    console.log(result.value);  // ✅ TypeScript knows 'value' exists
+} else {
+    console.log(result.error);  // ✅ TypeScript knows 'error' exists
+}
+```
+
+### Nullable Type Helper
+
+```typescript
+// Make any type nullable
 type Maybe<T> = T | null | undefined;
 
-let value: Maybe<string> = "hello";
-value = null;
-value = undefined;
+let userName: Maybe<string> = "John";
+userName = null;      // ✅ OK
+userName = undefined; // ✅ OK
 
-// Generic function type
+// Async function type helper
 type AsyncFn<T> = () => Promise<T>;
 
-const fetchUser: AsyncFn<User> = async () => {
+const fetchUser: AsyncFn<{ id: number; name: string }> = async () => {
     return { id: 1, name: "John" };
 };
 ```
 
 ## Default Type Parameters
 
+Provide defaults when type isn't specified:
+
 ```typescript
+// Default type is 'any'
 interface ApiResponse<T = any> {
     data: T;
     status: number;
 }
 
-// Uses default type 'any'
+// Uses default type
 const response1: ApiResponse = { data: "anything", status: 200 };
 
 // Specifies type
@@ -201,21 +422,18 @@ const response2: ApiResponse<string[]> = {
     data: ["a", "b"],
     status: 200
 };
-
-// Default with constraints
-type Container<T extends object = object> = {
-    value: T;
-};
 ```
 
 ## Conditional Types with Generics
 
+Types that change based on conditions:
+
 ```typescript
-// Basic conditional type
+// Is it a string?
 type IsString<T> = T extends string ? true : false;
 
-type A = IsString<string>;  // true
-type B = IsString<number>;  // false
+type A = IsString<"hello">;  // true
+type B = IsString<42>;       // false
 
 // Extract array element type
 type ElementType<T> = T extends (infer E)[] ? E : never;
@@ -223,66 +441,90 @@ type ElementType<T> = T extends (infer E)[] ? E : never;
 type NumElement = ElementType<number[]>;  // number
 type StrElement = ElementType<string[]>;  // string
 
-// Unwrap Promise type
+// Unwrap Promise
 type Awaited<T> = T extends Promise<infer U> ? U : T;
 
-type Result = Awaited<Promise<string>>;  // string
+type Result = Awaited<Promise<string>>;   // string
+type Same = Awaited<number>;              // number (not a Promise)
 ```
 
 ## Mapped Types with Generics
 
+Transform types property by property:
+
 ```typescript
-// Make all properties optional
-type Partial<T> = {
+// Make all properties optional (like Partial)
+type MyPartial<T> = {
     [K in keyof T]?: T[K];
 };
 
-// Make all properties required
-type Required<T> = {
+// Make all properties required (like Required)
+type MyRequired<T> = {
     [K in keyof T]-?: T[K];
 };
 
-// Make all properties readonly
-type Readonly<T> = {
+// Make all properties readonly (like Readonly)
+type MyReadonly<T> = {
     readonly [K in keyof T]: T[K];
-};
-
-// Pick specific properties
-type Pick<T, K extends keyof T> = {
-    [P in K]: T[P];
-};
-
-// Create type from keys
-type Record<K extends keyof any, V> = {
-    [P in K]: V;
 };
 
 // Usage
 interface User {
     id: number;
     name: string;
-    email: string;
+    email?: string;
 }
 
-type PartialUser = Partial<User>;
-type UserWithoutEmail = Omit<User, "email">;
-type UserIdName = Pick<User, "id" | "name">;
+type PartialUser = MyPartial<User>;
+// { id?: number; name?: string; email?: string }
+
+type ReadonlyUser = MyReadonly<User>;
+// { readonly id: number; readonly name: string; readonly email?: string }
 ```
 
-## Generic Utility Functions
+### Pick and Omit
 
 ```typescript
-// Type-safe Object.keys
+// Select specific properties
+type MyPick<T, K extends keyof T> = {
+    [P in K]: T[P];
+};
+
+// Exclude specific properties
+type MyOmit<T, K extends keyof T> = {
+    [P in Exclude<keyof T, K>]: T[P];
+};
+
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    password: string;
+}
+
+type PublicUser = MyOmit<User, "password">;
+// { id: number; name: string; email: string }
+
+type Credentials = MyPick<User, "email" | "password">;
+// { email: string; password: string }
+```
+
+## Common Patterns
+
+### Type-Safe Object.keys
+
+```typescript
 function keys<T extends object>(obj: T): (keyof T)[] {
     return Object.keys(obj) as (keyof T)[];
 }
 
-// Type-safe Object.entries
-function entries<T extends object>(obj: T): [keyof T, T[keyof T]][] {
-    return Object.entries(obj) as [keyof T, T[keyof T]][];
-}
+const person = { name: "John", age: 30 };
+const personKeys = keys(person);  // ("name" | "age")[]
+```
 
-// Merge objects with type safety
+### Type-Safe Merge
+
+```typescript
 function merge<T extends object, U extends object>(
     target: T,
     source: U
@@ -290,7 +532,16 @@ function merge<T extends object, U extends object>(
     return { ...target, ...source };
 }
 
-// Group array by key
+const merged = merge(
+    { name: "John" },
+    { age: 30 }
+);
+// { name: string; age: number }
+```
+
+### Group By
+
+```typescript
 function groupBy<T, K extends keyof T>(
     items: T[],
     key: K
@@ -306,32 +557,22 @@ function groupBy<T, K extends keyof T>(
 
     return map;
 }
-```
 
-## Variance
+interface Person { name: string; city: string; }
 
-Understanding how generic types relate:
+const people: Person[] = [
+    { name: "Alice", city: "NYC" },
+    { name: "Bob", city: "LA" },
+    { name: "Carol", city: "NYC" }
+];
 
-```typescript
-// Covariance - subtype relationship preserved
-interface Producer<out T> {
-    produce(): T;
-}
-
-// Contravariance - subtype relationship reversed
-interface Consumer<in T> {
-    consume(value: T): void;
-}
-
-// Invariance - no subtype relationship
-interface Processor<T> {
-    process(value: T): T;
-}
+const byCity = groupBy(people, "city");
+// Map { "NYC" => [Alice, Carol], "LA" => [Bob] }
 ```
 
 ## Practice Exercise
 
-Build a type-safe event system:
+Build a type-safe event emitter:
 
 ```typescript
 // Event map type
@@ -339,16 +580,15 @@ interface EventMap {
     click: { x: number; y: number };
     keypress: { key: string; code: number };
     submit: { data: Record<string, unknown> };
-    error: { message: string; code: number };
 }
 
-// Type-safe event listener
+// Generic event listener
 type EventListener<T> = (event: T) => void;
 
 class TypedEventEmitter<Events extends Record<string, unknown>> {
     private listeners = new Map<
         keyof Events,
-        Set<EventListener<Events[keyof Events]>>
+        Set<EventListener<any>>
     >();
 
     on<K extends keyof Events>(
@@ -360,12 +600,10 @@ class TypedEventEmitter<Events extends Record<string, unknown>> {
         }
 
         const listeners = this.listeners.get(event)!;
-        listeners.add(listener as EventListener<Events[keyof Events]>);
+        listeners.add(listener);
 
         // Return unsubscribe function
-        return () => {
-            listeners.delete(listener as EventListener<Events[keyof Events]>);
-        };
+        return () => listeners.delete(listener);
     }
 
     emit<K extends keyof Events>(event: K, data: Events[K]): void {
@@ -384,20 +622,12 @@ class TypedEventEmitter<Events extends Record<string, unknown>> {
             listener(data);
         });
     }
-
-    removeAllListeners<K extends keyof Events>(event?: K): void {
-        if (event) {
-            this.listeners.delete(event);
-        } else {
-            this.listeners.clear();
-        }
-    }
 }
 
-// Usage
+// Usage - fully type-safe!
 const emitter = new TypedEventEmitter<EventMap>();
 
-// Type-safe event handling
+// ✅ TypeScript knows the event data shape
 emitter.on("click", (event) => {
     console.log(`Clicked at ${event.x}, ${event.y}`);
 });
@@ -406,12 +636,25 @@ emitter.on("keypress", (event) => {
     console.log(`Key: ${event.key}, Code: ${event.code}`);
 });
 
-// Type checking works!
+// ✅ Type checking on emit
 emitter.emit("click", { x: 100, y: 200 });
-// emitter.emit("click", { key: "a" }); // Error!
 
-// One-time listener
-emitter.once("submit", (event) => {
-    console.log("Form submitted:", event.data);
-});
+// ❌ Error: wrong shape
+// emitter.emit("click", { key: "a" });
 ```
+
+## Summary
+
+| Concept | Syntax | Use Case |
+|---------|--------|----------|
+| Basic generic | `<T>` | Reusable functions/classes |
+| Multiple generics | `<T, U>` | Multiple related types |
+| Constraints | `<T extends Type>` | Limit allowed types |
+| Default type | `<T = Default>` | Provide fallback type |
+| keyof constraint | `<K extends keyof T>` | Valid property keys |
+| Conditional | `T extends U ? X : Y` | Type depends on condition |
+| Mapped | `{ [K in keyof T]: ... }` | Transform all properties |
+
+---
+
+[Next: Type Manipulation →](/guide/typescript/06-type-manipulation)

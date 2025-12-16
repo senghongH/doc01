@@ -2,7 +2,46 @@
 
 JavaScript supports object-oriented programming through prototypes and ES6 classes. This guide covers OOP concepts and patterns in JavaScript.
 
+::: info What You'll Learn
+- Understand the four pillars of OOP
+- Create classes with constructors and methods
+- Use private fields and getters/setters
+- Implement inheritance with extends
+- Apply common design patterns
+:::
+
 ## OOP Concepts
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                 The Four Pillars of OOP                          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌─────────────────┐    ┌─────────────────┐                     │
+│  │  ENCAPSULATION  │    │   ABSTRACTION   │                     │
+│  ├─────────────────┤    ├─────────────────┤                     │
+│  │ Bundle data +   │    │ Hide complexity │                     │
+│  │ methods together│    │ Show only what's│                     │
+│  │                 │    │ necessary       │                     │
+│  │ class User {    │    │                 │                     │
+│  │   #password;    │    │ car.start();    │                     │
+│  │   login() {}    │    │ // Don't need   │                     │
+│  │ }               │    │ // to know how  │                     │
+│  └─────────────────┘    └─────────────────┘                     │
+│                                                                  │
+│  ┌─────────────────┐    ┌─────────────────┐                     │
+│  │   INHERITANCE   │    │  POLYMORPHISM   │                     │
+│  ├─────────────────┤    ├─────────────────┤                     │
+│  │ Reuse code from │    │ Same interface, │                     │
+│  │ parent class    │    │ different       │                     │
+│  │                 │    │ behavior        │                     │
+│  │ class Dog       │    │                 │                     │
+│  │  extends Animal │    │ shapes.forEach( │                     │
+│  │                 │    │  s => s.draw()) │                     │
+│  └─────────────────┘    └─────────────────┘                     │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ### The Four Pillars of OOP
 
@@ -36,7 +75,38 @@ console.log(person.greet()); // "Hello, I'm John"
 
 ## ES6 Classes
 
-Modern, cleaner syntax for creating objects:
+Modern, cleaner syntax for creating objects.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Class Anatomy                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  class Person {                                                  │
+│      │                                                           │
+│      │    // Constructor - runs when creating new instance       │
+│      ├─▶ constructor(name, age) {                               │
+│      │       this.name = name;  ◀── Properties                  │
+│      │       this.age = age;                                     │
+│      │   }                                                       │
+│      │                                                           │
+│      │   // Method - behavior/action                             │
+│      ├─▶ greet() {                                              │
+│      │       return `Hello, I'm ${this.name}`;                   │
+│      │   }                                                       │
+│      │                                                           │
+│      │   // Getter - computed property                           │
+│      ├─▶ get birthYear() {                                      │
+│      │       return new Date().getFullYear() - this.age;         │
+│      │   }                                                       │
+│  }                                                               │
+│                                                                  │
+│  const person = new Person("John", 30);                          │
+│        │                                                         │
+│        └─▶ "new" creates an instance of the class               │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ```js
 class Person {
@@ -59,6 +129,17 @@ console.log(person.greet()); // "Hello, I'm John"
 ```
 
 ## Encapsulation
+
+Bundling data with methods that operate on that data.
+
+::: tip Public vs Private
+| Access Level | Syntax | Accessible From |
+|--------------|--------|-----------------|
+| Public | `this.name` | Anywhere |
+| Private | `#balance` | Only inside class |
+| Getter | `get value()` | Read-only access |
+| Setter | `set value(v)` | Controlled write access |
+:::
 
 ### Public Properties
 
@@ -158,6 +239,39 @@ console.log(circle.area);        // ~78.54
 ```
 
 ## Inheritance
+
+Creating new classes based on existing ones.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                  Inheritance Hierarchy                           │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│                    ┌─────────────┐                               │
+│                    │   Animal    │  ◀── Parent/Base class       │
+│                    │─────────────│                               │
+│                    │ name        │                               │
+│                    │ eat()       │                               │
+│                    │ speak()     │                               │
+│                    └──────┬──────┘                               │
+│                           │                                      │
+│              ┌────────────┼────────────┐                        │
+│              │            │            │                         │
+│              ▼            ▼            ▼                         │
+│        ┌─────────┐  ┌─────────┐  ┌─────────┐                    │
+│        │   Dog   │  │   Cat   │  │  Bird   │  ◀── Child classes │
+│        │─────────│  │─────────│  │─────────│                    │
+│        │ breed   │  │ indoor  │  │ canFly  │                    │
+│        │ fetch() │  │ scratch │  │ fly()   │                    │
+│        │ speak() │  │ speak() │  │ speak() │  ◀── Override      │
+│        └─────────┘  └─────────┘  └─────────┘                    │
+│                                                                  │
+│  dog.eat();    ← inherited from Animal                           │
+│  dog.speak();  ← Dog's own version ("bark")                     │
+│  dog.fetch();  ← Dog's unique method                             │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ### Basic Inheritance
 
@@ -268,6 +382,36 @@ console.log(dog.bark());    // "barking"
 
 ## Static Members
 
+Members that belong to the class itself, not instances.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                Instance vs Static Members                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  class Counter {                                                 │
+│      static count = 0;    ◀── Shared by ALL instances           │
+│                                                                  │
+│      constructor() {                                             │
+│          this.id = ++Counter.count;  ◀── Instance property      │
+│      }                                                           │
+│                                                                  │
+│      static getTotal() {  ◀── Called on class: Counter.getTotal │
+│          return Counter.count;                                   │
+│      }                                                           │
+│                                                                  │
+│      getId() {            ◀── Called on instance: obj.getId()   │
+│          return this.id;                                         │
+│      }                                                           │
+│  }                                                               │
+│                                                                  │
+│  const a = new Counter();  // a.id = 1, Counter.count = 1       │
+│  const b = new Counter();  // b.id = 2, Counter.count = 2       │
+│  Counter.getTotal();       // 2                                  │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 ```js
 class MathUtils {
     static PI = 3.14159;
@@ -370,7 +514,44 @@ shapes.forEach(shape => {
 
 ## Composition over Inheritance
 
-Favor composition for more flexible designs:
+Favor composition for more flexible designs.
+
+::: tip Inheritance vs Composition
+| Inheritance | Composition |
+|-------------|-------------|
+| "is-a" relationship | "has-a" relationship |
+| Dog IS an Animal | Car HAS an Engine |
+| Tight coupling | Loose coupling |
+| Less flexible | More flexible |
+| One parent only | Multiple abilities |
+:::
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                 Composition Example                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Abilities (mixins):                                             │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐                          │
+│  │ canSwim │  │ canFly  │  │ canWalk │                          │
+│  └────┬────┘  └────┬────┘  └────┬────┘                          │
+│       │            │            │                                │
+│       └────────────┼────────────┘                                │
+│                    │                                             │
+│       ┌────────────┼────────────┐                               │
+│       │            │            │                                │
+│       ▼            ▼            ▼                                │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐                          │
+│  │  Duck   │  │  Fish   │  │ Penguin │                          │
+│  │ swim ✓  │  │ swim ✓  │  │ swim ✓  │                          │
+│  │ fly ✓   │  │ fly ✗   │  │ fly ✗   │                          │
+│  │ walk ✓  │  │ walk ✗  │  │ walk ✓  │                          │
+│  └─────────┘  └─────────┘  └─────────┘                          │
+│                                                                  │
+│  Mix and match abilities as needed!                              │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ```js
 // Mixins / Composition
@@ -562,6 +743,17 @@ console.log(dog.hasOwnProperty("name")); // true (own property)
 ```
 
 ## Design Patterns
+
+Common solutions to recurring problems.
+
+::: tip Common OOP Design Patterns
+| Pattern | Purpose | Use Case |
+|---------|---------|----------|
+| Singleton | One instance only | Database connection |
+| Factory | Create objects | User types (admin, guest) |
+| Observer | Event notification | State changes |
+| Decorator | Add behavior | Extend functionality |
+:::
 
 ### Singleton
 
@@ -841,16 +1033,56 @@ todos.add("Build a project");
 ```
 :::
 
+## Quick Reference
+
+::: tip OOP Cheat Sheet
+```js
+// Class definition
+class Animal {
+    #privateField;           // Private
+
+    constructor(name) {      // Constructor
+        this.name = name;    // Public property
+    }
+
+    speak() {}               // Instance method
+
+    get info() {}            // Getter
+    set info(v) {}           // Setter
+
+    static count = 0;        // Static property
+    static create() {}       // Static method
+}
+
+// Inheritance
+class Dog extends Animal {
+    constructor(name, breed) {
+        super(name);         // Call parent constructor
+        this.breed = breed;
+    }
+
+    speak() {                // Override parent method
+        super.speak();       // Call parent method
+    }
+}
+
+// Instance check
+dog instanceof Animal        // true
+```
+:::
+
 ## Summary
 
-- Classes provide cleaner syntax for OOP in JavaScript
-- Use `#` for private fields and methods
-- Getters and setters control property access
-- Inheritance with `extends` and `super`
-- Static members belong to the class, not instances
-- Polymorphism allows different implementations of same interface
-- Favor composition over inheritance for flexibility
-- Design patterns solve common OOP problems
+| Concept | Description | Syntax |
+|---------|-------------|--------|
+| Class | Blueprint for objects | `class Name {}` |
+| Constructor | Initialize instance | `constructor() {}` |
+| Private fields | Internal only | `#field` |
+| Getters/Setters | Controlled access | `get/set prop()` |
+| Inheritance | Extend classes | `extends` |
+| Super | Access parent | `super.method()` |
+| Static | Class-level | `static method()` |
+| Composition | Mix abilities | `Object.assign()` |
 
 ## Next Steps
 

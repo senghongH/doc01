@@ -2,18 +2,56 @@
 
 Learn how to organize TypeScript code with modules.
 
-## ES Modules
+::: info What You'll Learn
+- How to export and import code between files
+- Named exports vs default exports
+- Re-exporting and barrel files
+- Module resolution and path mapping
+- Organizing large projects
+:::
 
-TypeScript supports standard ES modules.
+## Why Use Modules?
 
-### Exporting
+Modules help you **organize code into separate files**, making your codebase:
+- **Maintainable**: Each file has a single responsibility
+- **Reusable**: Import the same code in multiple places
+- **Encapsulated**: Hide internal implementation details
+- **Scalable**: Easier to navigate large projects
+
+```
+Without Modules:              With Modules:
+┌──────────────────┐         ┌──────────────────┐
+│ app.ts           │         │ app.ts           │
+│ - 5000 lines     │         │ - imports utils  │
+│ - all code here  │         │ - imports user   │
+│ - hard to find   │         │ - 50 lines       │
+│ - hard to test   │         └──────────────────┘
+└──────────────────┘                  ↓
+                              ┌───────────────────────┐
+                              │ utils/  │ user/       │
+                              │ math.ts │ service.ts  │
+                              │ date.ts │ model.ts    │
+                              └───────────────────────┘
+```
+
+## ES Modules Basics
+
+TypeScript uses standard ES modules (the modern JavaScript module system).
+
+### Named Exports
+
+Export multiple things from a file by name:
 
 ```typescript
-// Named exports
+// math.ts - Named exports
 export const PI = 3.14159;
 
 export function add(a: number, b: number): number {
     return a + b;
+}
+
+export function subtract(a: number, b: number): number {
+    return a - b;
 }
 
 export class Calculator {
@@ -22,113 +60,262 @@ export class Calculator {
     }
 }
 
+// Export types and interfaces too
+export interface MathOperation {
+    (a: number, b: number): number;
+}
+
+export type ID = string | number;
+```
+
+### Named Imports
+
+Import specific items by name:
+
+```typescript
+// app.ts - Importing named exports
+import { add, subtract, PI, Calculator } from "./math";
+
+console.log(add(2, 3));       // 5
+console.log(subtract(5, 2));  // 3
+console.log(PI);              // 3.14159
+
+const calc = new Calculator();
+```
+
+### Import with Aliases
+
+Rename imports to avoid conflicts:
+
+```typescript
+// If you have naming conflicts, use 'as'
+import { add as mathAdd } from "./math";
+import { add as dateAdd } from "./date-utils";
+
+mathAdd(2, 3);        // Math addition
+dateAdd(date, 1);     // Date addition
+```
+
+### Export List
+
+Export multiple items at once:
+
+```typescript
+// math.ts
+const multiply = (a: number, b: number) => a * b;
+const divide = (a: number, b: number) => a / b;
+
+// Export at the end of file
+export { multiply, divide };
+
+// Or rename on export
+export { multiply as mul, divide as div };
+```
+
+## Default Exports
+
+Each file can have ONE default export:
+
+```typescript
+// logger.ts - Default export
+export default class Logger {
+    log(message: string): void {
+        console.log(`[LOG] ${message}`);
+    }
+
+    error(message: string): void {
+        console.error(`[ERROR] ${message}`);
+    }
+}
+```
+
+```typescript
+// app.ts - Import default
+import Logger from "./logger";  // No curly braces!
+
+const logger = new Logger();
+logger.log("Hello");
+```
+
+### Named vs Default Exports
+
+| Feature | Named Export | Default Export |
+|---------|--------------|----------------|
+| Syntax | `export { name }` | `export default` |
+| Import | `import { name }` | `import name` |
+| Rename | `import { name as alias }` | `import anyName` |
+| Per file | Unlimited | One only |
+| Best for | Utilities, types | Main class/function |
+
+::: tip When to Use Which
+- **Named exports**: Multiple related things (utilities, constants, types)
+- **Default exports**: Main thing the file provides (class, component)
+- **Many prefer named exports only** for consistency and better refactoring
+:::
+
+### Mixed Exports
+
+Combine default and named exports:
+
+```typescript
+// user.ts
+export default class User {
+    constructor(public name: string) {}
+}
+
+export function createUser(name: string): User {
+    return new User(name);
+}
+
+export type UserRole = "admin" | "user" | "guest";
+```
+
+```typescript
+// app.ts - Import both
+import User, { createUser, UserRole } from "./user";
+
+const user = new User("John");
+const anotherUser = createUser("Jane");
+const role: UserRole = "admin";
+```
+
+## Importing Everything
+
+Import all exports as a namespace object:
+
+```typescript
+// Import everything with * as
+import * as MathUtils from "./math";
+
+MathUtils.add(1, 2);
+MathUtils.subtract(5, 3);
+console.log(MathUtils.PI);
+```
+
+## Side-Effect Imports
+
+Import a file just to run its code (no specific imports):
+
+```typescript
+// polyfills.ts
+if (!Array.prototype.includes) {
+    Array.prototype.includes = function(item) { /* ... */ };
+}
+
+// app.ts - Run the file but import nothing
+import "./polyfills";  // Just runs the code
+```
+
+## Type-Only Imports
+
+Import only types (removed during compilation):
+
+```typescript
+// types.ts
 export interface User {
     id: number;
     name: string;
 }
 
-export type ID = string | number;
-
-// Export list
-const multiply = (a: number, b: number) => a * b;
-const divide = (a: number, b: number) => a / b;
-
-export { multiply, divide };
-
-// Rename on export
-export { multiply as mul, divide as div };
+export class UserService { /* ... */ }
 ```
 
-### Default Exports
-
 ```typescript
-// Default export
-export default class Logger {
-    log(message: string): void {
-        console.log(message);
-    }
-}
+// app.ts - Type-only import
+import type { User } from "./types";
 
-// Or with function
-export default function createApp() {
-    return { name: "MyApp" };
-}
+// Or inline type import
+import { UserService, type User } from "./types";
 
-// Mixed exports
-export default class User {}
-export const createUser = () => new User();
-export type UserRole = "admin" | "user";
+// The type import is erased at runtime
+const user: User = { id: 1, name: "John" };
 ```
 
-### Importing
+::: tip Why Type-Only Imports?
+- Makes it clear the import is only for types
+- Can improve build performance
+- Prevents accidentally importing runtime code
+:::
+
+## Re-exporting (Barrel Files)
+
+Create an `index.ts` that re-exports from multiple files:
 
 ```typescript
-// Named imports
-import { add, Calculator, User } from "./math";
+// utils/math.ts
+export function add(a: number, b: number) { return a + b; }
+export function subtract(a: number, b: number) { return a - b; }
 
-// Import with alias
-import { add as sum } from "./math";
+// utils/date.ts
+export function formatDate(date: Date) { return date.toISOString(); }
+export function parseDate(str: string) { return new Date(str); }
 
-// Default import
-import Logger from "./logger";
-
-// Mixed import
-import User, { createUser, UserRole } from "./user";
-
-// Import all as namespace
-import * as MathUtils from "./math";
-MathUtils.add(1, 2);
-
-// Side-effect import (runs module code)
-import "./polyfills";
-
-// Type-only import
-import type { User, UserRole } from "./user";
-
-// Inline type import
-import { createUser, type User } from "./user";
-```
-
-## Re-exporting
-
-Create barrel files to simplify imports:
-
-```typescript
-// utils/index.ts
+// utils/index.ts - Barrel file
 export { add, subtract } from "./math";
 export { formatDate, parseDate } from "./date";
 export { default as Logger } from "./logger";
 
-// Re-export all
+// Re-export everything from a file
 export * from "./helpers";
 
 // Re-export with rename
 export { User as UserModel } from "./user";
 
 // Re-export types
-export type { User, UserRole } from "./user";
+export type { UserConfig, UserOptions } from "./user";
+```
+
+```typescript
+// app.ts - Simple import from barrel
+import { add, formatDate, Logger } from "./utils";
+// Instead of:
+// import { add } from "./utils/math";
+// import { formatDate } from "./utils/date";
+// import Logger from "./utils/logger";
+```
+
+### Visual Guide to Barrel Files
+
+```
+utils/
+├── index.ts    ← Barrel file (re-exports everything)
+├── math.ts     ← Individual module
+├── date.ts     ← Individual module
+└── logger.ts   ← Individual module
+
+Without barrel:                 With barrel:
+import { add } from           import { add, formatDate }
+  "./utils/math";               from "./utils";
+import { formatDate } from
+  "./utils/date";
 ```
 
 ## Module Resolution
 
 ### Path Mapping
 
+Configure shorter import paths in `tsconfig.json`:
+
 ```json
-// tsconfig.json
 {
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
             "@/*": ["src/*"],
             "@utils/*": ["src/utils/*"],
-            "@components/*": ["src/components/*"]
+            "@components/*": ["src/components/*"],
+            "@services/*": ["src/services/*"]
         }
     }
 }
 ```
 
 ```typescript
-// Using path aliases
+// Without path mapping
+import { Button } from "../../../components/Button";
+import { formatDate } from "../../../../utils/date";
+
+// With path mapping
 import { Button } from "@components/Button";
 import { formatDate } from "@utils/date";
 import { api } from "@/services/api";
@@ -136,9 +323,12 @@ import { api } from "@/services/api";
 
 ## Namespaces
 
-Group related code (older pattern, prefer modules):
+::: warning Legacy Feature
+Namespaces are an older TypeScript pattern. **Prefer ES modules** for new code. You may encounter namespaces in older codebases.
+:::
 
 ```typescript
+// Using namespace to group related code
 namespace Validation {
     export interface Validator {
         isValid(value: string): boolean;
@@ -157,97 +347,21 @@ namespace Validation {
     }
 }
 
+// Usage
 const emailValidator = new Validation.EmailValidator();
 console.log(emailValidator.isValid("test@example.com"));
 ```
 
-### Nested Namespaces
-
-```typescript
-namespace App {
-    export namespace Models {
-        export interface User {
-            id: number;
-            name: string;
-        }
-    }
-
-    export namespace Services {
-        export class UserService {
-            getUser(id: number): Models.User | undefined {
-                return { id, name: "John" };
-            }
-        }
-    }
-}
-
-const user: App.Models.User = { id: 1, name: "John" };
-const service = new App.Services.UserService();
-```
-
-## Ambient Declarations
-
-Describe external code:
-
-```typescript
-// globals.d.ts
-declare const API_URL: string;
-declare const DEBUG: boolean;
-
-declare function fetchData(url: string): Promise<unknown>;
-
-declare namespace NodeJS {
-    interface ProcessEnv {
-        NODE_ENV: "development" | "production";
-        API_KEY: string;
-    }
-}
-```
-
-## Module Augmentation
-
-Extend existing modules:
-
-```typescript
-// Extend Express Request
-import "express";
-
-declare module "express" {
-    interface Request {
-        user?: {
-            id: string;
-            role: string;
-        };
-    }
-}
-
-// Extend global types
-declare global {
-    interface Window {
-        myApp: {
-            version: string;
-            init(): void;
-        };
-    }
-
-    interface Array<T> {
-        first(): T | undefined;
-        last(): T | undefined;
-    }
-}
-
-export {}; // Make this a module
-```
-
 ## Dynamic Imports
 
-Load modules at runtime:
+Load modules at runtime (code splitting):
 
 ```typescript
-// Dynamic import
-async function loadModule() {
-    const module = await import("./heavy-module");
-    module.doSomething();
+// Load a module only when needed
+async function loadChartLibrary() {
+    // Module is loaded when this function runs
+    const { Chart } = await import("./chart-library");
+    return new Chart();
 }
 
 // Conditional import
@@ -262,41 +376,77 @@ async function loadFeature(featureName: string) {
     }
 }
 
-// With type assertion
-const { default: Component } = await import("./Component") as {
-    default: typeof import("./Component").default;
-};
+// Usage
+const charts = await loadFeature("charts");
+charts.render();
 ```
 
-## CommonJS Interop
+## Module Augmentation
 
-Work with CommonJS modules:
+Extend existing modules with new types:
 
 ```typescript
-// tsconfig.json
-{
-    "compilerOptions": {
-        "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true
+// Extend Express Request
+import "express";
+
+declare module "express" {
+    interface Request {
+        user?: {
+            id: string;
+            email: string;
+            role: "admin" | "user";
+        };
+        startTime?: number;
     }
 }
 
-// Import CommonJS module
-import express from "express";      // With esModuleInterop
-import * as fs from "fs";           // Namespace import
+// Now TypeScript knows about request.user
+app.use((req, res, next) => {
+    req.user = { id: "123", email: "user@test.com", role: "user" };
+    req.startTime = Date.now();
+    next();
+});
+```
 
-// Export for CommonJS
-export = function() {
-    return "Hello";
+### Extending Global Types
+
+```typescript
+// Extend built-in Array
+declare global {
+    interface Array<T> {
+        first(): T | undefined;
+        last(): T | undefined;
+        isEmpty(): boolean;
+    }
+}
+
+// Implement the extensions
+Array.prototype.first = function () {
+    return this[0];
 };
 
-// Import CommonJS with types
-import type { Request, Response } from "express";
+Array.prototype.last = function () {
+    return this[this.length - 1];
+};
+
+Array.prototype.isEmpty = function () {
+    return this.length === 0;
+};
+
+// Usage
+const arr = [1, 2, 3];
+console.log(arr.first()); // 1
+console.log(arr.last());  // 3
+console.log(arr.isEmpty()); // false
+
+export {}; // Make this a module
 ```
 
 ## Organizing Large Projects
 
-### Feature-based Structure
+### Feature-Based Structure
+
+Organize by feature, not by type:
 
 ```
 src/
@@ -306,37 +456,64 @@ src/
 │   │   ├── auth.service.ts
 │   │   ├── auth.types.ts
 │   │   └── auth.utils.ts
+│   │
 │   ├── users/
 │   │   ├── index.ts
 │   │   ├── user.service.ts
 │   │   ├── user.model.ts
 │   │   └── user.types.ts
+│   │
 │   └── products/
 │       ├── index.ts
 │       ├── product.service.ts
 │       └── product.types.ts
+│
 ├── shared/
 │   ├── utils/
 │   ├── types/
 │   └── constants/
+│
 └── index.ts
 ```
 
-### Barrel Files
+### Barrel Files for Features
 
 ```typescript
 // features/auth/index.ts
 export { AuthService } from "./auth.service";
 export { login, logout, register } from "./auth.utils";
-export type { LoginCredentials, AuthToken } from "./auth.types";
+export type { LoginCredentials, AuthToken, AuthState } from "./auth.types";
 
 // features/index.ts
 export * from "./auth";
 export * from "./users";
 export * from "./products";
 
-// Usage
+// app.ts - Clean imports
 import { AuthService, UserService, ProductService } from "@/features";
+```
+
+## CommonJS Interoperability
+
+Working with older Node.js modules:
+
+```json
+// tsconfig.json
+{
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true
+    }
+}
+```
+
+```typescript
+// With esModuleInterop enabled
+import express from "express";      // Works with CommonJS default
+import * as fs from "fs";           // Namespace import
+
+// Import types from CommonJS
+import type { Request, Response } from "express";
 ```
 
 ## Practice Exercise
@@ -459,29 +636,39 @@ export class UserService {
         return response.data;
     }
 
-    async updateUser(id: number, data: Partial<CreateUserDto>): Promise<User> {
-        const response = await this.http.put<User, Partial<CreateUserDto>>(
-            `/users/${id}`,
-            data
-        );
-        return response.data;
-    }
-
     async deleteUser(id: number): Promise<void> {
         await this.http.delete(`/users/${id}`);
     }
 }
 
-// index.ts - Main export
+// index.ts - Main barrel file
 export { HttpClient } from "./client/http";
 export { UserService } from "./services/user.service";
 export type * from "./types";
 
-// Usage
+// app.ts - Usage
 import { HttpClient, UserService } from "./api";
 
 const http = new HttpClient({ baseUrl: "https://api.example.com" });
 const userService = new UserService(http);
 
 const users = await userService.getUsers();
+console.log(users);
 ```
+
+## Summary
+
+| Concept | Syntax | Use Case |
+|---------|--------|----------|
+| Named export | `export { name }` | Multiple exports per file |
+| Default export | `export default` | One main export |
+| Named import | `import { name }` | Import specific items |
+| Default import | `import Name` | Import main export |
+| Re-export | `export * from` | Barrel files |
+| Type import | `import type { T }` | Types only |
+| Dynamic import | `await import()` | Code splitting |
+| Path mapping | `@/...` | Cleaner imports |
+
+---
+
+[Next: Decorators →](/guide/typescript/08-decorators)

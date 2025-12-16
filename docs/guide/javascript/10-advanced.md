@@ -2,11 +2,76 @@
 
 This guide covers advanced JavaScript patterns, techniques, and best practices used in professional development.
 
+::: info What You'll Learn
+- Apply functional programming principles
+- Use memoization to optimize performance
+- Control function execution with debounce/throttle
+- Intercept objects with Proxy
+- Implement state management patterns
+- Build lazy evaluation systems
+- Work with Web Workers for parallel processing
+:::
+
+## Advanced Patterns Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                  Advanced JavaScript Patterns                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  FUNCTIONAL PROGRAMMING         PERFORMANCE                      │
+│  ────────────────────          ───────────                       │
+│  • Pure functions              • Memoization                     │
+│  • Immutability               • Debounce/Throttle               │
+│  • Composition                • Lazy evaluation                  │
+│  • Currying                   • Web Workers                      │
+│                                                                  │
+│  DESIGN PATTERNS              META-PROGRAMMING                   │
+│  ──────────────              ────────────────                    │
+│  • Module pattern            • Proxy/Reflect                     │
+│  • State management          • Dependency injection              │
+│  • Result type               • Observable objects                │
+│  • Error handling                                                │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 ## Functional Programming
+
+Writing code using functions as the primary building blocks.
+
+::: tip Functional Programming Principles
+| Principle | Description | Benefit |
+|-----------|-------------|---------|
+| Pure Functions | Same input → same output | Predictable, testable |
+| Immutability | Never modify data | Fewer bugs |
+| Composition | Combine small functions | Reusable code |
+| Declarative | Describe what, not how | Readable code |
+:::
 
 ### Pure Functions
 
-Functions that always produce the same output for the same input and have no side effects:
+Functions that always produce the same output for the same input and have no side effects.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Pure vs Impure Functions                      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  PURE FUNCTION                    IMPURE FUNCTION                │
+│  ─────────────                    ───────────────                │
+│  function add(a, b) {             let total = 0;                 │
+│      return a + b;                function addToTotal(x) {       │
+│  }                                    total += x;  ← Side effect │
+│                                       return total;              │
+│  add(2, 3) = 5  ✓                 }                              │
+│  add(2, 3) = 5  ✓                                                │
+│  (always same)                    addToTotal(5) = 5              │
+│                                   addToTotal(5) = 10             │
+│                                   (different results!)           │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ```js
 // Pure function
@@ -152,7 +217,32 @@ console.log(sayHelloToJohn("?")); // "Hello, John?"
 
 ## Memoization
 
-Cache function results for expensive computations:
+Cache function results for expensive computations.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    How Memoization Works                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  First call: fibonacci(10)                                       │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │  args: [10]  →  Cache Miss  →  Compute  →  Store in cache │  │
+│  └───────────────────────────────────────────────────────────┘  │
+│                                                                  │
+│  Second call: fibonacci(10)                                      │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │  args: [10]  →  Cache Hit!  →  Return cached value        │  │
+│  └───────────────────────────────────────────────────────────┘  │
+│                                                                  │
+│  Cache:                                                          │
+│  ┌─────────────────┐                                            │
+│  │  [10] → 55     │  ← Stored result                           │
+│  │  [5]  → 5      │                                            │
+│  │  [8]  → 21     │                                            │
+│  └─────────────────┘                                            │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ```js
 function memoize(fn) {
@@ -200,7 +290,32 @@ function memoizeWithTTL(fn, ttl = 60000) {
 
 ## Debounce and Throttle
 
-Control function execution frequency:
+Control function execution frequency.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│               Debounce vs Throttle Comparison                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  User Events:  X  X  X  X  X  X  X  X  X  X  (rapid clicks)     │
+│  Time:         ─────────────────────────────→                    │
+│                                                                  │
+│  DEBOUNCE (wait 300ms after LAST event)                         │
+│  ──────────────────────────────────────                         │
+│  Executes:                              │ X │                    │
+│                                         └───┘                    │
+│  Only executes after user STOPS for 300ms                        │
+│  Use case: Search input, resize handler                          │
+│                                                                  │
+│  THROTTLE (max once per 300ms)                                   │
+│  ────────────────────────────                                    │
+│  Executes:  │X│     │X│     │X│     │X│                         │
+│             └─┘     └─┘     └─┘     └─┘                          │
+│  Executes at regular intervals during events                     │
+│  Use case: Scroll handler, mousemove                             │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ### Debounce
 
@@ -399,6 +514,34 @@ import { add, subtract } from "./utils/index.js";
 ```
 
 ## State Management
+
+Centralizing application state for predictable updates.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    State Management Flow                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│           ┌─────────────┐                                       │
+│           │    VIEW     │ ◀───────────────┐                     │
+│           │ (UI renders │                  │                     │
+│           │   state)    │                  │                     │
+│           └──────┬──────┘                  │                     │
+│                  │                         │                     │
+│           User clicks                 State updates              │
+│                  │                         │                     │
+│                  ▼                         │                     │
+│           ┌─────────────┐          ┌──────┴──────┐              │
+│           │   ACTION    │ ───────▶ │    STORE    │              │
+│           │ { type: X } │          │  { count }  │              │
+│           └─────────────┘          └──────┬──────┘              │
+│                                           │                      │
+│                                    Reducer processes             │
+│                                    action, returns               │
+│                                    new state                     │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ### Simple Store
 
@@ -924,17 +1067,66 @@ state.count = 2; // Logs: Count is: 2
 ```
 :::
 
+## Quick Reference
+
+::: tip Advanced Patterns Cheat Sheet
+```js
+// Memoization
+const memoize = (fn) => {
+    const cache = new Map();
+    return (...args) => {
+        const key = JSON.stringify(args);
+        if (cache.has(key)) return cache.get(key);
+        const result = fn(...args);
+        cache.set(key, result);
+        return result;
+    };
+};
+
+// Debounce
+const debounce = (fn, delay) => {
+    let timeoutId;
+    return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn(...args), delay);
+    };
+};
+
+// Throttle
+const throttle = (fn, limit) => {
+    let inThrottle;
+    return (...args) => {
+        if (!inThrottle) {
+            fn(...args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+};
+
+// Compose (right to left)
+const compose = (...fns) => (x) =>
+    fns.reduceRight((acc, fn) => fn(acc), x);
+
+// Pipe (left to right)
+const pipe = (...fns) => (x) =>
+    fns.reduce((acc, fn) => fn(acc), x);
+```
+:::
+
 ## Summary
 
-- Functional programming promotes pure functions and immutability
-- Memoization caches expensive computations
-- Debounce and throttle control execution frequency
-- Proxies enable powerful object interception
-- Module patterns organize and encapsulate code
-- State management centralizes application state
-- Lazy evaluation delays computation until needed
-- Web Workers enable parallel processing
-- Performance patterns optimize rendering and DOM updates
+| Pattern | Purpose | Use Case |
+|---------|---------|----------|
+| Pure Functions | Predictable code | Calculations |
+| Immutability | Prevent mutations | State updates |
+| Memoization | Cache results | Expensive computations |
+| Debounce | Wait for pause | Search input |
+| Throttle | Limit frequency | Scroll events |
+| Proxy | Intercept operations | Validation, reactivity |
+| State Management | Centralize state | App-wide data |
+| Lazy Evaluation | Defer computation | Large datasets |
+| Web Workers | Parallel processing | CPU-intensive tasks |
 
 ## Conclusion
 
