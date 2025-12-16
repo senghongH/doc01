@@ -29,6 +29,7 @@ export default defineConfig({
           { text: 'TypeScript', link: '/guide/typescript/' },
           { text: 'NestJS', link: '/guide/nestjs/' },
           { text: 'Hono', link: '/guide/hono/' },
+          { text: 'Python', link: '/guide/python/' },
           { text: 'AI', link: '/guide/ai/' },
           { text: 'Author', link: '/creator' }
         ],
@@ -91,6 +92,7 @@ export default defineConfig({
                 { text: 'TypeScript', link: '/guide/typescript/' },
                 { text: 'NestJS', link: '/guide/nestjs/' },
                 { text: 'Hono', link: '/guide/hono/' },
+                { text: 'Python', link: '/guide/python/' },
                 { text: 'AI & Machine Learning', link: '/guide/ai/' }
               ]
             }
@@ -302,6 +304,42 @@ export default defineConfig({
                     { text: 'Testing', link: '/guide/hono/06-testing' },
                     { text: 'Deployment', link: '/guide/hono/07-deployment' },
                     { text: 'Advanced Topics', link: '/guide/hono/08-advanced' }
+                  ]
+                }
+              ]
+            }
+          ],
+          '/guide/python/': [
+            {
+              text: 'Python Tutorial',
+              items: [
+                { text: 'Introduction', link: '/guide/python/' },
+                {
+                  text: 'Beginner',
+                  collapsed: false,
+                  items: [
+                    { text: 'Basics', link: '/guide/python/01-basics' },
+                    { text: 'Control Flow', link: '/guide/python/02-control-flow' },
+                    { text: 'Functions', link: '/guide/python/03-functions' }
+                  ]
+                },
+                {
+                  text: 'Intermediate',
+                  collapsed: false,
+                  items: [
+                    { text: 'Data Structures', link: '/guide/python/04-data-structures' },
+                    { text: 'Strings', link: '/guide/python/05-strings' },
+                    { text: 'File I/O', link: '/guide/python/06-file-io' }
+                  ]
+                },
+                {
+                  text: 'Advanced',
+                  collapsed: false,
+                  items: [
+                    { text: 'Modules', link: '/guide/python/07-modules' },
+                    { text: 'OOP', link: '/guide/python/08-oop' },
+                    { text: 'Exceptions', link: '/guide/python/09-exceptions' },
+                    { text: 'Advanced Topics', link: '/guide/python/10-advanced' }
                   ]
                 }
               ]
