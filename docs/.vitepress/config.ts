@@ -29,6 +29,7 @@ export default defineConfig({
           { text: 'TypeScript', link: '/guide/typescript/' },
           { text: 'NestJS', link: '/guide/nestjs/' },
           { text: 'Hono', link: '/guide/hono/' },
+          { text: 'AI', link: '/guide/ai/' },
           { text: 'Author', link: '/creator' }
         ],
         sidebar: {
@@ -89,7 +90,8 @@ export default defineConfig({
                 { text: 'JavaScript', link: '/guide/javascript/' },
                 { text: 'TypeScript', link: '/guide/typescript/' },
                 { text: 'NestJS', link: '/guide/nestjs/' },
-                { text: 'Hono', link: '/guide/hono/' }
+                { text: 'Hono', link: '/guide/hono/' },
+                { text: 'AI & Machine Learning', link: '/guide/ai/' }
               ]
             }
           ],
@@ -300,6 +302,42 @@ export default defineConfig({
                     { text: 'Testing', link: '/guide/hono/06-testing' },
                     { text: 'Deployment', link: '/guide/hono/07-deployment' },
                     { text: 'Advanced Topics', link: '/guide/hono/08-advanced' }
+                  ]
+                }
+              ]
+            }
+          ],
+          '/guide/ai/': [
+            {
+              text: 'AI & Machine Learning',
+              items: [
+                { text: 'Introduction', link: '/guide/ai/' },
+                {
+                  text: 'Beginner',
+                  collapsed: false,
+                  items: [
+                    { text: 'What is AI?', link: '/guide/ai/01-introduction' },
+                    { text: 'ML Basics', link: '/guide/ai/02-ml-basics' },
+                    { text: 'Python for AI', link: '/guide/ai/03-python-for-ai' },
+                    { text: 'Your First Model', link: '/guide/ai/04-first-model' }
+                  ]
+                },
+                {
+                  text: 'Intermediate',
+                  collapsed: false,
+                  items: [
+                    { text: 'Neural Networks', link: '/guide/ai/05-neural-networks' },
+                    { text: 'Deep Learning', link: '/guide/ai/06-deep-learning' },
+                    { text: 'Working with LLMs', link: '/guide/ai/07-llms' }
+                  ]
+                },
+                {
+                  text: 'Advanced',
+                  collapsed: false,
+                  items: [
+                    { text: 'Fine-tuning Models', link: '/guide/ai/08-fine-tuning' },
+                    { text: 'AI Agents', link: '/guide/ai/09-agents' },
+                    { text: 'Production AI', link: '/guide/ai/10-production' }
                   ]
                 }
               ]
