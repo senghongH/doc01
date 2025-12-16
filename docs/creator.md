@@ -105,22 +105,6 @@
 
 ---
 
-## Featured Projects
-
-### Ampere Electric
-Calculation system for electrical engineering applications.
-
-### Transaction List
-Management platform for tracking and organizing transactions.
-
-### Invitation Website
-Custom invitation and event management website.
-
-### API Upload Files
-File upload service with API integration.
-
----
-
 ## Experience
 
 ### Techbodia
@@ -160,4 +144,87 @@ This tutorial site was created to share programming knowledge and help others le
 - To document my learning journey
 - To provide free, accessible programming education
 
-[Start Learning HTML](/guide/html/) | [Start Learning JavaScript](/guide/javascript/)
+
+<div class="cta-buttons">
+  <a href="/guide/html/" class="cta-button primary">Start Learning HTML</a>
+  <a href="/guide/javascript/" class="cta-button secondary">Start Learning JavaScript</a>
+</div>
+
+<style>
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.cta-button.primary {
+  background: var(--vp-c-brand-1);
+  color: white;
+}
+
+.cta-button.primary:hover {
+  background: var(--vp-c-brand-2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.cta-button.secondary {
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-brand-1);
+  border: 1px solid var(--vp-c-brand-1);
+}
+
+.cta-button.secondary:hover {
+  background: var(--vp-c-brand-soft);
+  transform: translateY(-2px);
+}
+</style>
+
+---
+
+<div class="motivation-section">
+  <h2>Need Some Motivation?</h2>
+  <p class="motivation-text">Take a moment to get inspired before diving into your coding journey</p>
+  <VideoPlayer youtube="4adZ7AguVcw" />
+</div>
+
+<style>
+.motivation-section {
+  margin: 2rem 0;
+  padding: 2rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--vp-c-bg-soft) 0%, var(--vp-c-bg-alt) 100%);
+  border: 1px solid var(--vp-c-divider);
+  text-align: center;
+}
+
+.motivation-section h2 {
+  margin: 0 0 0.5rem 0;
+  background: linear-gradient(120deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.motivation-text {
+  color: var(--vp-c-text-2);
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.motivation-section :deep(.video-player) {
+  margin: 0 auto;
+  max-width: 700px;
+}
+</style>

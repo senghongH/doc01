@@ -9,5 +9,9 @@ export default {
       'Counter',
       (await import('../components/Counter.vue')).default
     )
+    app.component(
+      'VideoPlayer',
+      (await import('../components/VideoPlayer.vue')).default
+    )
   },
 }
