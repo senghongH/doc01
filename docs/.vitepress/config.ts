@@ -8,6 +8,12 @@ export default defineConfig({
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/doc01/favicon.svg' }],
   ],
 
+  themeConfig: {
+    search: {
+      provider: 'local'
+    }
+  },
+
   locales: {
     root: {
       label: 'English',
