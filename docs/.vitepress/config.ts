@@ -27,6 +27,8 @@ export default defineConfig({
           { text: 'CSS', link: '/guide/css/' },
           { text: 'JavaScript', link: '/guide/javascript/' },
           { text: 'TypeScript', link: '/guide/typescript/' },
+          { text: 'NestJS', link: '/guide/nestjs/' },
+          { text: 'Hono', link: '/guide/hono/' },
           { text: 'Author', link: '/creator' }
         ],
         sidebar: {
@@ -85,7 +87,9 @@ export default defineConfig({
                 { text: 'HTML', link: '/guide/html/' },
                 { text: 'CSS', link: '/guide/css/' },
                 { text: 'JavaScript', link: '/guide/javascript/' },
-                { text: 'TypeScript', link: '/guide/typescript/' }
+                { text: 'TypeScript', link: '/guide/typescript/' },
+                { text: 'NestJS', link: '/guide/nestjs/' },
+                { text: 'Hono', link: '/guide/hono/' }
               ]
             }
           ],
@@ -230,99 +234,79 @@ export default defineConfig({
                 }
               ]
             }
+          ],
+          '/guide/nestjs/': [
+            {
+              text: 'NestJS Tutorial',
+              items: [
+                { text: 'Introduction', link: '/guide/nestjs/' },
+                {
+                  text: 'Beginner',
+                  collapsed: false,
+                  items: [
+                    { text: 'Getting Started', link: '/guide/nestjs/01-introduction' },
+                    { text: 'Controllers', link: '/guide/nestjs/02-controllers' },
+                    { text: 'Providers & Services', link: '/guide/nestjs/03-providers' }
+                  ]
+                },
+                {
+                  text: 'Intermediate',
+                  collapsed: false,
+                  items: [
+                    { text: 'Modules', link: '/guide/nestjs/04-modules' },
+                    { text: 'Middleware & Guards', link: '/guide/nestjs/05-middleware' },
+                    { text: 'Pipes & Validation', link: '/guide/nestjs/06-pipes' }
+                  ]
+                },
+                {
+                  text: 'Advanced',
+                  collapsed: false,
+                  items: [
+                    { text: 'Database Integration', link: '/guide/nestjs/07-database' },
+                    { text: 'Authentication', link: '/guide/nestjs/08-authentication' },
+                    { text: 'Testing', link: '/guide/nestjs/09-testing' },
+                    { text: 'Advanced Topics', link: '/guide/nestjs/10-advanced' }
+                  ]
+                }
+              ]
+            }
+          ],
+          '/guide/hono/': [
+            {
+              text: 'Hono Tutorial',
+              items: [
+                { text: 'Introduction', link: '/guide/hono/' },
+                {
+                  text: 'Beginner',
+                  collapsed: false,
+                  items: [
+                    { text: 'Getting Started', link: '/guide/hono/01-introduction' },
+                    { text: 'Routing', link: '/guide/hono/02-routing' }
+                  ]
+                },
+                {
+                  text: 'Intermediate',
+                  collapsed: false,
+                  items: [
+                    { text: 'Middleware', link: '/guide/hono/03-middleware' },
+                    { text: 'Context API', link: '/guide/hono/04-context' },
+                    { text: 'Validation', link: '/guide/hono/05-validation' }
+                  ]
+                },
+                {
+                  text: 'Advanced',
+                  collapsed: false,
+                  items: [
+                    { text: 'Testing', link: '/guide/hono/06-testing' },
+                    { text: 'Deployment', link: '/guide/hono/07-deployment' },
+                    { text: 'Advanced Topics', link: '/guide/hono/08-advanced' }
+                  ]
+                }
+              ]
+            }
           ]
         }
       }
     },
-    // km: {
-    //   label: 'ខ្មែរ',
-    //   lang: 'km',
-    //   title: 'មេរៀន',
-    //   description: 'មេរៀនសរសេរកម្មវិធី',
-    //   themeConfig: {
-    //     nav: [
-    //       { text: 'ទំព័រដើម', link: '/km/' },
-    //       { text: 'HTML', link: '/km/guide/html/' },
-    //       { text: 'JavaScript', link: '/km/guide/javascript/' }
-    //     ],
-    //     sidebar: {
-    //       '/km/guide/html/': [
-    //         {
-    //           text: 'មេរៀន HTML',
-    //           items: [
-    //             { text: 'ការណែនាំ', link: '/km/guide/html/' },
-    //             {
-    //               text: 'កម្រិតដំបូង',
-    //               collapsed: false,
-    //               items: [
-    //                 { text: 'មូលដ្ឋាន', link: '/km/guide/html/01-basics' },
-    //                 { text: 'អត្ថបទ និងពុម្ពអក្សរ', link: '/km/guide/html/02-text' },
-    //                 { text: 'តំណភ្ជាប់ និងរូបភាព', link: '/km/guide/html/03-links-images' }
-    //               ]
-    //             },
-    //             {
-    //               text: 'កម្រិតមធ្យម',
-    //               collapsed: false,
-    //               items: [
-    //                 { text: 'បញ្ជី និងតារាង', link: '/km/guide/html/04-lists-tables' },
-    //                 { text: 'ទម្រង់បែបបទ', link: '/km/guide/html/05-forms' },
-    //                 { text: 'Semantic HTML', link: '/km/guide/html/06-semantic' }
-    //               ]
-    //             },
-    //             {
-    //               text: 'កម្រិតខ្ពស់',
-    //               collapsed: false,
-    //               items: [
-    //                 { text: 'មេឌៀ', link: '/km/guide/html/07-media' },
-    //                 { text: 'មុខងារកម្រិតខ្ពស់', link: '/km/guide/html/08-advanced' }
-    //               ]
-    //             }
-    //           ]
-    //         }
-    //       ],
-    //       '/km/guide/javascript/': [
-    //         {
-    //           text: 'មេរៀន JavaScript',
-    //           items: [
-    //             { text: 'ការណែនាំ', link: '/km/guide/javascript/' },
-    //             {
-    //               text: 'កម្រិតដំបូង',
-    //               collapsed: false,
-    //               items: [
-    //                 { text: 'មូលដ្ឋាន', link: '/km/guide/javascript/01-basics' },
-    //                 { text: 'លំហូរគ្រប់គ្រង', link: '/km/guide/javascript/02-control-flow' },
-    //                 { text: 'អនុគមន៍', link: '/km/guide/javascript/03-functions' }
-    //               ]
-    //             },
-    //             {
-    //               text: 'កម្រិតមធ្យម',
-    //               collapsed: false,
-    //               items: [
-    //                 { text: 'អារេ', link: '/km/guide/javascript/04-arrays' },
-    //                 { text: 'វត្ថុ', link: '/km/guide/javascript/05-objects' },
-    //                 { text: 'ការគ្រប់គ្រង DOM', link: '/km/guide/javascript/06-dom' }
-    //               ]
-    //             },
-    //             {
-    //               text: 'កម្រិតខ្ពស់',
-    //               collapsed: false,
-    //               items: [
-    //                 { text: 'កម្មវិធី Async', link: '/km/guide/javascript/07-async' },
-    //                 { text: 'មុខងារ ES6+', link: '/km/guide/javascript/08-es6' },
-    //                 { text: 'OOP', link: '/km/guide/javascript/09-oop' },
-    //                 { text: 'គំរូកម្រិតខ្ពស់', link: '/km/guide/javascript/10-advanced' }
-    //               ]
-    //             }
-    //           ]
-    //         }
-    //       ]
-    //     },
-    //     outlineTitle: 'នៅលើទំព័រនេះ',
-    //     docFooter: {
-    //       prev: 'ទំព័រមុន',
-    //       next: 'ទំព័របន្ទាប់'
-    //     }
-    //   }
-    // }
   }
 })

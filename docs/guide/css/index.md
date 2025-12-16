@@ -1,5 +1,9 @@
 # CSS Tutorial
 
+::: info Official Documentation
+This tutorial is based on MDN Web Docs. For the most up-to-date information, visit: [https://developer.mozilla.org/en-US/docs/Web/CSS](https://developer.mozilla.org/en-US/docs/Web/CSS)
+:::
+
 Welcome to the comprehensive CSS tutorial! Learn how to style and design beautiful web pages.
 
 ## What is CSS?

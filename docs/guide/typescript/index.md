@@ -1,5 +1,9 @@
 # TypeScript Tutorial
 
+::: info Official Documentation
+This tutorial is based on the official TypeScript documentation. For the most up-to-date information, visit: [https://www.typescriptlang.org/docs/](https://www.typescriptlang.org/docs/)
+:::
+
 Welcome to the comprehensive TypeScript tutorial! Learn how to write type-safe JavaScript at scale.
 
 ## What is TypeScript?

@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Programming Tutorials
   text: Learn to Code from Basics to Advanced
-  tagline: Comprehensive guides for HTML, CSS, JavaScript, and TypeScript
+  tagline: Comprehensive guides for HTML, CSS, JavaScript, TypeScript, NestJS, and Hono
   actions:
     - theme: brand
       text: Start with HTML
@@ -30,6 +30,14 @@ features:
     title: TypeScript
     details: Add type safety to your JavaScript. Learn types, interfaces, generics, and advanced type manipulation.
     link: /guide/typescript/
+  - icon: 🚀
+    title: NestJS
+    details: Build scalable server-side applications with NestJS. Learn modules, controllers, services, authentication, and more.
+    link: /guide/nestjs/
+  - icon: 🔥
+    title: Hono
+    details: Ultrafast, lightweight web framework for the Edge. Build APIs for Cloudflare Workers, Deno, Bun, and Node.js.
+    link: /guide/hono/
 ---
 
 ## Available Tutorials
@@ -71,3 +79,23 @@ Type-safe JavaScript for scalable applications:
 - **Advanced**: Modules, Decorators, Declaration Files, Advanced Patterns
 
 [Start Learning TypeScript →](/guide/typescript/)
+
+---
+
+### NestJS
+Build scalable, maintainable server-side applications:
+- **Beginner**: Installation, Controllers, Providers & Services
+- **Intermediate**: Modules, Middleware, Guards, Pipes & Validation
+- **Advanced**: Database Integration, Authentication, Testing, Microservices, WebSockets, GraphQL
+
+[Start Learning NestJS →](/guide/nestjs/)
+
+---
+
+### Hono
+Ultrafast, lightweight web framework for the Edge:
+- **Beginner**: Installation, Routing, HTTP Methods
+- **Intermediate**: Middleware, Context API, Validation
+- **Advanced**: Testing, Deployment, RPC, WebSockets, Streaming
+
+[Start Learning Hono →](/guide/hono/)

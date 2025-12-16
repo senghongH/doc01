@@ -1,5 +1,9 @@
 # HTML Tutorial
 
+::: info Official Documentation
+This tutorial is based on MDN Web Docs. For the most up-to-date information, visit: [https://developer.mozilla.org/en-US/docs/Web/HTML](https://developer.mozilla.org/en-US/docs/Web/HTML)
+:::
+
 Welcome to the comprehensive HTML tutorial! Learn how to structure web pages from the ground up.
 
 ## What is HTML?

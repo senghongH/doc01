@@ -1,5 +1,9 @@
 # JavaScript Tutorial
 
+::: info Official Documentation
+This tutorial is based on MDN Web Docs. For the most up-to-date information, visit: [https://developer.mozilla.org/en-US/docs/Web/JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+:::
+
 Welcome to the comprehensive JavaScript tutorial! This guide will take you from beginner to advanced level.
 
 ## What is JavaScript?
