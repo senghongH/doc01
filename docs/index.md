@@ -2,100 +2,90 @@
 layout: home
 
 hero:
-  name: Programming Tutorials
-  text: Learn to Code from Basics to Advanced
-  tagline: Comprehensive guides for HTML, CSS, JavaScript, TypeScript, NestJS, and Hono
+  name: DevDocs
+  text: Master Modern Web Development
+  tagline: From fundamentals to production-ready skills. Learn HTML, CSS, JavaScript, TypeScript, and modern frameworks.
+  image:
+    src: /hero-image.svg
+    alt: Programming Tutorials
   actions:
     - theme: brand
-      text: Start with HTML
-      link: /guide/html/
+      text: Get Started
+      link: /guide/
     - theme: alt
-      text: Learn TypeScript
-      link: /guide/typescript/
+      text: View on GitHub
+      link: https://github.com
 
 features:
   - icon: 🌐
-    title: HTML
-    details: Learn the foundation of web development. Master HTML structure, forms, semantic markup, and accessibility.
+    title: HTML Fundamentals
+    details: Build solid foundations with semantic markup, accessibility best practices, and modern HTML5 features.
     link: /guide/html/
+    linkText: Learn HTML
   - icon: 🎨
-    title: CSS
-    details: Style your websites with CSS. Learn selectors, layouts, Flexbox, Grid, animations, and responsive design.
+    title: CSS Mastery
+    details: Create stunning layouts with Flexbox, Grid, animations, and responsive design techniques.
     link: /guide/css/
-  - icon: 📜
+    linkText: Learn CSS
+  - icon: ⚡
     title: JavaScript
-    details: Master JavaScript from fundamentals to advanced patterns including ES6+, async programming, and OOP.
+    details: From basics to advanced patterns - async/await, ES6+, DOM manipulation, and functional programming.
     link: /guide/javascript/
+    linkText: Learn JavaScript
   - icon: 🔷
     title: TypeScript
-    details: Add type safety to your JavaScript. Learn types, interfaces, generics, and advanced type manipulation.
+    details: Write type-safe, scalable code with interfaces, generics, and advanced type manipulation.
     link: /guide/typescript/
-  - icon: 🚀
+    linkText: Learn TypeScript
+  - icon: 🏗️
     title: NestJS
-    details: Build scalable server-side applications with NestJS. Learn modules, controllers, services, authentication, and more.
+    details: Build enterprise-grade Node.js applications with this powerful, modular framework.
     link: /guide/nestjs/
+    linkText: Learn NestJS
   - icon: 🔥
     title: Hono
-    details: Ultrafast, lightweight web framework for the Edge. Build APIs for Cloudflare Workers, Deno, Bun, and Node.js.
+    details: Ultrafast web framework for Edge computing - Cloudflare Workers, Deno, Bun & more.
     link: /guide/hono/
+    linkText: Learn Hono
+  - icon: 🐍
+    title: Python
+    details: Versatile programming language for web development, data science, AI, and automation.
+    link: /guide/python/
+    linkText: Learn Python
+  - icon: 🤖
+    title: AI & Machine Learning
+    details: Explore artificial intelligence concepts, neural networks, and practical ML applications.
+    link: /guide/ai/
+    linkText: Learn AI
 ---
 
-## Available Tutorials
+<style>
+:root {
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #bd34fe 30%, #41d1ff);
+  --vp-home-hero-image-background-image: linear-gradient(-45deg, #bd34fe50 50%, #47caff50 50%);
+  --vp-home-hero-image-filter: blur(44px);
+}
 
-### HTML
-The foundation of every website. Learn to structure web content properly.
-- **Beginner**: Document Structure, Text Formatting, Links & Images
-- **Intermediate**: Lists, Tables, Forms, Semantic HTML
-- **Advanced**: Media Elements, Meta Tags, Accessibility, SEO
+.VPHero .text {
+  font-size: 48px !important;
+  line-height: 1.2 !important;
+}
 
-[Start Learning HTML →](/guide/html/)
+.VPHero .tagline {
+  font-size: 20px !important;
+  max-width: 560px !important;
+}
 
----
+@media (min-width: 640px) {
+  :root {
+    --vp-home-hero-image-filter: blur(56px);
+  }
+}
 
-### CSS
-Style and design beautiful, responsive websites.
-- **Beginner**: Selectors, Colors, Typography
-- **Intermediate**: Box Model, Layout, Flexbox
-- **Advanced**: Grid, Responsive Design, Animations, Advanced Techniques
-
-[Start Learning CSS →](/guide/css/)
-
----
-
-### JavaScript
-A complete JavaScript tutorial covering:
-- **Beginner**: Variables, Data Types, Control Flow, Functions
-- **Intermediate**: Arrays, Objects, DOM Manipulation
-- **Advanced**: Async Programming, ES6+, OOP, Design Patterns
-
-[Start Learning JavaScript →](/guide/javascript/)
-
----
-
-### TypeScript
-Type-safe JavaScript for scalable applications:
-- **Beginner**: Types, Functions, Interfaces
-- **Intermediate**: Classes, Generics, Type Manipulation
-- **Advanced**: Modules, Decorators, Declaration Files, Advanced Patterns
-
-[Start Learning TypeScript →](/guide/typescript/)
-
----
-
-### NestJS
-Build scalable, maintainable server-side applications:
-- **Beginner**: Installation, Controllers, Providers & Services
-- **Intermediate**: Modules, Middleware, Guards, Pipes & Validation
-- **Advanced**: Database Integration, Authentication, Testing, Microservices, WebSockets, GraphQL
-
-[Start Learning NestJS →](/guide/nestjs/)
-
----
-
-### Hono
-Ultrafast, lightweight web framework for the Edge:
-- **Beginner**: Installation, Routing, HTTP Methods
-- **Intermediate**: Middleware, Context API, Validation
-- **Advanced**: Testing, Deployment, RPC, WebSockets, Streaming
-
-[Start Learning Hono →](/guide/hono/)
+@media (min-width: 960px) {
+  :root {
+    --vp-home-hero-image-filter: blur(68px);
+  }
+}
+</style>
