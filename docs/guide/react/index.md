@@ -200,6 +200,37 @@ my-react-app/
 ```
 :::
 
+## Video Tutorials
+
+::: tip Recommended Video Resources
+Learn React through these excellent video tutorials from the community.
+:::
+
+### Free Courses
+
+| Course | Creator | Description |
+|--------|---------|-------------|
+| [React Course for Beginners](https://www.youtube.com/watch?v=bMknfKXIFA8) | freeCodeCamp | 12-hour comprehensive beginner course |
+| [React Tutorial for Beginners](https://www.youtube.com/watch?v=SqcY0GlETPk) | Programming with Mosh | 1-hour crash course |
+| [React JS Full Course](https://www.youtube.com/watch?v=b9eMGE7QtTk) | Dave Gray | 9-hour complete course |
+| [React in 100 Seconds](https://www.youtube.com/watch?v=Tn6-PIqc4UM) | Fireship | Quick 100-second explanation |
+
+### Official Resources
+
+| Resource | Description |
+|----------|-------------|
+| [React.dev Learn](https://react.dev/learn) | Official React documentation with interactive tutorials |
+| [React.dev Tutorial](https://react.dev/learn/tutorial-tic-tac-toe) | Build Tic-Tac-Toe step by step |
+
+### Topic-Specific Videos
+
+| Topic | Video | Duration |
+|-------|-------|----------|
+| React Hooks | [React Hooks Tutorial](https://www.youtube.com/watch?v=TNhaISOUy6Q) | ~30 min |
+| React Router | [React Router v6 Tutorial](https://www.youtube.com/watch?v=Ul3y1LXxzdU) | ~30 min |
+| State Management | [Redux Toolkit Tutorial](https://www.youtube.com/watch?v=bbkBuqC1rU4) | ~2 hours |
+| TypeScript + React | [React TypeScript Tutorial](https://www.youtube.com/watch?v=TPACABQTHvM) | ~1 hour |
+
 ## Let's Begin!
 
 Ready to start building with React? Head over to the [Getting Started](/guide/react/01-introduction) guide!

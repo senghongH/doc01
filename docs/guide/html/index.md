@@ -117,4 +117,35 @@ Every HTML document has this basic structure:
 | `<head>` | Contains metadata (not displayed) |
 | `<body>` | Contains visible page content |
 
+## Video Tutorials
+
+::: tip Recommended Video Resources
+Learn HTML through these excellent video tutorials from the community.
+:::
+
+### Free Courses
+
+| Course | Creator | Description |
+|--------|---------|-------------|
+| [HTML Full Course](https://www.youtube.com/watch?v=kUMe1FH4CHE) | freeCodeCamp | 2-hour complete HTML tutorial |
+| [HTML Crash Course](https://www.youtube.com/watch?v=UB1O30fR-EE) | Traversy Media | 1-hour beginner crash course |
+| [HTML Tutorial for Beginners](https://www.youtube.com/watch?v=qz0aGYrrlhU) | Programming with Mosh | 1-hour beginner tutorial |
+| [HTML in 100 Seconds](https://www.youtube.com/watch?v=ok-plXXHlWw) | Fireship | Quick 100-second explanation |
+
+### Official Resources
+
+| Resource | Description |
+|----------|-------------|
+| [MDN HTML Basics](https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/HTML_basics) | Mozilla's official HTML learning path |
+| [W3Schools HTML](https://www.w3schools.com/html/) | Interactive HTML tutorials and examples |
+
+### Topic-Specific Videos
+
+| Topic | Video | Duration |
+|-------|-------|----------|
+| HTML Forms | [HTML Forms Tutorial](https://www.youtube.com/watch?v=fNcJuPIZ2WE) | ~30 min |
+| Semantic HTML | [Semantic HTML Tutorial](https://www.youtube.com/watch?v=kGW8Al_cga4) | ~12 min |
+| HTML Tables | [HTML Tables Tutorial](https://www.youtube.com/watch?v=iDA0kF5lrVk) | ~15 min |
+| Accessibility | [HTML Accessibility](https://www.youtube.com/watch?v=0hqhAIjE_8I) | ~20 min |
+
 Let's begin your HTML journey!

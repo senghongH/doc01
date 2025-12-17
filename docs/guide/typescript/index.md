@@ -342,6 +342,37 @@ VS Code has excellent TypeScript support built-in:
 When you see a red squiggly line, click on it and press `Ctrl/Cmd + .` to see quick fixes!
 :::
 
+## Video Tutorials
+
+::: tip Recommended Video Resources
+Learn TypeScript through these excellent video tutorials from the community.
+:::
+
+### Free Courses
+
+| Course | Creator | Description |
+|--------|---------|-------------|
+| [TypeScript Full Course](https://www.youtube.com/watch?v=30LWjhZzg50) | freeCodeCamp | 5-hour comprehensive course |
+| [TypeScript Crash Course](https://www.youtube.com/watch?v=BCg4U1FzODs) | Traversy Media | 1-hour beginner crash course |
+| [TypeScript Tutorial for Beginners](https://www.youtube.com/watch?v=d56mG7DezGs) | Programming with Mosh | 1-hour beginner tutorial |
+| [TypeScript in 100 Seconds](https://www.youtube.com/watch?v=zQnBQ4tB3ZA) | Fireship | Quick 100-second explanation |
+
+### Official Resources
+
+| Resource | Description |
+|----------|-------------|
+| [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/) | Official TypeScript documentation |
+| [TypeScript Playground](https://www.typescriptlang.org/play) | Interactive TypeScript editor |
+
+### Topic-Specific Videos
+
+| Topic | Video | Duration |
+|-------|-------|----------|
+| Generics | [TypeScript Generics](https://www.youtube.com/watch?v=nViEqpgwxHE) | ~20 min |
+| Interfaces vs Types | [Interface vs Type](https://www.youtube.com/watch?v=oiFo2z8ILNo) | ~15 min |
+| Utility Types | [Utility Types](https://www.youtube.com/watch?v=EU0TB_8KHpY) | ~25 min |
+| Advanced Patterns | [Advanced TypeScript](https://www.youtube.com/watch?v=F2Z4T_WPdfY) | ~40 min |
+
 ## What's Next?
 
 Ready to start learning? Begin with the basics:

@@ -196,6 +196,37 @@ while count > 0:
 | Learning curve | Easy | Medium | Steep |
 | Use cases | General purpose | Web | Enterprise |
 
+## Video Tutorials
+
+::: tip Recommended Video Resources
+Learn Python through these excellent video tutorials from the community.
+:::
+
+### Free Courses
+
+| Course | Creator | Description |
+|--------|---------|-------------|
+| [Python Full Course](https://www.youtube.com/watch?v=rfscVS0vtbw) | freeCodeCamp | 4+ hour comprehensive course |
+| [Python Tutorial for Beginners](https://www.youtube.com/watch?v=_uQrJ0TkZlc) | Programming with Mosh | 6-hour complete course |
+| [Python Crash Course](https://www.youtube.com/watch?v=JJmcL1N2KQs) | Traversy Media | 1-hour crash course |
+| [Python in 100 Seconds](https://www.youtube.com/watch?v=x7X9w_GIm1s) | Fireship | Quick 100-second explanation |
+
+### Official Resources
+
+| Resource | Description |
+|----------|-------------|
+| [Python.org Tutorial](https://docs.python.org/3/tutorial/) | Official Python tutorial |
+| [Real Python](https://realpython.com/) | High-quality Python tutorials |
+
+### Topic-Specific Videos
+
+| Topic | Video | Duration |
+|-------|-------|----------|
+| OOP in Python | [Python OOP Tutorial](https://www.youtube.com/watch?v=JeznW_7DlB0) | ~1 hour |
+| File Handling | [Python File I/O](https://www.youtube.com/watch?v=Uh2ebFW8OYM) | ~20 min |
+| Web Scraping | [Python Web Scraping](https://www.youtube.com/watch?v=XVv6mJpFOb0) | ~1.5 hours |
+| Data Analysis | [Pandas Tutorial](https://www.youtube.com/watch?v=vmEHCJofslg) | ~1 hour |
+
 ## Next Steps
 
 Ready to start learning? Head to [Python Basics](/guide/python/01-basics) to begin your journey!

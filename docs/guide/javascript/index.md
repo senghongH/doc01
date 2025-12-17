@@ -271,6 +271,37 @@ function doSomething(param) {
 - Forgetting curly braces `{}` around code blocks
 :::
 
+## Video Tutorials
+
+::: tip Recommended Video Resources
+Learn JavaScript through these excellent video tutorials from the community.
+:::
+
+### Free Courses
+
+| Course | Creator | Description |
+|--------|---------|-------------|
+| [JavaScript Full Course](https://www.youtube.com/watch?v=PkZNo7MFNFg) | freeCodeCamp | 3+ hour comprehensive course |
+| [JavaScript Crash Course](https://www.youtube.com/watch?v=hdI2bqOjy3c) | Traversy Media | 1.5-hour beginner crash course |
+| [Modern JavaScript Tutorial](https://www.youtube.com/watch?v=W6NZfCO5SIk) | Programming with Mosh | 1-hour ES6+ tutorial |
+| [JavaScript in 100 Seconds](https://www.youtube.com/watch?v=DHjqpvDnNGE) | Fireship | Quick 100-second explanation |
+
+### Official Resources
+
+| Resource | Description |
+|----------|-------------|
+| [MDN JavaScript Guide](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide) | Mozilla's official JavaScript guide |
+| [JavaScript.info](https://javascript.info/) | Modern JavaScript tutorial |
+
+### Topic-Specific Videos
+
+| Topic | Video | Duration |
+|-------|-------|----------|
+| Async/Await | [Async JavaScript](https://www.youtube.com/watch?v=PoRJizFvM7s) | ~25 min |
+| DOM Manipulation | [DOM Tutorial](https://www.youtube.com/watch?v=y17RuWkWdn8) | ~20 min |
+| ES6 Features | [ES6 Tutorial](https://www.youtube.com/watch?v=nZ1DMMsyVyI) | ~30 min |
+| Array Methods | [Array Methods](https://www.youtube.com/watch?v=rRgD1yVwIvE) | ~35 min |
+
 ## Let's Begin!
 
 Ready to start coding? Head to the first lesson:

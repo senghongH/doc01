@@ -88,4 +88,35 @@ Express works seamlessly with:
 - **Template Engines**: EJS, Pug, Handlebars
 - **API Documentation**: Swagger, OpenAPI
 
+## Video Tutorials
+
+::: tip Recommended Video Resources
+Learn Express.js through these excellent video tutorials from the community.
+:::
+
+### Free Courses
+
+| Course | Creator | Description |
+|--------|---------|-------------|
+| [Express.js Full Course](https://www.youtube.com/watch?v=SccSCuHhOw0) | freeCodeCamp | 8-hour comprehensive course |
+| [Express.js Crash Course](https://www.youtube.com/watch?v=L72fhGm1tfE) | Traversy Media | 1.5-hour crash course |
+| [Express Tutorial](https://www.youtube.com/watch?v=pKd0Rpw7O48) | Programming with Mosh | 1-hour REST API tutorial |
+| [Express in 100 Seconds](https://www.youtube.com/watch?v=CsBPLiX6GjE) | Fireship | Quick 100-second explanation |
+
+### Official Resources
+
+| Resource | Description |
+|----------|-------------|
+| [Express.js Guide](https://expressjs.com/en/guide/routing.html) | Official Express.js guide |
+| [Express.js API](https://expressjs.com/en/4x/api.html) | Official API documentation |
+
+### Topic-Specific Videos
+
+| Topic | Video | Duration |
+|-------|-------|----------|
+| Middleware | [Express Middleware](https://www.youtube.com/watch?v=lY6icfhap2o) | ~15 min |
+| Authentication | [JWT Auth in Express](https://www.youtube.com/watch?v=mbsmsi7l3r4) | ~30 min |
+| REST API | [Build REST API](https://www.youtube.com/watch?v=-MTSQjw5DrM) | ~45 min |
+| MongoDB + Express | [MERN Stack](https://www.youtube.com/watch?v=7CqJlxBYj-M) | ~2 hours |
+
 Ready to dive in? Start with [Getting Started](/guide/express/01-introduction) to build your first Express application!

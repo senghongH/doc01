@@ -225,6 +225,37 @@ Throughout this tutorial, you'll build a complete RESTful API with:
 - Unit and E2E tests
 - API documentation
 
+## Video Tutorials
+
+::: tip Recommended Video Resources
+Learn NestJS through these excellent video tutorials from the community.
+:::
+
+### Free Courses
+
+| Course | Creator | Description |
+|--------|---------|-------------|
+| [NestJS Crash Course](https://www.youtube.com/watch?v=wqhNoDE6pb4) | Traversy Media | 1.5-hour crash course |
+| [NestJS Full Tutorial](https://www.youtube.com/watch?v=GHTA143_b-s) | freeCodeCamp | 3+ hour comprehensive course |
+| [NestJS Tutorial](https://www.youtube.com/watch?v=0M8AYU_hPas) | Academind | 1-hour beginner tutorial |
+| [NestJS in 100 Seconds](https://www.youtube.com/watch?v=0M8AYU_hPas) | Fireship | Quick 100-second explanation |
+
+### Official Resources
+
+| Resource | Description |
+|----------|-------------|
+| [NestJS Fundamentals](https://docs.nestjs.com/first-steps) | Official getting started guide |
+| [NestJS Courses](https://courses.nestjs.com/) | Official NestJS courses |
+
+### Topic-Specific Videos
+
+| Topic | Video | Duration |
+|-------|-------|----------|
+| Authentication | [NestJS JWT Auth](https://www.youtube.com/watch?v=_L225zpUK0M) | ~45 min |
+| Database (TypeORM) | [NestJS + TypeORM](https://www.youtube.com/watch?v=W1gvIw0GNl8) | ~30 min |
+| GraphQL | [NestJS GraphQL](https://www.youtube.com/watch?v=geYvdbpo3cA) | ~40 min |
+| Testing | [NestJS Testing](https://www.youtube.com/watch?v=dXOfOgFFKuY) | ~35 min |
+
 Let's begin your NestJS journey!
 
 ---

@@ -453,6 +453,37 @@ Try creating this simple styled card:
 The best way to learn CSS is by experimenting. Change values, break things, and see what happens!
 :::
 
+## Video Tutorials
+
+::: tip Recommended Video Resources
+Learn CSS through these excellent video tutorials from the community.
+:::
+
+### Free Courses
+
+| Course | Creator | Description |
+|--------|---------|-------------|
+| [CSS Full Course](https://www.youtube.com/watch?v=OXGznpKZ_sA) | freeCodeCamp | 11-hour comprehensive CSS course |
+| [CSS Crash Course](https://www.youtube.com/watch?v=yfoY53QXEnI) | Traversy Media | 1-hour beginner crash course |
+| [CSS Tutorial for Beginners](https://www.youtube.com/watch?v=1PnVor36_40) | Dave Gray | 9-hour complete course |
+| [CSS in 100 Seconds](https://www.youtube.com/watch?v=OEV8gMkCHXQ) | Fireship | Quick 100-second explanation |
+
+### Official Resources
+
+| Resource | Description |
+|----------|-------------|
+| [MDN CSS Basics](https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/CSS_basics) | Mozilla's official CSS learning path |
+| [CSS-Tricks](https://css-tricks.com/) | Excellent CSS tutorials and guides |
+
+### Topic-Specific Videos
+
+| Topic | Video | Duration |
+|-------|-------|----------|
+| Flexbox | [Flexbox Tutorial](https://www.youtube.com/watch?v=fYq5PXgSsbE) | ~20 min |
+| CSS Grid | [CSS Grid Tutorial](https://www.youtube.com/watch?v=EFafSYg-PkI) | ~18 min |
+| Animations | [CSS Animations](https://www.youtube.com/watch?v=YszONjKpgg4) | ~30 min |
+| Responsive Design | [Responsive Web Design](https://www.youtube.com/watch?v=srvUrASNj0s) | ~1 hour |
+
 ## Next Steps
 
 Ready to dive deeper? Start with [Chapter 1: CSS Basics](/guide/css/01-basics) to learn about selectors, properties, and values in detail.

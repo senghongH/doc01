@@ -106,6 +106,37 @@ node hello.js
 | `require`/`import` | Limited | ✅ Full support |
 | Network access | Limited | ✅ Full access |
 
+## Video Tutorials
+
+::: tip Recommended Video Resources
+Learn Node.js through these excellent video tutorials from the community.
+:::
+
+### Free Courses
+
+| Course | Creator | Description |
+|--------|---------|-------------|
+| [Node.js Full Course](https://www.youtube.com/watch?v=Oe421EPjeBE) | freeCodeCamp | 8-hour comprehensive course |
+| [Node.js Crash Course](https://www.youtube.com/watch?v=fBNz5xF-Kx4) | Traversy Media | 1.5-hour beginner crash course |
+| [Node.js Tutorial for Beginners](https://www.youtube.com/watch?v=TlB_eWDSMt4) | Programming with Mosh | 1-hour beginner tutorial |
+| [Node.js in 100 Seconds](https://www.youtube.com/watch?v=ENrzD9HAZK4) | Fireship | Quick 100-second explanation |
+
+### Official Resources
+
+| Resource | Description |
+|----------|-------------|
+| [Node.js Learn](https://nodejs.org/en/learn) | Official Node.js learning resources |
+| [Node.js Guides](https://nodejs.org/en/docs/guides) | Official guides and documentation |
+
+### Topic-Specific Videos
+
+| Topic | Video | Duration |
+|-------|-------|----------|
+| Async Programming | [Node.js Async](https://www.youtube.com/watch?v=PoRJizFvM7s) | ~25 min |
+| File System | [Node.js File System](https://www.youtube.com/watch?v=U57kU311-nE) | ~20 min |
+| Streams | [Node.js Streams](https://www.youtube.com/watch?v=GlybFFMXXmQ) | ~30 min |
+| REST API | [Build REST API](https://www.youtube.com/watch?v=pKd0Rpw7O48) | ~1 hour |
+
 ## Let's Begin!
 
 Ready to start? Head over to the [Getting Started](/guide/nodejs/01-introduction) guide!

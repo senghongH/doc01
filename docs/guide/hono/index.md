@@ -146,6 +146,35 @@ Throughout this tutorial, you'll build:
 3. **Validated Endpoints** - Input validation with Zod
 4. **Edge-ready App** - Deploy to Cloudflare Workers
 
+## Video Tutorials
+
+::: tip Recommended Video Resources
+Learn Hono through these excellent video tutorials from the community.
+:::
+
+### Free Courses
+
+| Course | Creator | Description |
+|--------|---------|-------------|
+| [Hono.js Crash Course](https://www.youtube.com/watch?v=yPY_bFq4aIA) | Traversy Media | 45-minute crash course |
+| [Hono Tutorial](https://www.youtube.com/watch?v=_WHoqGAT4mk) | Beyond Fireship | Build APIs with Hono |
+| [Hono + Cloudflare Workers](https://www.youtube.com/watch?v=H7eVoGEgRlA) | James Q Quick | Deploy to the Edge |
+
+### Official Resources
+
+| Resource | Description |
+|----------|-------------|
+| [Hono Documentation](https://hono.dev/top) | Official Hono documentation |
+| [Hono Examples](https://github.com/honojs/hono/tree/main/examples) | Official code examples |
+
+### Topic-Specific Videos
+
+| Topic | Video | Duration |
+|-------|-------|----------|
+| Cloudflare Workers | [Hono on Workers](https://www.youtube.com/watch?v=H7eVoGEgRlA) | ~20 min |
+| Authentication | [JWT with Hono](https://www.youtube.com/watch?v=roMYi-xKZXY) | ~25 min |
+| Zod Validation | [Hono + Zod](https://www.youtube.com/watch?v=GaP2Z79wiQw) | ~15 min |
+
 Let's begin your Hono journey!
 
 ---

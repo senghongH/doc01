@@ -30,7 +30,8 @@ export default defineConfig({
               { text: 'CSS', link: '/guide/css/' },
               { text: 'JavaScript', link: '/guide/javascript/' },
               { text: 'TypeScript', link: '/guide/typescript/' },
-              { text: 'React', link: '/guide/react/' }
+              { text: 'React', link: '/guide/react/' },
+              { text: 'Vue.js', link: '/guide/vue/' }
             ]
           },
           {
@@ -109,7 +110,44 @@ export default defineConfig({
                 { text: 'NestJS', link: '/guide/nestjs/' },
                 { text: 'Hono', link: '/guide/hono/' },
                 { text: 'Python', link: '/guide/python/' },
-                { text: 'AI & Machine Learning', link: '/guide/ai/' }
+                { text: 'AI & Machine Learning', link: '/guide/ai/' },
+                { text: 'Vue.js', link: '/guide/vue/' }
+              ]
+            }
+          ],
+          '/guide/vue/': [
+            {
+              text: 'Vue.js Tutorial',
+              items: [
+                { text: 'Introduction', link: '/guide/vue/' },
+                {
+                  text: 'Beginner',
+                  collapsed: false,
+                  items: [
+                    { text: 'Getting Started', link: '/guide/vue/01-introduction' },
+                    { text: 'Template Syntax', link: '/guide/vue/02-template-syntax' },
+                    { text: 'Components & Props', link: '/guide/vue/03-components' }
+                  ]
+                },
+                {
+                  text: 'Intermediate',
+                  collapsed: false,
+                  items: [
+                    { text: 'Reactivity & State', link: '/guide/vue/04-reactivity' },
+                    { text: 'Event Handling', link: '/guide/vue/05-events' },
+                    { text: 'Computed & Watchers', link: '/guide/vue/06-computed-watchers' }
+                  ]
+                },
+                {
+                  text: 'Advanced',
+                  collapsed: false,
+                  items: [
+                    { text: 'Form Handling', link: '/guide/vue/07-forms' },
+                    { text: 'Lifecycle Hooks', link: '/guide/vue/08-lifecycle' },
+                    { text: 'Composables', link: '/guide/vue/09-composables' },
+                    { text: 'Vue Router', link: '/guide/vue/10-routing' }
+                  ]
+                }
               ]
             }
           ],

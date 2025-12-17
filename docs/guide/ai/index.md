@@ -242,6 +242,38 @@ Throughout this tutorial, you'll build:
 - A RAG (Retrieval-Augmented Generation) system
 - An AI agent that can perform tasks
 
+## Video Tutorials
+
+::: tip Recommended Video Resources
+Learn AI & Machine Learning through these excellent video tutorials.
+:::
+
+### Free Courses
+
+| Course | Creator | Description |
+|--------|---------|-------------|
+| [Machine Learning Course](https://www.youtube.com/watch?v=i_LwzRVP7bg) | freeCodeCamp | 10-hour comprehensive course |
+| [Deep Learning Tutorial](https://www.youtube.com/watch?v=VyWAvY2CF9c) | freeCodeCamp | 6-hour PyTorch course |
+| [AI Full Course](https://www.youtube.com/watch?v=JMUxmLyrhSk) | Edureka | 10-hour AI course |
+| [Machine Learning in 100 Seconds](https://www.youtube.com/watch?v=PeMlggyqz0Y) | Fireship | Quick 100-second explanation |
+
+### Official Resources
+
+| Resource | Description |
+|----------|-------------|
+| [Google ML Crash Course](https://developers.google.com/machine-learning/crash-course) | Free ML course from Google |
+| [Fast.ai](https://www.fast.ai/) | Practical deep learning for coders |
+| [Hugging Face Course](https://huggingface.co/course) | Free NLP and Transformers course |
+
+### Topic-Specific Videos
+
+| Topic | Video | Duration |
+|-------|-------|----------|
+| Neural Networks | [Neural Networks Explained](https://www.youtube.com/watch?v=aircAruvnKk) | ~20 min |
+| LangChain | [LangChain Tutorial](https://www.youtube.com/watch?v=aywZrzNaKjs) | ~1 hour |
+| OpenAI API | [ChatGPT API Tutorial](https://www.youtube.com/watch?v=uRQH2CFvedY) | ~30 min |
+| RAG | [RAG Tutorial](https://www.youtube.com/watch?v=T-D1OfcDW1M) | ~45 min |
+
 Let's begin your AI journey!
 
 ---
