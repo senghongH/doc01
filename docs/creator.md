@@ -103,6 +103,46 @@
 | CI/CD | Intermediate |
 | Docker | Medium |
 
+### AI & Machine Learning
+| Technology | Proficiency |
+|------------|-------------|
+| Prompt Engineering | Advanced |
+| Claude AI / Anthropic API | Advanced |
+| OpenAI / ChatGPT API | Advanced |
+| LangChain | Intermediate |
+| RAG (Retrieval-Augmented Generation) | Intermediate |
+| Vector Databases (Pinecone, ChromaDB) | Intermediate |
+| AI Agents & Automation | Intermediate |
+| Fine-tuning LLMs | Beginner |
+| Python for AI/ML | Intermediate |
+
+---
+
+## AI Experience & Projects
+
+### AI-Powered Development
+- Extensive experience using AI coding assistants (Claude, GitHub Copilot) to accelerate development workflows
+- Building applications that integrate LLM APIs for intelligent features
+- Implementing conversational AI interfaces and chatbots
+
+### Prompt Engineering
+- Crafting effective prompts for various AI models
+- Developing prompt templates for consistent and reliable AI outputs
+- Experience with chain-of-thought and few-shot prompting techniques
+
+### AI Integration Projects
+- Building RAG (Retrieval-Augmented Generation) systems for knowledge bases
+- Integrating AI capabilities into web applications
+- Creating AI-powered content generation tools
+- Developing automated workflows using AI agents
+
+### Areas of Interest
+- Large Language Models (LLMs) and their applications
+- AI-assisted software development
+- Intelligent automation and AI agents
+- Natural Language Processing (NLP)
+- Building AI-enhanced user experiences
+
 ---
 
 ## Experience
