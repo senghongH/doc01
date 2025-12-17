@@ -1,7 +1,7 @@
 <template>
     <div class="tips-container">
         <div
-            v-for="(tip, index) in cssTips"
+            v-for="(tip, index) in jsTips"
             :key="index"
             class="tip-card"
             :class="{ 'tip-card--active': activeTips.has(index) }"
@@ -33,7 +33,7 @@
                                 <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
                                 <circle cx="12" cy="12" r="3"/>
                             </svg>
-                            <span>Result</span>
+                            <span>Output</span>
                         </div>
                         <div class="tip-result-preview" v-html="tip.resultHtml"></div>
                     </div>
@@ -45,7 +45,7 @@
                                 <polyline points="16 18 22 12 16 6"/>
                                 <polyline points="8 6 2 12 8 18"/>
                             </svg>
-                            <span>CSS Code</span>
+                            <span>JavaScript Code</span>
                         </div>
                         <pre><code>{{ tip.code }}</code></pre>
                     </div>
@@ -57,17 +57,16 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import cssTipsData from './cssTips.json'
+import jsTipsData from './jsTips.json'
 
-interface CssTip {
+interface JsTip {
     title: string
     description: string
     code?: string
-    resultType?: string
     resultHtml?: string
 }
 
-const cssTips: CssTip[] = cssTipsData
+const jsTips: JsTip[] = jsTipsData
 const activeTips = ref<Set<number>>(new Set())
 
 function toggleTip(index: number) {
@@ -98,13 +97,13 @@ function toggleTip(index: number) {
 }
 
 .tip-card:hover {
-    border-color: var(--vp-c-brand-1);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    border-color: #f7df1e;
+    box-shadow: 0 4px 16px rgba(247, 223, 30, 0.15);
 }
 
 .tip-card--active {
-    border-color: var(--vp-c-brand-1);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-color: #f7df1e;
+    box-shadow: 0 4px 20px rgba(247, 223, 30, 0.2);
 }
 
 .tip-header {
@@ -130,9 +129,9 @@ function toggleTip(index: number) {
     justify-content: center;
     width: 36px;
     height: 36px;
-    background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
+    background: linear-gradient(135deg, #f7df1e, #e8c50b);
     border-radius: 10px;
-    color: white;
+    color: #323330;
     flex-shrink: 0;
 }
 
@@ -158,8 +157,8 @@ function toggleTip(index: number) {
 }
 
 .tip-arrow--open {
-    background: var(--vp-c-brand-soft);
-    color: var(--vp-c-brand-1);
+    background: rgba(247, 223, 30, 0.2);
+    color: #b8a609;
     transform: rotate(180deg);
 }
 
@@ -199,11 +198,7 @@ function toggleTip(index: number) {
 }
 
 .tip-result-header svg {
-    color: var(--vp-c-brand-1);
-}
-
-.tip-result-preview {
-    padding: 20px;
+    color: #f7df1e;
 }
 
 /* Code Block */
@@ -229,7 +224,7 @@ function toggleTip(index: number) {
 }
 
 .tip-code-header svg {
-    color: var(--vp-c-brand-1);
+    color: #f7df1e;
 }
 
 .tip-code pre {
@@ -272,10 +267,14 @@ function toggleTip(index: number) {
 }
 
 :root.dark .tip-card:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 16px rgba(247, 223, 30, 0.1);
 }
 
 :root.dark .tip-card--active {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 20px rgba(247, 223, 30, 0.15);
+}
+
+:root.dark .tip-arrow--open {
+    color: #f7df1e;
 }
 </style>

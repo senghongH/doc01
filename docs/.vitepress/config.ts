@@ -227,6 +227,7 @@ export default defineConfig({
               text: 'JavaScript Tutorial',
               items: [
                 { text: 'Introduction', link: '/guide/javascript/' },
+                { text: 'Tips', link: '/guide/javascript/tip' },
                 {
                   text: 'Beginner',
                   collapsed: false,

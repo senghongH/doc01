@@ -17,5 +17,9 @@ export default {
       'CssTip',
       (await import('../components/css/CssTip.vue')).default
     )
+    app.component(
+      'JsTip',
+      (await import('../components/js/JsTip.vue')).default
+    )
   },
 }
