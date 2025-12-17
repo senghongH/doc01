@@ -12,6 +12,10 @@ export default {
     app.component(
       'VideoPlayer',
       (await import('../components/VideoPlayer.vue')).default
+    ),
+     app.component(
+      'CssTip',
+      (await import('../components/css/CssTip.vue')).default
     )
   },
 }

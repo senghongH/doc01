@@ -190,6 +190,7 @@ export default defineConfig({
               text: 'CSS Tutorial',
               items: [
                 { text: 'Introduction', link: '/guide/css/' },
+                { text: 'Tips', link: '/guide/css/tip' },
                 {
                   text: 'Beginner',
                   collapsed: false,
