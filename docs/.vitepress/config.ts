@@ -23,14 +23,25 @@ export default defineConfig({
         nav: [
           { text: 'Home', link: '/' },
           { text: 'Guide', link: '/guide/' },
-          { text: 'HTML', link: '/guide/html/' },
-          { text: 'CSS', link: '/guide/css/' },
-          { text: 'JavaScript', link: '/guide/javascript/' },
-          { text: 'TypeScript', link: '/guide/typescript/' },
-          { text: 'NestJS', link: '/guide/nestjs/' },
-          { text: 'Hono', link: '/guide/hono/' },
-          { text: 'Express', link: '/guide/express/' },
-          { text: 'Python', link: '/guide/python/' },
+          {
+            text: 'Frontend',
+            items: [
+              { text: 'HTML', link: '/guide/html/' },
+              { text: 'CSS', link: '/guide/css/' },
+              { text: 'JavaScript', link: '/guide/javascript/' },
+              { text: 'TypeScript', link: '/guide/typescript/' }
+            ]
+          },
+          {
+            text: 'Backend',
+            items: [
+              { text: 'Node.js', link: '/guide/nodejs/' },
+              { text: 'Express', link: '/guide/express/' },
+              { text: 'NestJS', link: '/guide/nestjs/' },
+              { text: 'Hono', link: '/guide/hono/' },
+              { text: 'Python', link: '/guide/python/' }
+            ]
+          },
           { text: 'AI', link: '/guide/ai/' },
           { text: 'Author', link: '/creator' }
         ],
@@ -91,9 +102,10 @@ export default defineConfig({
                 { text: 'CSS', link: '/guide/css/' },
                 { text: 'JavaScript', link: '/guide/javascript/' },
                 { text: 'TypeScript', link: '/guide/typescript/' },
+                { text: 'Node.js', link: '/guide/nodejs/' },
+                { text: 'Express', link: '/guide/express/' },
                 { text: 'NestJS', link: '/guide/nestjs/' },
                 { text: 'Hono', link: '/guide/hono/' },
-                { text: 'Express', link: '/guide/express/' },
                 { text: 'Python', link: '/guide/python/' },
                 { text: 'AI & Machine Learning', link: '/guide/ai/' }
               ]
@@ -306,6 +318,42 @@ export default defineConfig({
                     { text: 'Testing', link: '/guide/hono/06-testing' },
                     { text: 'Deployment', link: '/guide/hono/07-deployment' },
                     { text: 'Advanced Topics', link: '/guide/hono/08-advanced' }
+                  ]
+                }
+              ]
+            }
+          ],
+          '/guide/nodejs/': [
+            {
+              text: 'Node.js Tutorial',
+              items: [
+                { text: 'Introduction', link: '/guide/nodejs/' },
+                {
+                  text: 'Beginner',
+                  collapsed: false,
+                  items: [
+                    { text: 'Getting Started', link: '/guide/nodejs/01-introduction' },
+                    { text: 'Modules', link: '/guide/nodejs/02-modules' },
+                    { text: 'File System', link: '/guide/nodejs/03-file-system' }
+                  ]
+                },
+                {
+                  text: 'Intermediate',
+                  collapsed: false,
+                  items: [
+                    { text: 'Async Programming', link: '/guide/nodejs/04-async' },
+                    { text: 'Events', link: '/guide/nodejs/05-events' },
+                    { text: 'Streams', link: '/guide/nodejs/06-streams' }
+                  ]
+                },
+                {
+                  text: 'Advanced',
+                  collapsed: false,
+                  items: [
+                    { text: 'HTTP Module', link: '/guide/nodejs/07-http' },
+                    { text: 'NPM & Packages', link: '/guide/nodejs/08-npm' },
+                    { text: 'Debugging', link: '/guide/nodejs/09-debugging' },
+                    { text: 'Advanced Topics', link: '/guide/nodejs/10-advanced' }
                   ]
                 }
               ]
