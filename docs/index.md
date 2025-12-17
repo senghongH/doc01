@@ -12,9 +12,9 @@ hero:
     - theme: brand
       text: Get Started
       link: /guide/
-    - theme: alt
-      text: View on GitHub
-      link: https://github.com
+    # - theme: alt
+    #   text: View on GitHub
+    #   link: https://github.com
 
 features:
   - icon: 🌐
