@@ -29,7 +29,8 @@ export default defineConfig({
               { text: 'HTML', link: '/guide/html/' },
               { text: 'CSS', link: '/guide/css/' },
               { text: 'JavaScript', link: '/guide/javascript/' },
-              { text: 'TypeScript', link: '/guide/typescript/' }
+              { text: 'TypeScript', link: '/guide/typescript/' },
+              { text: 'React', link: '/guide/react/' }
             ]
           },
           {
@@ -102,6 +103,7 @@ export default defineConfig({
                 { text: 'CSS', link: '/guide/css/' },
                 { text: 'JavaScript', link: '/guide/javascript/' },
                 { text: 'TypeScript', link: '/guide/typescript/' },
+                { text: 'React', link: '/guide/react/' },
                 { text: 'Node.js', link: '/guide/nodejs/' },
                 { text: 'Express', link: '/guide/express/' },
                 { text: 'NestJS', link: '/guide/nestjs/' },
@@ -318,6 +320,42 @@ export default defineConfig({
                     { text: 'Testing', link: '/guide/hono/06-testing' },
                     { text: 'Deployment', link: '/guide/hono/07-deployment' },
                     { text: 'Advanced Topics', link: '/guide/hono/08-advanced' }
+                  ]
+                }
+              ]
+            }
+          ],
+          '/guide/react/': [
+            {
+              text: 'React Tutorial',
+              items: [
+                { text: 'Introduction', link: '/guide/react/' },
+                {
+                  text: 'Beginner',
+                  collapsed: false,
+                  items: [
+                    { text: 'Getting Started', link: '/guide/react/01-introduction' },
+                    { text: 'JSX', link: '/guide/react/02-jsx' },
+                    { text: 'Components & Props', link: '/guide/react/03-components' }
+                  ]
+                },
+                {
+                  text: 'Intermediate',
+                  collapsed: false,
+                  items: [
+                    { text: 'State & useState', link: '/guide/react/04-state' },
+                    { text: 'Event Handling', link: '/guide/react/05-events' },
+                    { text: 'React Hooks', link: '/guide/react/06-hooks' }
+                  ]
+                },
+                {
+                  text: 'Advanced',
+                  collapsed: false,
+                  items: [
+                    { text: 'Form Handling', link: '/guide/react/07-forms' },
+                    { text: 'React Router', link: '/guide/react/08-routing' },
+                    { text: 'Data Fetching', link: '/guide/react/09-api' },
+                    { text: 'Advanced Patterns', link: '/guide/react/10-advanced' }
                   ]
                 }
               ]

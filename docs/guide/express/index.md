@@ -1,5 +1,9 @@
 # Express.js Tutorial
 
+::: info Official Documentation
+This tutorial is based on the official Express.js documentation. For the most up-to-date information, visit: [https://expressjs.com/](https://expressjs.com/)
+:::
+
 Express.js is a minimal and flexible Node.js web application framework that provides a robust set of features for building web and mobile applications. It's the de facto standard for Node.js web development.
 
 ## What You'll Learn

@@ -23,21 +23,42 @@ features:
     details: Build solid foundations with semantic markup, accessibility best practices, and modern HTML5 features.
     link: /guide/html/
     linkText: Learn HTML
-  - icon: 🎨
+  - icon:
+      src: /frameworks/css.png
     title: CSS Mastery
     details: Create stunning layouts with Flexbox, Grid, animations, and responsive design techniques.
     link: /guide/css/
     linkText: Learn CSS
-  - icon: ⚡
+  - icon:
+      src: /frameworks/js.png
     title: JavaScript
     details: From basics to advanced patterns - async/await, ES6+, DOM manipulation, and functional programming.
     link: /guide/javascript/
     linkText: Learn JavaScript
-  - icon: 🔷
+  - icon:
+      src: /frameworks/typescript.png
     title: TypeScript
     details: Write type-safe, scalable code with interfaces, generics, and advanced type manipulation.
     link: /guide/typescript/
     linkText: Learn TypeScript
+  - icon:
+      src: /frameworks/react.png
+    title: React
+    details: Build modern user interfaces with components, hooks, state management, and the React ecosystem.
+    link: /guide/react/
+    linkText: Learn React
+  - icon:
+      src: /frameworks/node.png
+    title: Node.js
+    details: Server-side JavaScript runtime - master async programming, streams, modules, and build powerful backends.
+    link: /guide/nodejs/
+    linkText: Learn Node.js
+  - icon:
+      src: /frameworks/express.png
+    title: Express.js
+    details: The most popular Node.js web framework for building APIs and web applications.
+    link: /guide/express/
+    linkText: Learn Express
   - icon:
       src: /frameworks/NestJS.png
     title: NestJS
@@ -49,12 +70,8 @@ features:
     details: Ultrafast web framework for Edge computing - Cloudflare Workers, Deno, Bun & more.
     link: /guide/hono/
     linkText: Learn Hono
-  - icon: 🚂
-    title: Express.js
-    details: The most popular Node.js web framework for building APIs and web applications.
-    link: /guide/express/
-    linkText: Learn Express
-  - icon: 🐍
+  - icon:
+      src: /frameworks/python.png
     title: Python
     details: Versatile programming language for web development, data science, AI, and automation.
     link: /guide/python/

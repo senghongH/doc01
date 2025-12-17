@@ -1,5 +1,9 @@
 # Node.js Tutorial
 
+::: info Official Documentation
+This tutorial is based on the official Node.js documentation. For the most up-to-date information, visit: [https://nodejs.org/docs/](https://nodejs.org/docs/)
+:::
+
 Welcome to the Node.js tutorial! Learn how to build powerful server-side applications with JavaScript.
 
 ## What is Node.js?
