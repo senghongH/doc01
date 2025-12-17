@@ -2,9 +2,44 @@
 
 Learn how to create websites that work on all screen sizes.
 
+## Introduction
+
+Responsive design ensures your website looks great on any device - from mobile phones to ultra-wide desktop monitors. In a world where over 50% of web traffic comes from mobile devices, responsive design isn't optional!
+
+::: tip The Responsive Mindset
+Instead of building separate mobile and desktop sites, responsive design uses:
+- **Fluid layouts** that adapt to screen size
+- **Flexible images** that scale within their containers
+- **Media queries** that apply different styles at different sizes
+:::
+
+### Mobile-First Philosophy
+
+The modern approach is to design for mobile FIRST, then enhance for larger screens:
+
+```css
+/* Mobile styles (default) */
+.container { padding: 10px; }
+
+/* Tablet and up */
+@media (min-width: 768px) {
+    .container { padding: 20px; }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .container { padding: 40px; }
+}
+```
+
+**Why mobile-first?**
+- Mobile users have the most constraints (small screen, slow connection)
+- Easier to add complexity than remove it
+- Forces you to prioritize content
+
 ## Viewport Meta Tag
 
-Essential for responsive design:
+Essential for responsive design - without it, mobile browsers assume your site is designed for desktop:
 
 ```html
 <meta name="viewport" content="width=device-width, initial-scale=1.0">

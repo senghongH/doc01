@@ -4,11 +4,43 @@ Learn CSS Grid Layout for two-dimensional layouts.
 
 ## Introduction to Grid
 
-CSS Grid is a powerful layout system for creating two-dimensional layouts (rows AND columns).
+CSS Grid is the most powerful layout system in CSS. While Flexbox excels at one-dimensional layouts, Grid handles two dimensions - rows AND columns simultaneously.
+
+::: tip Grid vs Flexbox - When to Use Which?
+| Use **Flexbox** for | Use **Grid** for |
+|---------------------|------------------|
+| Navigation bars | Page layouts |
+| Card rows | Image galleries |
+| Centering content | Dashboard layouts |
+| Simple component layouts | Complex overlapping designs |
+
+**Rule of thumb**: If you need to control layout in one direction, use Flexbox. If you need rows AND columns, use Grid.
+:::
+
+### Grid Mental Model
+
+Think of Grid like a spreadsheet - you define rows and columns, then place items in cells:
+
+```
+        Column 1    Column 2    Column 3
+       ┌──────────┬──────────┬──────────┐
+Row 1  │  Header spans all three        │
+       ├──────────┼──────────┴──────────┤
+Row 2  │ Sidebar  │    Main Content     │
+       │          │                     │
+       ├──────────┼─────────────────────┤
+Row 3  │  Footer spans all three        │
+       └──────────┴─────────────────────┘
+```
+
+### Getting Started
 
 ```css
 .container {
     display: grid;
+    grid-template-columns: 200px 1fr 200px;  /* 3 columns */
+    grid-template-rows: auto 1fr auto;        /* 3 rows */
+    gap: 20px;                                /* Spacing */
 }
 ```
 

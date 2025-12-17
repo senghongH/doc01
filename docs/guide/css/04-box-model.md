@@ -2,6 +2,18 @@
 
 Learn about the CSS box model including margins, padding, borders, and sizing.
 
+## Introduction
+
+The CSS box model is one of the most fundamental concepts in CSS. Understanding it is essential for controlling layout and spacing. Every single element on a webpage is a rectangular box!
+
+::: tip Why the Box Model Matters
+The box model affects EVERYTHING about how elements take up space:
+- How much room an element needs
+- How elements are spaced from each other
+- Where borders and backgrounds appear
+- Why your layouts sometimes "break"
+:::
+
 ## Understanding the Box Model
 
 Every HTML element is a rectangular box. The box model consists of:

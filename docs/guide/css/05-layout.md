@@ -2,9 +2,30 @@
 
 Learn about CSS display modes, positioning, and layout techniques.
 
+## Introduction
+
+Layout is how you arrange elements on a page. CSS gives you several powerful tools to control where elements appear and how they interact with each other.
+
+::: tip Layout Evolution
+CSS layout has evolved significantly:
+- **Old way**: Tables, floats, and hacks
+- **Modern way**: Flexbox and Grid
+- **Best practice**: Use Flexbox for 1D layouts, Grid for 2D layouts
+:::
+
+### Layout Concepts Overview
+
+| Concept | What It Does | When to Use |
+|---------|--------------|-------------|
+| **Display** | Controls how elements flow | Always - it's fundamental |
+| **Position** | Places elements precisely | Overlays, fixed headers, tooltips |
+| **Float** | Text wrapping around images | Rarely - use Flexbox instead |
+| **Flexbox** | One-dimensional layouts | Navigation, card rows, centering |
+| **Grid** | Two-dimensional layouts | Page layouts, galleries |
+
 ## Display Property
 
-The `display` property determines how an element behaves in the layout.
+The `display` property determines how an element behaves in the layout. It's the foundation of CSS layout.
 
 ### Block Elements
 

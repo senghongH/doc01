@@ -2,7 +2,31 @@
 
 Learn how to style text and fonts in CSS.
 
+## Introduction
+
+Typography is the art of arranging text to make it readable, appealing, and effective. Good typography can make the difference between a professional website and an amateur one.
+
+::: tip Why Typography Matters
+- **Readability**: 95% of web content is text. If it's hard to read, visitors leave
+- **Hierarchy**: Typography guides users through your content
+- **Brand Identity**: Fonts convey personality (modern, traditional, playful, serious)
+- **Accessibility**: Proper typography helps users with visual impairments
+:::
+
+### Key Typography Concepts
+
+| Concept | What It Controls |
+|---------|------------------|
+| **Font Family** | The typeface (Arial, Georgia, etc.) |
+| **Font Size** | How big the text is |
+| **Font Weight** | How bold/thin the text is |
+| **Line Height** | Spacing between lines |
+| **Letter Spacing** | Spacing between characters |
+| **Text Alignment** | Left, center, right, justified |
+
 ## Font Family
+
+The `font-family` property sets the typeface. Always provide fallback fonts!
 
 ### Setting Fonts
 

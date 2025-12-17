@@ -2,7 +2,32 @@
 
 Learn CSS custom properties, functions, and best practices.
 
+## Introduction
+
+Welcome to the advanced chapter! Here you'll learn techniques used by professional developers to create maintainable, scalable CSS.
+
+::: tip What Makes CSS "Advanced"?
+Advanced CSS isn't about complexity - it's about:
+- **Maintainability**: Code that's easy to update
+- **Scalability**: Systems that work for small and large projects
+- **Performance**: Fast-loading, smooth-rendering sites
+- **Organization**: Consistent patterns others can understand
+:::
+
+### Topics Covered
+
+| Topic | What You'll Learn |
+|-------|-------------------|
+| **CSS Variables** | Create reusable values across your stylesheet |
+| **CSS Functions** | `calc()`, `min()`, `max()`, `clamp()` |
+| **Logical Properties** | Direction-agnostic CSS |
+| **Advanced Selectors** | `:is()`, `:where()`, `:has()` |
+| **Architecture** | BEM naming, utility classes, design tokens |
+| **Dark Mode** | Implementing theme switching |
+
 ## CSS Custom Properties (Variables)
+
+CSS Variables (Custom Properties) let you define reusable values. They're one of the most impactful features added to CSS!
 
 ### Defining Variables
 

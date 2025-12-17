@@ -2,9 +2,29 @@
 
 Learn CSS transitions and animations for interactive effects.
 
+## Introduction
+
+Animations bring your website to life! They provide visual feedback, guide user attention, and make interactions feel smooth and natural.
+
+::: tip Transitions vs Animations
+| Transitions | Animations |
+|-------------|------------|
+| Simple A → B changes | Complex multi-step sequences |
+| Triggered by state changes (hover, focus) | Can run automatically |
+| Two states only | Multiple keyframes |
+| Perfect for: hover effects, focus states | Perfect for: loading spinners, attention grabbers |
+:::
+
+### Animation Best Practices
+
+1. **Be subtle** - Too much animation is distracting
+2. **Be purposeful** - Animation should serve a function
+3. **Be performant** - Stick to `transform` and `opacity` for smooth 60fps
+4. **Be accessible** - Respect `prefers-reduced-motion`
+
 ## Transitions
 
-Smooth changes between property values.
+Transitions create smooth changes between property values. They're the easiest way to add polish to your site.
 
 ### Basic Transition
 

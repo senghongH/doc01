@@ -17,7 +17,8 @@ hero:
     #   link: https://github.com
 
 features:
-  - icon: 🌐
+  - icon:
+      src: frameworks/html.png
     title: HTML Fundamentals
     details: Build solid foundations with semantic markup, accessibility best practices, and modern HTML5 features.
     link: /guide/html/
@@ -37,7 +38,8 @@ features:
     details: Write type-safe, scalable code with interfaces, generics, and advanced type manipulation.
     link: /guide/typescript/
     linkText: Learn TypeScript
-  - icon: 🏗️
+  - icon:
+      src: /frameworks/NestJS.png
     title: NestJS
     details: Build enterprise-grade Node.js applications with this powerful, modular framework.
     link: /guide/nestjs/
