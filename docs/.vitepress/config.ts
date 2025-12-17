@@ -29,6 +29,7 @@ export default defineConfig({
           { text: 'TypeScript', link: '/guide/typescript/' },
           { text: 'NestJS', link: '/guide/nestjs/' },
           { text: 'Hono', link: '/guide/hono/' },
+          { text: 'Express', link: '/guide/express/' },
           { text: 'Python', link: '/guide/python/' },
           { text: 'AI', link: '/guide/ai/' },
           { text: 'Author', link: '/creator' }
@@ -92,6 +93,7 @@ export default defineConfig({
                 { text: 'TypeScript', link: '/guide/typescript/' },
                 { text: 'NestJS', link: '/guide/nestjs/' },
                 { text: 'Hono', link: '/guide/hono/' },
+                { text: 'Express', link: '/guide/express/' },
                 { text: 'Python', link: '/guide/python/' },
                 { text: 'AI & Machine Learning', link: '/guide/ai/' }
               ]
@@ -304,6 +306,42 @@ export default defineConfig({
                     { text: 'Testing', link: '/guide/hono/06-testing' },
                     { text: 'Deployment', link: '/guide/hono/07-deployment' },
                     { text: 'Advanced Topics', link: '/guide/hono/08-advanced' }
+                  ]
+                }
+              ]
+            }
+          ],
+          '/guide/express/': [
+            {
+              text: 'Express.js Tutorial',
+              items: [
+                { text: 'Introduction', link: '/guide/express/' },
+                {
+                  text: 'Beginner',
+                  collapsed: false,
+                  items: [
+                    { text: 'Getting Started', link: '/guide/express/01-introduction' },
+                    { text: 'Routing', link: '/guide/express/02-routing' },
+                    { text: 'Middleware', link: '/guide/express/03-middleware' }
+                  ]
+                },
+                {
+                  text: 'Intermediate',
+                  collapsed: false,
+                  items: [
+                    { text: 'Request & Response', link: '/guide/express/04-request-response' },
+                    { text: 'Template Engines', link: '/guide/express/05-templates' },
+                    { text: 'Static Files', link: '/guide/express/06-static-files' }
+                  ]
+                },
+                {
+                  text: 'Advanced',
+                  collapsed: false,
+                  items: [
+                    { text: 'Error Handling', link: '/guide/express/07-error-handling' },
+                    { text: 'Authentication', link: '/guide/express/08-authentication' },
+                    { text: 'Database Integration', link: '/guide/express/09-database' },
+                    { text: 'Deployment', link: '/guide/express/10-deployment' }
                   ]
                 }
               ]

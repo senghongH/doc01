@@ -49,6 +49,11 @@ features:
     details: Ultrafast web framework for Edge computing - Cloudflare Workers, Deno, Bun & more.
     link: /guide/hono/
     linkText: Learn Hono
+  - icon: 🚂
+    title: Express.js
+    details: The most popular Node.js web framework for building APIs and web applications.
+    link: /guide/express/
+    linkText: Learn Express
   - icon: 🐍
     title: Python
     details: Versatile programming language for web development, data science, AI, and automation.
