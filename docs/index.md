@@ -81,6 +81,18 @@ features:
     details: Explore artificial intelligence concepts, neural networks, and practical ML applications.
     link: /guide/ai/
     linkText: Learn AI
+  - icon:
+      src: /frameworks/cshap.png
+    title: C#
+    details: Powerful, modern object-oriented language for building Windows apps, games with Unity, and enterprise solutions.
+    link: /guide/csharp/
+    linkText: Learn C#
+  - icon:
+      src: /frameworks/dotnet.svg
+    title: .NET
+    details: Cross-platform framework for building web APIs, desktop apps, cloud services, and microservices.
+    link: /guide/dotnet/
+    linkText: Learn .NET
 ---
 
 <style>
