@@ -41,7 +41,9 @@ export default defineConfig({
               { text: 'Express', link: '/guide/express/' },
               { text: 'NestJS', link: '/guide/nestjs/' },
               { text: 'Hono', link: '/guide/hono/' },
-              { text: 'Python', link: '/guide/python/' }
+              { text: 'Python', link: '/guide/python/' },
+              { text: 'C#', link: '/guide/csharp/' },
+              { text: '.NET', link: '/guide/dotnet/' }
             ]
           },
           { text: 'AI', link: '/guide/ai/' },
@@ -110,6 +112,8 @@ export default defineConfig({
                 { text: 'NestJS', link: '/guide/nestjs/' },
                 { text: 'Hono', link: '/guide/hono/' },
                 { text: 'Python', link: '/guide/python/' },
+                { text: 'C#', link: '/guide/csharp/' },
+                { text: '.NET', link: '/guide/dotnet/' },
                 { text: 'AI & Machine Learning', link: '/guide/ai/' },
                 { text: 'Vue.js', link: '/guide/vue/' }
               ]
@@ -540,6 +544,78 @@ export default defineConfig({
                     { text: 'Fine-tuning Models', link: '/guide/ai/08-fine-tuning' },
                     { text: 'AI Agents', link: '/guide/ai/09-agents' },
                     { text: 'Production AI', link: '/guide/ai/10-production' }
+                  ]
+                }
+              ]
+            }
+          ],
+          '/guide/csharp/': [
+            {
+              text: 'C# Tutorial',
+              items: [
+                { text: 'Introduction', link: '/guide/csharp/' },
+                {
+                  text: 'Beginner',
+                  collapsed: false,
+                  items: [
+                    { text: 'Getting Started', link: '/guide/csharp/01-introduction' },
+                    { text: 'Variables & Types', link: '/guide/csharp/02-variables' },
+                    { text: 'Control Flow', link: '/guide/csharp/03-control-flow' }
+                  ]
+                },
+                {
+                  text: 'Intermediate',
+                  collapsed: false,
+                  items: [
+                    { text: 'Methods', link: '/guide/csharp/04-methods' },
+                    { text: 'Classes & Objects', link: '/guide/csharp/05-classes' },
+                    { text: 'Inheritance', link: '/guide/csharp/06-inheritance' }
+                  ]
+                },
+                {
+                  text: 'Advanced',
+                  collapsed: false,
+                  items: [
+                    { text: 'Interfaces', link: '/guide/csharp/07-interfaces' },
+                    { text: 'Generics', link: '/guide/csharp/08-generics' },
+                    { text: 'LINQ', link: '/guide/csharp/09-linq' },
+                    { text: 'Async Programming', link: '/guide/csharp/10-async' }
+                  ]
+                }
+              ]
+            }
+          ],
+          '/guide/dotnet/': [
+            {
+              text: '.NET Tutorial',
+              items: [
+                { text: 'Introduction', link: '/guide/dotnet/' },
+                {
+                  text: 'Beginner',
+                  collapsed: false,
+                  items: [
+                    { text: 'Getting Started', link: '/guide/dotnet/01-introduction' },
+                    { text: 'Project Structure', link: '/guide/dotnet/02-project-structure' },
+                    { text: 'CLI Tools', link: '/guide/dotnet/03-cli' }
+                  ]
+                },
+                {
+                  text: 'Intermediate',
+                  collapsed: false,
+                  items: [
+                    { text: 'Dependency Injection', link: '/guide/dotnet/04-dependency-injection' },
+                    { text: 'Configuration', link: '/guide/dotnet/05-configuration' },
+                    { text: 'Logging', link: '/guide/dotnet/06-logging' }
+                  ]
+                },
+                {
+                  text: 'Advanced',
+                  collapsed: false,
+                  items: [
+                    { text: 'Middleware', link: '/guide/dotnet/07-middleware' },
+                    { text: 'Entity Framework', link: '/guide/dotnet/08-entity-framework' },
+                    { text: 'Testing', link: '/guide/dotnet/09-testing' },
+                    { text: 'Deployment', link: '/guide/dotnet/10-deployment' }
                   ]
                 }
               ]

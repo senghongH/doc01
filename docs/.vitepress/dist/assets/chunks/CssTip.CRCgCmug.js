@@ -1,1 +1,0 @@
-import{_ as s,c as o,o as t,j as n}from"./framework.-1KSn0C5.js";const r={},a={class:"text-red-400 bg-gray-500/10 rounded-md p-4 mt-4"};function c(d,e){return t(),o("div",a,[...e[0]||(e[0]=[n("span",null,"Comming soon!!",-1)])])}const m=s(r,[["render",c]]);export{m as default};
