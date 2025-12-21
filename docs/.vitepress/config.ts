@@ -46,6 +46,12 @@ export default defineConfig({
               { text: '.NET', link: '/guide/dotnet/' }
             ]
           },
+          {
+            text: 'DevOps',
+            items: [
+              { text: 'Docker', link: '/guide/docker/' }
+            ]
+          },
           { text: 'AI', link: '/guide/ai/' },
           { text: 'Author', link: '/creator' }
         ],
@@ -114,6 +120,7 @@ export default defineConfig({
                 { text: 'Python', link: '/guide/python/' },
                 { text: 'C#', link: '/guide/csharp/' },
                 { text: '.NET', link: '/guide/dotnet/' },
+                { text: 'Docker', link: '/guide/docker/' },
                 { text: 'AI & Machine Learning', link: '/guide/ai/' },
                 { text: 'Vue.js', link: '/guide/vue/' }
               ]
@@ -620,9 +627,152 @@ export default defineConfig({
                 }
               ]
             }
+          ],
+          '/guide/docker/': [
+            {
+              text: 'Docker Tutorial',
+              items: [
+                { text: 'Introduction', link: '/guide/docker/' },
+                {
+                  text: 'Beginner',
+                  collapsed: false,
+                  items: [
+                    { text: 'Introduction to Docker', link: '/guide/docker/01-introduction' },
+                    { text: 'Docker Images', link: '/guide/docker/02-images' },
+                    { text: 'Docker Containers', link: '/guide/docker/03-containers' },
+                    { text: 'Dockerfile Basics', link: '/guide/docker/04-dockerfile' },
+                    { text: 'Docker Volumes', link: '/guide/docker/05-volumes' }
+                  ]
+                },
+                {
+                  text: 'Intermediate',
+                  collapsed: false,
+                  items: [
+                    { text: 'Docker Networking', link: '/guide/docker/06-networking' },
+                    { text: 'Docker Compose', link: '/guide/docker/07-compose' },
+                    { text: 'Docker Registry', link: '/guide/docker/08-registry' }
+                  ]
+                },
+                {
+                  text: 'Advanced',
+                  collapsed: false,
+                  items: [
+                    { text: 'Docker in Production', link: '/guide/docker/09-production' },
+                    { text: 'Docker Orchestration', link: '/guide/docker/10-orchestration' }
+                  ]
+                }
+              ]
+            }
           ]
         }
       }
     },
+    km: {
+      label: 'ភាសាខ្មែរ',
+      lang: 'km',
+      themeConfig: {
+        logo: '/favicon.svg',
+        nav: [
+          { text: 'ទំព័រដើម', link: '/km/' },
+          { text: 'មគ្គុទេសក៍', link: '/km/guide/' },
+          {
+            text: 'Frontend',
+            items: [
+              { text: 'HTML', link: '/km/guide/html/' },
+              { text: 'CSS', link: '/km/guide/css/' },
+              { text: 'JavaScript', link: '/km/guide/javascript/' },
+              { text: 'TypeScript', link: '/km/guide/typescript/' },
+              { text: 'React', link: '/km/guide/react/' },
+              { text: 'Vue.js', link: '/km/guide/vue/' }
+            ]
+          },
+          {
+            text: 'Backend',
+            items: [
+              { text: 'Node.js', link: '/km/guide/nodejs/' },
+              { text: 'Express', link: '/km/guide/express/' },
+              { text: 'NestJS', link: '/km/guide/nestjs/' },
+              { text: 'Hono', link: '/km/guide/hono/' },
+              { text: 'Python', link: '/km/guide/python/' },
+              { text: 'C#', link: '/km/guide/csharp/' },
+              { text: '.NET', link: '/km/guide/dotnet/' }
+            ]
+          },
+          { text: 'AI', link: '/km/guide/ai/' },
+          { text: 'អ្នកនិពន្ធ', link: '/km/creator' }
+        ],
+        sidebar: {
+          '/km/guide/': [
+            {
+              text: 'មូលដ្ឋាន',
+              items: [
+                { text: 'សេចក្តីផ្តើម', link: '/km/guide/' },
+                { text: 'តើគេហទំព័រជាអ្វី?', link: '/km/guide/fundamentals/what-is-website' },
+                { text: 'របៀបដែលវេបសាइតដំណើរការ', link: '/km/guide/fundamentals/how-web-works' },
+                { text: 'ឧបករណ៍អភិវឌ្ឍន៍វេប', link: '/km/guide/fundamentals/web-development-overview' },
+                { text: 'ការចាប់ផ្តើម', link: '/km/guide/fundamentals/getting-started' }
+              ]
+            },
+            {
+              text: 'បរិស្ថាននៃការអភិវឌ្ឍន៍',
+              items: [
+                { text: 'មូលដ្ឋាននៃបន្ទាត់ពាក្យបញ្ជា', link: '/km/guide/environment/command-line' },
+                { text: 'កម្មវិធីកែសម្រួលលេខកូដ', link: '/km/guide/environment/code-editors' },
+                { text: 'អ្នកគ្រប់គ្រងកញ្ចប់', link: '/km/guide/environment/package-managers' }
+              ]
+            },
+            {
+              text: 'ជំនាញសំខាន់ៗ',
+              items: [
+                { text: 'ឧបករណ៍អ្នកអភិវឌ្ឍន៍', link: '/km/guide/skills/developer-tools' },
+                { text: 'ការគ្រប់គ្រងកំណែ (Git)', link: '/km/guide/skills/version-control' },
+                { text: 'មូលដ្ឋាននៃការឆ្លុះបញ្ហា', link: '/km/guide/skills/debugging' },
+                { text: 'API និងការទទួលបានទិន្នន័យ', link: '/km/guide/skills/apis-data-fetching' },
+                { text: 'ការងារជាមួយទម្រង់', link: '/km/guide/skills/forms' },
+                { text: 'JSON និងទម្រង់ទិន្នន័យ', link: '/km/guide/skills/json-data' },
+                { text: 'កន្សោមទៀងទាត់', link: '/km/guide/skills/regex' },
+                { text: 'ផ្ទុកលើតាមទ្រូង', link: '/km/guide/skills/web-storage' }
+              ]
+            },
+            {
+              text: 'ការអនុវត្តល្អបំផុត',
+              items: [
+                { text: 'ការរចនាឆ្លើយតប', link: '/km/guide/best-practices/responsive-design' },
+                { text: 'ភាពងាយលាभ់បក្សីតាមលេខកូដ', link: '/km/guide/best-practices/web-accessibility' },
+                { text: 'ដំណើរការលេចឡើង', link: '/km/guide/best-practices/web-performance' },
+                { text: 'សន្តិសុខលើតាមទ្រូង', link: '/km/guide/best-practices/web-security' },
+                { text: 'ភាពឆបគ្នារបស់ឧបករណ៍ស្វាគមន៍', link: '/km/guide/best-practices/browser-compatibility' },
+                { text: 'មូលដ្ឋាននៃ SEO', link: '/km/guide/best-practices/seo-basics' }
+              ]
+            },
+            {
+              text: 'ការដាក់ពង្រាយ',
+              items: [
+                { text: 'ផ្ទុកវេបនិងការដាក់ពង្រាយ', link: '/km/guide/deployment/web-hosting' }
+              ]
+            },
+            {
+              text: 'មេរៀនបង្រៀន',
+              items: [
+                { text: 'HTML', link: '/km/guide/html/' },
+                { text: 'CSS', link: '/km/guide/css/' },
+                { text: 'JavaScript', link: '/km/guide/javascript/' },
+                { text: 'TypeScript', link: '/km/guide/typescript/' },
+                { text: 'React', link: '/km/guide/react/' },
+                { text: 'Node.js', link: '/km/guide/nodejs/' },
+                { text: 'Express', link: '/km/guide/express/' },
+                { text: 'NestJS', link: '/km/guide/nestjs/' },
+                { text: 'Hono', link: '/km/guide/hono/' },
+                { text: 'Python', link: '/km/guide/python/' },
+                { text: 'C#', link: '/km/guide/csharp/' },
+                { text: '.NET', link: '/km/guide/dotnet/' },
+                { text: 'AI & ការរៀនម៉ាស៊ីន', link: '/km/guide/ai/' },
+                { text: 'Vue.js', link: '/km/guide/vue/' }
+              ]
+            }
+          ]
+        }
+      }
+    }
   }
 })
